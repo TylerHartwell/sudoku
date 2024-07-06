@@ -1,6 +1,8 @@
 "use client"
 
-const GetButton = () => {
+import { ReactNode } from "react"
+
+const FetchPuzzleButton = ({ children, className }: { children: ReactNode; className: string }) => {
   const handleClick = async () => {
     try {
       const response = await fetch("/api/randomPuzzle")
@@ -16,7 +18,11 @@ const GetButton = () => {
     }
   }
 
-  return <button onClick={handleClick}>GET TEST</button>
+  return (
+    <button className={className} onClick={handleClick}>
+      {children}
+    </button>
+  )
 }
 
-export default GetButton
+export default FetchPuzzleButton
