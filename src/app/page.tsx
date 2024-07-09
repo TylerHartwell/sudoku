@@ -3,8 +3,9 @@ import FetchPuzzleButton from "@/components/FetchPuzzleButton"
 import Image from "next/image"
 import "./css/modern-normalize.css"
 import "./css/style.css"
+import Board from "@/components/board/Board"
 
-export default function Home() {
+export default function Page() {
   return (
     <div className="container">
       <section className="title">SUDOKU RULER</section>
@@ -12,7 +13,7 @@ export default function Home() {
         <div className="rules-title">Rules</div>
         <ol className="rules-list">{/* <!-- generate with js --> */}</ol>
       </section>
-      <section className="board">{/* <!-- generate with js --> */}</section>
+      <Board />
       <section className="controls">
         <div className="controls-title">Controls</div>
         <div className="control-buttons">

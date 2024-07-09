@@ -180,7 +180,7 @@ body {
 }
 
 .candidate {
-  font-size: 0.3em;
+  font-size: 0.8em;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -226,8 +226,7 @@ body {
 }
 
 .highlight.entry {
-  text-shadow: -1px -1px 0 currentColor, 1px -1px 0 currentColor,
-    -1px 1px 0 currentColor, 1px 1px 0 currentColor;
+  text-shadow: -1px -1px 0 currentColor, 1px -1px 0 currentColor, -1px 1px 0 currentColor, 1px 1px 0 currentColor;
 }
 
 .highlight.pad-number {
