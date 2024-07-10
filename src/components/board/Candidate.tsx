@@ -2,37 +2,22 @@
 
 import { useState } from "react"
 import { useContext } from "react"
-import CandidateHighlightContext from "@/contexts/CandidateHighlightContext"
+import CandidateContext from "@/contexts/CandidateContext"
 
-const Candidate = ({
-  boxId,
-  squareN,
-  candidateN,
-  isCandidatesOn
-}: {
-  boxId: number
-  squareN: number
-  candidateN: number
-  isCandidatesOn: boolean
-}) => {
+const Candidate = ({ boxId, squareN, candidateN }: { boxId: number; squareN: number; candidateN: number }) => {
   const [isEliminated, setIsEliminated] = useState(false)
-  const isHighlighted = useContext(CandidateHighlightContext)
+  const { highlightCandidates, showCandidates, candidateMode } = useContext(CandidateContext)
 
   const toggleEliminated = () => {
     setIsEliminated(prevState => !prevState)
   }
 
-  // const eliminate = () => {
-  //   if (!isEliminated) setIsEliminated(true)
-  // }
-
-  // const uneliminate = () => {
-  //   if (isEliminated) setIsEliminated(false)
-  // }
+  const highlight: string = candidateN == highlightCandidates && showCandidates && !isEliminated ? "highlight" : ""
+  const noPointer: string = !candidateMode ? "no-pointer" : ""
 
   return (
-    <div className={`candidate ${isHighlighted ? "highlight" : ""}`} onClick={toggleEliminated}>
-      {!isEliminated && isCandidatesOn ? candidateN.toString() : ""}
+    <div className={`candidate ${highlight} ${noPointer}`} onClick={toggleEliminated}>
+      {!isEliminated && (showCandidates || candidateMode) ? candidateN.toString() : ""}
     </div>
   )
 }

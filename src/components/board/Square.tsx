@@ -6,7 +6,7 @@ const Square = ({ boxId, squareN }: { boxId: number; squareN: number }) => {
   return (
     <div className="square">
       {Array.from({ length: 9 }).map((_, index) => (
-        <Candidate key={index} boxId={boxId} squareN={squareN} candidateN={index + 1} isCandidatesOn={true} />
+        <Candidate key={index} boxId={boxId} squareN={squareN} candidateN={index + 1} />
       ))}
       <Entry boxId={boxId} squareN={squareN} />
     </div>

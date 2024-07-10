@@ -177,6 +177,7 @@ body {
   height: 100%;
   /* padding-bottom: 0.1em; */
   transition: text-shadow 0.2s ease;
+  cursor: default;
 }
 
 .candidate {
