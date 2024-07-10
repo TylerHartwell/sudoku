@@ -2,7 +2,15 @@
 
 import { ReactNode } from "react"
 
-const FetchPuzzleButton = ({ children, className }: { children: ReactNode; className: string }) => {
+const FetchPuzzleButton = ({
+  setGridString,
+  children,
+  className
+}: {
+  setGridString: (gridString: string) => void
+  children: ReactNode
+  className: string
+}) => {
   const handleClick = async () => {
     try {
       const response = await fetch("/api/randomPuzzle")
@@ -12,7 +20,8 @@ const FetchPuzzleButton = ({ children, className }: { children: ReactNode; class
       }
 
       const data = await response.json()
-      console.log("PAGE DATA: ", data)
+      console.log("Puzzle String: ", data)
+      setGridString(data)
     } catch (error) {
       console.log("PAGE ERROR: ", error)
     }
