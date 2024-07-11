@@ -209,7 +209,7 @@ body {
 }
 
 /* style toggles */
-.hidden {
+.board-is-set {
   display: none;
 }
 
@@ -293,6 +293,10 @@ button.set-puzzle-btn:active {
   box-shadow: black 0px 0px 3px;
 }
 
+.toggle-candidates-btn:disabled {
+  opacity: 0.5;
+}
+
 .toggle-candidates-btn:active:disabled {
   transform: none;
 }
@@ -350,6 +354,7 @@ button.set-puzzle-btn:active {
 
 button {
   padding: 4px 6px;
+  background-color: rgb(240, 240, 240);
 }
 
 button:active {
@@ -405,6 +410,11 @@ button:active {
 
   .entry:hover {
     border: 1px solid rgb(80, 80, 80);
+  }
+
+  .entry:focus {
+    outline: none;
+    border: 4px solid blue;
   }
 
   .try-next-btn:hover:disabled {

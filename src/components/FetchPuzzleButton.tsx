@@ -3,11 +3,11 @@
 import { ReactNode } from "react"
 
 const FetchPuzzleButton = ({
-  setGridString,
+  setPuzzleStringStart,
   children,
   className
 }: {
-  setGridString: (gridString: string) => void
+  setPuzzleStringStart: (puzzleStringStart: string) => void
   children: ReactNode
   className: string
 }) => {
@@ -21,7 +21,7 @@ const FetchPuzzleButton = ({
 
       const data = await response.json()
       console.log("Puzzle String: ", data)
-      setGridString(data)
+      setPuzzleStringStart(data)
     } catch (error) {
       console.log("PAGE ERROR: ", error)
     }

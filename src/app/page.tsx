@@ -8,7 +8,8 @@ import { useEffect, useState } from "react"
 import CandidateContext from "@/contexts/CandidateContext"
 
 export default function Page() {
-  const [gridString, setGridString] = useState("")
+  const [puzzleStringStart, setPuzzleStringStart] = useState("")
+  const [puzzleStringCurrent, setPuzzleStringCurrent] = useState("")
   const [highlightCandidates, setHighlightCandidates] = useState(0)
   const [showCandidates, setShowCandidates] = useState(false)
   const [candidateMode, setCandidateMode] = useState(false)
@@ -19,14 +20,8 @@ export default function Page() {
     setCandidateMode(false)
     setShowCandidates(false)
     setHighlightCandidates(0)
-    setGridString("")
+    setPuzzleStringCurrent("")
   }
-
-  useEffect(() => {
-    if (candidateMode) {
-      setShowCandidates(true)
-    }
-  }, [candidateMode])
 
   useEffect(() => {
     if (!showCandidates) {
@@ -35,6 +30,7 @@ export default function Page() {
   }, [showCandidates])
 
   const candidateModeClass: string = candidateMode ? "candidate-mode-on" : ""
+  const boardIsSetClass: string = boardIsSet ? "board-is-set" : ""
 
   return (
     <div className="container">
@@ -43,30 +39,36 @@ export default function Page() {
         <div className="rules-title">Rules</div>
         <ol className="rules-list">{/* <!-- generate with js --> */}</ol>
       </section>
-      <CandidateContext.Provider value={{ highlightCandidates, showCandidates, candidateMode }}>
+      <CandidateContext.Provider
+        value={{ highlightCandidates, showCandidates, candidateMode, puzzleStringStart, puzzleStringCurrent, boardIsSet }}
+      >
         <Board />
       </CandidateContext.Provider>
 
       <section className="controls">
         <div className="controls-title">Controls</div>
         <div className="control-buttons">
-          <FetchPuzzleButton className="fetch-grid-string-btn" setGridString={setGridString}>
+          <FetchPuzzleButton className={`fetch-grid-string-btn ${boardIsSetClass}`} setPuzzleStringStart={setPuzzleStringStart}>
             Fetch A New Puzzle
           </FetchPuzzleButton>
           <input
             type="text"
             placeholder="paste or enter 81-character grid string"
-            className="grid-string"
+            className={`grid-string ${boardIsSetClass}`}
             id="grid-string"
-            value={gridString}
-            onChange={e => setGridString(e.target.value)}
+            value={puzzleStringStart}
+            onChange={e => setPuzzleStringStart(e.target.value)}
           />
-          <button className="input-grid-string-btn" onClick={() => setHighlightCandidates(prev => prev + 1)}>
+          {/* <button className="input-grid-string-btn" onClick={() => setHighlightCandidates(prev => prev + 1)}>
             Input grid string and set
+          </button> */}
+          <button className="clear-all-btn" onClick={() => setBoardIsSet(false)}>
+            Clear All
           </button>
-          <button className="clear-all-btn">Clear All</button>
-          <button className="set-puzzle-btn">Set Puzzle</button>
-          <button className="toggle-candidates-btn" onClick={() => setShowCandidates(prev => !prev)}>
+          <button className={`set-puzzle-btn ${boardIsSetClass}`} onClick={() => setBoardIsSet(true)}>
+            Set Puzzle
+          </button>
+          <button className="toggle-candidates-btn" onClick={() => setShowCandidates(prev => !prev)} disabled={candidateMode}>
             Toggle Candidates
           </button>
         </div>
