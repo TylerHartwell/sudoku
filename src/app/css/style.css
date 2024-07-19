@@ -214,7 +214,7 @@ body {
 }
 
 .set {
-  background-color: rgb(153, 165, 180);
+  background-color: rgba(153, 165, 180, 0.75);
 }
 
 .wrong {

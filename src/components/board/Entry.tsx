@@ -1,33 +1,24 @@
 "use client"
 
-import { useRef, useState, useContext, useEffect } from "react"
+import { useRef, useState, useContext, useEffect, useCallback } from "react"
 import CandidateContext from "@/contexts/CandidateContext"
 
 interface EntryProps {
-  boxId: number
-  squareN: number
-  rowN: number
-  colN: number
-  squareId: number
+  gridSquareIndex: number
+  shownValue: string
 }
 
-const Entry = ({ boxId, squareN, rowN, colN, squareId }: EntryProps) => {
-  const [shownValue, setShownValue] = useState("")
+const Entry = ({ gridSquareIndex, shownValue }: EntryProps) => {
   const shownValueRef = useRef(shownValue)
   const [isLocked, setIsLocked] = useState(false)
-  const { highlightCandidates, candidateMode, puzzleStringStart, boardIsSet } = useContext(CandidateContext)
+  const { candidateMode, setPuzzleStringCurrent, boardIsSet } = useContext(CandidateContext)
   const entryRef = useRef<HTMLDivElement>(null)
 
-  const noPointer: string = candidateMode ? "no-pointer" : ""
-  const set: string = isLocked ? "set" : ""
+  const handleCharacterEntry = (character: string) => {
+    const replacementChar = character < "1" || character > "9" ? "0" : character
 
-  useEffect(() => {
-    if (puzzleStringStart[squareId - 1]) {
-      handleCharacterEntry(puzzleStringStart[squareId - 1])
-    } else {
-      handleCharacterEntry("")
-    }
-  }, [puzzleStringStart, squareId])
+    setPuzzleStringCurrent((prev: string) => prev.slice(0, gridSquareIndex) + replacementChar + prev.slice(gridSquareIndex + 1))
+  }
 
   useEffect(() => {
     shownValueRef.current = shownValue
@@ -46,20 +37,19 @@ const Entry = ({ boxId, squareN, rowN, colN, squareId }: EntryProps) => {
   }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    e.preventDefault()
     if (!isLocked) handleCharacterEntry(e.key)
     entryRef.current?.blur()
   }
 
-  const handleCharacterEntry = (character: string) => {
-    if (character < "1" || character > "9") {
-      setShownValue("")
-    } else {
-      setShownValue(character)
-    }
-  }
-
   return (
-    <div ref={entryRef} className={`entry ${noPointer} ${set}`} tabIndex={0} onClick={handleClick} onKeyDown={handleKeyDown}>
+    <div
+      ref={entryRef}
+      className={`entry ${candidateMode ? "no-pointer" : ""} ${isLocked ? "set" : ""}`}
+      tabIndex={0}
+      onClick={handleClick}
+      onKeyDown={handleKeyDown}
+    >
       {shownValue}
     </div>
   )

@@ -1,18 +1,29 @@
-import { ReactNode } from "react"
+import { useContext, useEffect, useState } from "react"
 import Candidate from "./Candidate"
 import Entry from "./Entry"
+import CandidateContext from "@/contexts/CandidateContext"
 
-const Square = ({ boxId, squareN }: { boxId: number; squareN: number }) => {
-  const rowN = Math.round(Math.floor((boxId - 1) / 3) * 3 + Math.floor((squareN - 1) / 3) + 1)
-  const colN = Math.round(((boxId - 1) % 3) * 3 + ((squareN - 1) % 3) + 1)
-  const squareId = (rowN - 1) * 9 + colN
+const Square = ({ boxIndex, boxSquareIndex }: { boxIndex: number; boxSquareIndex: number }) => {
+  const { puzzleStringCurrent } = useContext(CandidateContext)
+  const rowIndex = Math.floor(boxIndex / 3) * 3 + Math.floor(boxSquareIndex / 3)
+  const colIndex = (boxIndex % 3) * 3 + (boxSquareIndex % 3)
+  const gridSquareIndex = rowIndex * 9 + colIndex
+
+  const shownValue = puzzleStringCurrent[gridSquareIndex] == "0" ? "" : puzzleStringCurrent[gridSquareIndex]
 
   return (
     <div className="square">
       {Array.from({ length: 9 }).map((_, index) => (
-        <Candidate key={index} boxId={boxId} squareN={squareN} candidateN={index + 1} />
+        <Candidate
+          key={index}
+          boxIndex={boxIndex}
+          rowIndex={rowIndex}
+          colIndex={colIndex}
+          candidateN={index + 1}
+          gridSquareIndex={gridSquareIndex}
+        />
       ))}
-      <Entry boxId={boxId} squareN={squareN} rowN={rowN} colN={colN} squareId={squareId} />
+      <Entry gridSquareIndex={gridSquareIndex} shownValue={shownValue} />
     </div>
   )
 }
