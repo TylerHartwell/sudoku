@@ -21,6 +21,7 @@ const Square = ({ boxIndex, boxSquareIndex }: { boxIndex: number; boxSquareIndex
           colIndex={colIndex}
           candidateN={index + 1}
           gridSquareIndex={gridSquareIndex}
+          entryShownValue={shownValue}
         />
       ))}
       <Entry gridSquareIndex={gridSquareIndex} shownValue={shownValue} />

@@ -46,7 +46,7 @@ const Entry = ({ gridSquareIndex, shownValue }: EntryProps) => {
     <div
       ref={entryRef}
       className={`entry ${candidateMode ? "no-pointer" : ""} ${isLocked ? "set" : ""}`}
-      tabIndex={0}
+      tabIndex={gridSquareIndex + 1}
       onClick={handleClick}
       onKeyDown={handleKeyDown}
     >

@@ -1,6 +1,6 @@
 "use client"
 
-import { ReactNode } from "react"
+import { ReactNode, useState } from "react"
 
 const FetchPuzzleButton = ({
   setPuzzleStringStart,
@@ -13,8 +13,11 @@ const FetchPuzzleButton = ({
   children: ReactNode
   className: string
 }) => {
+  const [loading, setLoading] = useState(false)
+
   const handleClick = async () => {
     try {
+      setLoading(true)
       const response = await fetch("/api/randomPuzzle")
 
       if (!response.ok) {
@@ -27,12 +30,14 @@ const FetchPuzzleButton = ({
       setPuzzleSolution(data.solution)
     } catch (error) {
       console.log("PAGE ERROR: ", error)
+    } finally {
+      setLoading(false)
     }
   }
 
   return (
     <button className={className} onClick={handleClick}>
-      {children}
+      {loading ? "Loading..." : children}
     </button>
   )
 }

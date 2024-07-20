@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { useContext } from "react"
 import CandidateContext from "@/contexts/CandidateContext"
 
@@ -10,18 +10,20 @@ interface CandidateProps {
   rowIndex: number
   colIndex: number
   gridSquareIndex: number
+  entryShownValue: string
 }
 
-const Candidate = ({ boxIndex, candidateN, rowIndex, colIndex, gridSquareIndex }: CandidateProps) => {
+const Candidate = ({ boxIndex, candidateN, rowIndex, colIndex, gridSquareIndex, entryShownValue }: CandidateProps) => {
   const [isEliminated, setIsEliminated] = useState(false)
   const toggledByUser = useRef(false)
-  const { highlightCandidates, showCandidates, candidateMode, puzzleStringCurrent, allBoxes, allColumns, allRows } =
+  const { highlightN, showCandidates, candidateMode, puzzleStringCurrent, allBoxes, allColumns, allRows } =
     useContext(CandidateContext)
 
-  const toggleEliminated = () => {
-    toggledByUser.current = !isEliminated
-    setIsEliminated(prevState => !prevState)
-  }
+  const highlight = useMemo(() => {
+    return candidateN === highlightN && showCandidates && !isEliminated ? "highlight" : ""
+  }, [highlightN, showCandidates, isEliminated, candidateN])
+
+  const noPointer = useMemo(() => (!candidateMode ? "no-pointer" : ""), [candidateMode])
 
   useEffect(() => {
     if (
@@ -38,12 +40,16 @@ const Candidate = ({ boxIndex, candidateN, rowIndex, colIndex, gridSquareIndex }
     }
   }, [puzzleStringCurrent, allBoxes, allColumns, allRows, boxIndex, candidateN, colIndex, rowIndex, gridSquareIndex])
 
-  const highlight: string = candidateN == highlightCandidates && showCandidates && !isEliminated ? "highlight" : ""
-  const noPointer: string = !candidateMode ? "no-pointer" : ""
+  const toggleEliminated = () => {
+    toggledByUser.current = !isEliminated
+    setIsEliminated(prevState => !prevState)
+  }
+
+  if ((!showCandidates && !candidateMode) || entryShownValue) return null
 
   return (
     <div className={`candidate ${highlight} ${noPointer}`} onClick={toggleEliminated}>
-      {!isEliminated && (showCandidates || candidateMode) ? candidateN.toString() : ""}
+      {!isEliminated ? candidateN.toString() : ""}
     </div>
   )
 }

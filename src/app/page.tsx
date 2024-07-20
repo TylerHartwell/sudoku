@@ -15,14 +15,12 @@ export default function Page() {
   const [puzzleStringStart, setPuzzleStringStart] = useState("")
   const [puzzleStringCurrent, setPuzzleStringCurrent] = useState("0".repeat(81))
   const [puzzleSolution, setPuzzleSolution] = useState("")
-  const [highlightCandidates, setHighlightCandidates] = useState(0)
+  const [highlightN, setHighlightN] = useState(0)
   const [showCandidates, setShowCandidates] = useState(false)
   const [candidateMode, setCandidateMode] = useState(false)
   const [boardIsSet, setBoardIsSet] = useState(false)
 
   console.log("Page Render")
-  console.log("puzzleStringStart:", puzzleStringStart)
-  console.log("puzzleStringCurrent:", puzzleStringCurrent)
 
   useEffect(() => {
     console.log("useEffect: puzzleStringStart:", puzzleStringStart)
@@ -40,56 +38,39 @@ export default function Page() {
     }
   }, [showCandidates])
 
-  const allBoxes = useMemo(() => {
-    const matrix = newZeroMatrix()
-    for (let boxIndex = 0; boxIndex < 9; boxIndex++) {
-      for (let squareIndex = 0; squareIndex < 9; squareIndex++) {
-        const squareId = (squareIndex % 3) + Math.floor(squareIndex / 3) * 9 + Math.floor(boxIndex / 3) * 27 + (boxIndex % 3) * 3
-        matrix[boxIndex][squareIndex] = parseInt(puzzleStringCurrent[squareId])
-      }
-    }
-    return matrix
-  }, [puzzleStringCurrent])
+  const { allBoxes, allRows, allColumns } = useMemo(() => {
+    const boxesMatrix = newZeroMatrix()
+    const rowsMatrix = newZeroMatrix()
+    const columnsMatrix = newZeroMatrix()
 
-  const allRows = useMemo(() => {
-    const matrix = newZeroMatrix()
-    for (let rowIndex = 0; rowIndex < 9; rowIndex++) {
-      for (let squareIndex = 0; squareIndex < 9; squareIndex++) {
-        const squareId = rowIndex * 9 + squareIndex
-        matrix[rowIndex][squareIndex] = parseInt(puzzleStringCurrent[squareId])
-      }
-    }
-    return matrix
-  }, [puzzleStringCurrent])
+    for (let index = 0; index < 81; index++) {
+      const rowIndex = Math.floor(index / 9)
+      const colIndex = index % 9
+      const boxIndex = Math.floor(rowIndex / 3) * 3 + Math.floor(colIndex / 3)
 
-  const allColumns = useMemo(() => {
-    const allColumns = newZeroMatrix()
-    for (let columnIndex = 0; columnIndex < 9; columnIndex++) {
-      for (let squareIndex = 0; squareIndex < 9; squareIndex++) {
-        const squareId = columnIndex + squareIndex * 9
-        allColumns[columnIndex][squareIndex] = parseInt(puzzleStringCurrent[squareId])
-      }
+      const value = parseInt(puzzleStringCurrent[index])
+
+      boxesMatrix[boxIndex][(rowIndex % 3) * 3 + (colIndex % 3)] = value
+      rowsMatrix[rowIndex][colIndex] = value
+      columnsMatrix[colIndex][rowIndex] = value
     }
-    return allColumns
+
+    return {
+      allBoxes: boxesMatrix,
+      allRows: rowsMatrix,
+      allColumns: columnsMatrix
+    }
   }, [puzzleStringCurrent])
 
   function resetBoardData() {
     setBoardIsSet(false)
     setCandidateMode(false)
     setShowCandidates(false)
-    setHighlightCandidates(0)
+    setHighlightN(0)
     setPuzzleStringStart("")
     setPuzzleStringCurrent("0".repeat(81))
     setPuzzleSolution("")
   }
-
-  // let boardState = {
-  //   start: puzzleStringStart,
-  //   current: puzzleStringCurrent,
-  //   get boxes() {
-  //     return [puzzleStringCurrent[0]]
-  //   }
-  // }
 
   const truncateAndPad = (inputString: string) => {
     return inputString.slice(0, 81).padEnd(81, "0")
@@ -107,7 +88,7 @@ export default function Page() {
       </section>
       <CandidateContext.Provider
         value={{
-          highlightCandidates,
+          highlightN,
           showCandidates,
           candidateMode,
           puzzleStringStart,
