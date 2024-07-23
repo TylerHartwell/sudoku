@@ -6,16 +6,24 @@ import "./css/style.css"
 import Board from "@/components/board/Board"
 import { useEffect, useMemo, useState } from "react"
 import CandidateContext from "@/contexts/CandidateContext"
+import PadNumber from "@/components/PadNumber"
 
 const newZeroMatrix = () => {
   return Array.from({ length: 9 }, () => Array(9).fill(0))
 }
+
+const truncateAndPad = (inputString: string) => {
+  return inputString.slice(0, 81).padEnd(81, "0")
+}
+
+const numbers = Array.from({ length: 9 }, (_, i) => i + 1)
 
 export default function Page() {
   const [puzzleStringStart, setPuzzleStringStart] = useState("")
   const [puzzleStringCurrent, setPuzzleStringCurrent] = useState("0".repeat(81))
   const [puzzleSolution, setPuzzleSolution] = useState("")
   const [highlightN, setHighlightN] = useState(0)
+  const [lastClickedHighlightN, setLastClickedHighlightN] = useState(0)
   const [showCandidates, setShowCandidates] = useState(false)
   const [candidateMode, setCandidateMode] = useState(false)
   const [boardIsSet, setBoardIsSet] = useState(false)
@@ -47,7 +55,6 @@ export default function Page() {
       const rowIndex = Math.floor(index / 9)
       const colIndex = index % 9
       const boxIndex = Math.floor(rowIndex / 3) * 3 + Math.floor(colIndex / 3)
-
       const value = parseInt(puzzleStringCurrent[index])
 
       boxesMatrix[boxIndex][(rowIndex % 3) * 3 + (colIndex % 3)] = value
@@ -70,10 +77,6 @@ export default function Page() {
     setPuzzleStringStart("")
     setPuzzleStringCurrent("0".repeat(81))
     setPuzzleSolution("")
-  }
-
-  const truncateAndPad = (inputString: string) => {
-    return inputString.slice(0, 81).padEnd(81, "0")
   }
 
   const candidateModeClass: string = candidateMode ? "candidate-mode-on" : ""
@@ -135,15 +138,16 @@ export default function Page() {
         </div>
       </section>
       <section className="numberpad">
-        <div className="pad-number pad1">1</div>
-        <div className="pad-number pad2">2</div>
-        <div className="pad-number pad3">3</div>
-        <div className="pad-number pad4">4</div>
-        <div className="pad-number pad5">5</div>
-        <div className="pad-number pad6">6</div>
-        <div className="pad-number pad7">7</div>
-        <div className="pad-number pad8">8</div>
-        <div className="pad-number pad9">9</div>
+        {numbers.map(num => (
+          <PadNumber
+            key={num}
+            number={num}
+            highlightN={highlightN}
+            setHighlightN={setHighlightN}
+            lastClickedHighlightN={lastClickedHighlightN}
+            setLastClickedHighlightN={setLastClickedHighlightN}
+          />
+        ))}
         <div className="pad-mode-container">
           <button className={`solution-mode-btn ${candidateModeClass}`} onClick={() => setCandidateMode(false)}>
             Solution Mode

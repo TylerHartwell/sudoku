@@ -162,11 +162,11 @@ body {
   position: relative;
   border: 1px solid grey;
   aspect-ratio: 1;
-  font-size: 1em;
+  font-size: 100%;
 }
 
 .entry {
-  font-size: 2em;
+  font-size: 1em;
   display: flex;
   justify-content: center;
   align-items: center;
