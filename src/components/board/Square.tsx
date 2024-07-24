@@ -24,7 +24,13 @@ const Square = ({ boxIndex, boxSquareIndex }: { boxIndex: number; boxSquareIndex
           entryShownValue={shownValue}
         />
       ))}
-      <Entry gridSquareIndex={gridSquareIndex} shownValue={shownValue} />
+      <Entry
+        gridSquareIndex={gridSquareIndex}
+        shownValue={shownValue}
+        boxIndex={boxIndex}
+        rowIndex={rowIndex}
+        colIndex={colIndex}
+      />
     </div>
   )
 }
