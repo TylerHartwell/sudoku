@@ -21,7 +21,7 @@ const Entry = ({ gridSquareIndex, shownValue, boxIndex, rowIndex, colIndex }: En
   const entryRef = useRef<HTMLDivElement>(null)
 
   const highlight = useMemo(() => {
-    return shownValue === highlightN ? "highlight" : ""
+    return shownValue === highlightN.toString() ? "highlight" : ""
   }, [highlightN, shownValue])
 
   const wrong = useMemo(() => {

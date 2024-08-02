@@ -7,6 +7,8 @@ import Board from "@/components/board/Board"
 import { useEffect, useMemo, useState } from "react"
 import CandidateContext from "@/contexts/CandidateContext"
 import PadNumber from "@/components/PadNumber"
+import RuleItem from "@/components/RuleItem"
+import rulesArr from "@/rules/rulesArr"
 
 const newZeroMatrix = () => {
   return Array.from({ length: 9 }, () => Array(9).fill(0))
@@ -22,7 +24,7 @@ export default function Page() {
   const [puzzleStringStart, setPuzzleStringStart] = useState("")
   const [puzzleStringCurrent, setPuzzleStringCurrent] = useState("0".repeat(81))
   const [puzzleSolution, setPuzzleSolution] = useState("")
-  const [highlightN, setHighlightN] = useState(0)
+  const [highlightN, setHighlightN] = useState<number>(0)
   const [lastClickedHighlightN, setLastClickedHighlightN] = useState(0)
   const [showCandidates, setShowCandidates] = useState(false)
   const [candidateMode, setCandidateMode] = useState(false)
@@ -87,7 +89,11 @@ export default function Page() {
       <section className="title">SUDOKU RULER</section>
       <section className="rules">
         <div className="rules-title">Rules</div>
-        <ol className="rules-list">{/* <!-- generate with js --> */}</ol>
+        <ol className="rules-list">
+          {rulesArr.map((rule, index) => (
+            <RuleItem key={index} ruleN={index + 1} rule={rule} />
+          ))}
+        </ol>
       </section>
       <CandidateContext.Provider
         value={{
