@@ -1,5 +1,5 @@
 import { createContext } from "react"
 
-const CandidateHighlightContext = createContext()
+const CandidateContext = createContext()
 
-export default CandidateHighlightContext
+export default CandidateContext

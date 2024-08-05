@@ -1,23 +1,33 @@
+import { Rule } from "@/rules/rulesInterface"
+import { useState } from "react"
+
 interface RuleItemProps {
   ruleN: number
-  rule: () => {
-    ruleName: string
-    ruleProgresses: () => boolean
-    ruleResolve: () => void
-  }
+  rule: Rule
 }
 
 const RuleItem = ({ ruleN, rule }: RuleItemProps) => {
-  const ruleObj = rule()
+  const [ruleOutcome, setRuleOutcome] = useState("")
 
-  function handleRuleAttempt() {}
+  function handleRuleAttempt() {
+    const ruleProgresses = rule.ruleProgresses()
+
+    const tempRuleOutcome = ruleProgresses ? "success" : "fail"
+
+    setRuleOutcome(tempRuleOutcome)
+    setTimeout(() => {
+      setRuleOutcome("")
+    }, 300)
+
+    if (ruleProgresses) rule.ruleResolve()
+  }
 
   return (
     <li className="rule-item">
-      <button className="try-next-btn" onClick={handleRuleAttempt}>
+      <button className={`try-next-btn ${ruleOutcome}`} onClick={handleRuleAttempt}>
         Attempt
       </button>
-      <span className="rule-name">{ruleObj.ruleName}</span>
+      <span className="rule-name">{rule.ruleName}</span>
       <label htmlFor={"checkbox" + ruleN} className="checkbox-label">
         Auto Attempt:
       </label>

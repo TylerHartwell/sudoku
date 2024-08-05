@@ -1,13 +1,12 @@
-const loneSingle = () => {
-  console.log("lonesingle")
-  return {
-    ruleName: "Lone Single",
-    ruleProgresses: () => {
-      return false
-    },
-    ruleResolve: () => {
-      console.log("loneSingle resolve")
-    }
+import { Rule } from "./rulesInterface"
+
+const loneSingle: Rule = {
+  ruleName: "Lone Single",
+  ruleProgresses: () => {
+    return true
+  },
+  ruleResolve: () => {
+    console.log("loneSingle resolve")
   }
 }
 

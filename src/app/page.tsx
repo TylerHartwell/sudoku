@@ -22,7 +22,7 @@ const numbers = Array.from({ length: 9 }, (_, i) => i + 1)
 
 export default function Page() {
   const [puzzleStringStart, setPuzzleStringStart] = useState("")
-  const [puzzleStringCurrent, setPuzzleStringCurrent] = useState("0".repeat(81))
+  const [puzzleStringCurrent, setPuzzleStringCurrent] = useState(() => "0".repeat(81))
   const [puzzleSolution, setPuzzleSolution] = useState("")
   const [highlightN, setHighlightN] = useState<number>(0)
   const [lastClickedHighlightN, setLastClickedHighlightN] = useState(0)

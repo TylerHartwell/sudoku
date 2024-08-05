@@ -19,11 +19,11 @@ const Candidate = ({ boxIndex, candidateN, rowIndex, colIndex, gridSquareIndex, 
   const { highlightN, showCandidates, candidateMode, puzzleStringCurrent, allBoxes, allColumns, allRows } =
     useContext(CandidateContext)
 
-  const highlight = useMemo(() => {
+  const highlightClass = useMemo(() => {
     return candidateN === highlightN && showCandidates && !isEliminated ? "highlight" : ""
   }, [highlightN, showCandidates, isEliminated, candidateN])
 
-  const noPointer = useMemo(() => (!candidateMode ? "no-pointer" : ""), [candidateMode])
+  const noPointerClass = useMemo(() => (!candidateMode ? "no-pointer" : ""), [candidateMode])
 
   useEffect(() => {
     if (
@@ -45,10 +45,8 @@ const Candidate = ({ boxIndex, candidateN, rowIndex, colIndex, gridSquareIndex, 
     setIsEliminated(prevState => !prevState)
   }
 
-  if ((!showCandidates && !candidateMode) || entryShownValue) return null
-
-  return (
-    <div className={`candidate ${highlight} ${noPointer}`} onClick={toggleEliminated}>
+  return (!showCandidates && !candidateMode) || entryShownValue ? null : (
+    <div className={`candidate ${highlightClass} ${noPointerClass}`} onClick={toggleEliminated}>
       {!isEliminated ? candidateN.toString() : ""}
     </div>
   )
