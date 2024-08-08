@@ -13,36 +13,32 @@ interface CandidateProps {
   entryShownValue: string
 }
 
-const Candidate = ({ boxIndex, candidateN, rowIndex, colIndex, gridSquareIndex, entryShownValue }: CandidateProps) => {
+const Candidate = ({ gridSquareIndex, boxIndex, rowIndex, colIndex, candidateN, entryShownValue }: CandidateProps) => {
   const [isEliminated, setIsEliminated] = useState(false)
-  const toggledByUser = useRef(false)
-  const { highlightN, showCandidates, candidateMode, puzzleStringCurrent, allBoxes, allColumns, allRows } =
-    useContext(CandidateContext)
+  const { allUnits, highlightN, showCandidates, candidateMode, handleToggleEliminated, manualElimCandidates } = useContext(CandidateContext)
 
-  const highlightClass = useMemo(() => {
-    return candidateN === highlightN && showCandidates && !isEliminated ? "highlight" : ""
-  }, [highlightN, showCandidates, isEliminated, candidateN])
-
-  const noPointerClass = useMemo(() => (!candidateMode ? "no-pointer" : ""), [candidateMode])
+  const candidateKey = `${gridSquareIndex}-${candidateN}`
+  const highlightClass = candidateN === highlightN && showCandidates && !isEliminated ? "highlight" : ""
+  const noPointerClass = !candidateMode || (isEliminated && !manualElimCandidates.includes(candidateKey)) ? "no-pointer" : ""
 
   useEffect(() => {
     if (
-      allBoxes[boxIndex].includes(candidateN) ||
-      allRows[rowIndex].includes(candidateN) ||
-      allColumns[colIndex].includes(candidateN) ||
-      puzzleStringCurrent[gridSquareIndex] != "0"
+      allUnits.allBoxes[boxIndex].includes(candidateN.toString()) ||
+      allUnits.allRows[rowIndex].includes(candidateN.toString()) ||
+      allUnits.allColumns[colIndex].includes(candidateN.toString()) ||
+      entryShownValue ||
+      manualElimCandidates.includes(candidateKey)
     ) {
       setIsEliminated(true)
     } else {
-      if (!toggledByUser.current) {
-        setIsEliminated(false)
-      }
+      setIsEliminated(false)
     }
-  }, [puzzleStringCurrent, allBoxes, allColumns, allRows, boxIndex, candidateN, colIndex, rowIndex, gridSquareIndex])
+  }, [entryShownValue, allUnits, boxIndex, candidateN, colIndex, rowIndex, gridSquareIndex, manualElimCandidates, candidateKey])
 
   const toggleEliminated = () => {
-    toggledByUser.current = !isEliminated
-    setIsEliminated(prevState => !prevState)
+    if (manualElimCandidates.includes(candidateKey) || !isEliminated) {
+      handleToggleEliminated(gridSquareIndex, candidateN)
+    }
   }
 
   return (!showCandidates && !candidateMode) || entryShownValue ? null : (

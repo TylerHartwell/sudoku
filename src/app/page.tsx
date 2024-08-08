@@ -9,16 +9,8 @@ import CandidateContext from "@/contexts/CandidateContext"
 import PadNumber from "@/components/PadNumber"
 import RuleItem from "@/components/RuleItem"
 import rulesArr from "@/rules/rulesArr"
-
-const newZeroMatrix = () => {
-  return Array.from({ length: 9 }, () => Array(9).fill(0))
-}
-
-const truncateAndPad = (inputString: string) => {
-  return inputString.slice(0, 81).padEnd(81, "0")
-}
-
-const numbers = Array.from({ length: 9 }, (_, i) => i + 1)
+import calculateAllUnits from "@/utils/calculateAllUnits"
+import truncateAndPad from "@/utils/truncateAndPad"
 
 export default function Page() {
   const [puzzleStringStart, setPuzzleStringStart] = useState("")
@@ -29,47 +21,38 @@ export default function Page() {
   const [showCandidates, setShowCandidates] = useState(false)
   const [candidateMode, setCandidateMode] = useState(false)
   const [boardIsSet, setBoardIsSet] = useState(false)
+  const [manualElimCandidates, setManualElimCandidates] = useState<string[]>([])
 
   console.log("Page Render")
 
+  //setPuzzleStringCurrent when puzzleStringStart changes
   useEffect(() => {
     console.log("useEffect: puzzleStringStart:", puzzleStringStart)
     if (puzzleStringStart) {
-      setPuzzleStringCurrent(truncateAndPad(puzzleStringStart))
+      setPuzzleStringCurrent(truncateAndPad(puzzleStringStart, 81, "0"))
     } else {
       setPuzzleStringCurrent("0".repeat(81))
     }
   }, [puzzleStringStart])
 
-  useEffect(() => {
-    console.log("useEffect: showCandidates:", showCandidates)
-    if (!showCandidates) {
-      setCandidateMode(false)
-    }
-  }, [showCandidates])
+  const numbers = useMemo(() => Array.from({ length: 9 }, (_, i) => i + 1), [])
 
-  const { allBoxes, allRows, allColumns } = useMemo(() => {
-    const boxesMatrix = newZeroMatrix()
-    const rowsMatrix = newZeroMatrix()
-    const columnsMatrix = newZeroMatrix()
-
-    for (let index = 0; index < 81; index++) {
-      const rowIndex = Math.floor(index / 9)
-      const colIndex = index % 9
-      const boxIndex = Math.floor(rowIndex / 3) * 3 + Math.floor(colIndex / 3)
-      const value = parseInt(puzzleStringCurrent[index])
-
-      boxesMatrix[boxIndex][(rowIndex % 3) * 3 + (colIndex % 3)] = value
-      rowsMatrix[rowIndex][colIndex] = value
-      columnsMatrix[colIndex][rowIndex] = value
-    }
-
-    return {
-      allBoxes: boxesMatrix,
-      allRows: rowsMatrix,
-      allColumns: columnsMatrix
-    }
+  //Only recalculate allUnits when puzzleStringCurrent changes
+  const allUnits = useMemo(() => {
+    console.log("Calculating unit matrices...")
+    return calculateAllUnits(puzzleStringCurrent)
   }, [puzzleStringCurrent])
+
+  const handleToggleEliminated = (gridSquareIndex: number, candidateN: number) => {
+    const candidateKey = `${gridSquareIndex}-${candidateN}`
+    setManualElimCandidates(prev => {
+      if (prev.includes(candidateKey)) {
+        return prev.filter(key => key !== candidateKey)
+      } else {
+        return [...prev, candidateKey]
+      }
+    })
+  }
 
   function resetBoardData() {
     setBoardIsSet(false)
@@ -84,6 +67,19 @@ export default function Page() {
   const candidateModeClass: string = candidateMode ? "candidate-mode-on" : ""
   const boardIsSetClass: string = boardIsSet ? "board-is-set" : ""
 
+  const contextObj = {
+    highlightN,
+    showCandidates,
+    candidateMode,
+    puzzleStringStart,
+    puzzleStringCurrent,
+    setPuzzleStringCurrent,
+    boardIsSet,
+    allUnits,
+    handleToggleEliminated,
+    manualElimCandidates
+  }
+
   return (
     <div className="container">
       <section className="title">SUDOKU RULER</section>
@@ -95,20 +91,7 @@ export default function Page() {
           ))}
         </ol>
       </section>
-      <CandidateContext.Provider
-        value={{
-          highlightN,
-          showCandidates,
-          candidateMode,
-          puzzleStringStart,
-          puzzleStringCurrent,
-          setPuzzleStringCurrent,
-          boardIsSet,
-          allBoxes,
-          allRows,
-          allColumns
-        }}
-      >
+      <CandidateContext.Provider value={contextObj}>
         <Board />
       </CandidateContext.Provider>
 
