@@ -2,11 +2,9 @@ import { Rule } from "./rulesInterface"
 
 const nakedSingle: Rule = {
   ruleName: "Naked Single",
-  ruleProgresses: () => {
+  ruleAttempt: (allSquares: { entryValue: string; candidates: boolean[] }[]) => {
+    console.log("naked single attempt")
     return false
-  },
-  ruleResolve: () => {
-    console.log("nakedSingle resolve")
   }
 }
 

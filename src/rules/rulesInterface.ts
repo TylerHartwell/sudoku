@@ -1,5 +1,8 @@
 export interface Rule {
   ruleName: string
-  ruleProgresses: () => boolean
-  ruleResolve: () => void
+  ruleAttempt: (
+    allSquares: { entryValue: string; candidates: boolean[] }[],
+    handleCandidateEliminate: (gridSquareIndex: number, candidateN: number) => void,
+    handleEntry: (gridSquareIndex: number, newEntry: string) => void
+  ) => boolean
 }

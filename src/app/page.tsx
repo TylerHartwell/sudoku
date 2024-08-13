@@ -43,7 +43,57 @@ export default function Page() {
     return calculateAllUnits(puzzleStringCurrent)
   }, [puzzleStringCurrent])
 
-  const handleToggleEliminated = (gridSquareIndex: number, candidateN: number) => {
+  const getCandidates = (gridSquareIndex: number) => {
+    const candidateArr = Array.from({ length: 9 }, (_, i) => {
+      const candidateN = i + 1
+      const candidateKey = `${gridSquareIndex}-${candidateN}`
+
+      const rowIndex = Math.floor(gridSquareIndex / 9)
+      const colIndex = gridSquareIndex % 9
+      const boxRowIndex = Math.floor(rowIndex / 3)
+      const boxColIndex = Math.floor(colIndex / 3)
+      const boxIndex = boxRowIndex * 3 + boxColIndex
+
+      if (
+        allUnits.allBoxes[boxIndex].includes(candidateN.toString()) ||
+        allUnits.allRows[rowIndex].includes(candidateN.toString()) ||
+        allUnits.allColumns[colIndex].includes(candidateN.toString()) ||
+        puzzleStringCurrent[gridSquareIndex] != "0" ||
+        manualElimCandidates.includes(candidateKey)
+      ) {
+        return false
+      } else {
+        return true
+      }
+    })
+    return candidateArr
+  }
+
+  const allSquares = Array.from({ length: 81 }, (_, gridSquareIndex) => {
+    return {
+      entryValue: puzzleStringCurrent[gridSquareIndex],
+      candidates: getCandidates(gridSquareIndex)
+    }
+  })
+
+  const handleEntry = (gridSquareIndex: number, newEntry: string) => {
+    setPuzzleStringCurrent(prev => {
+      return prev.slice(0, gridSquareIndex) + newEntry + prev.slice(gridSquareIndex + 1)
+    })
+  }
+
+  const handleCandidateEliminate = (gridSquareIndex: number, candidateN: number) => {
+    const candidateKey = `${gridSquareIndex}-${candidateN}`
+    setManualElimCandidates(prev => {
+      if (!prev.includes(candidateKey)) {
+        return [...prev, candidateKey]
+      } else {
+        return prev
+      }
+    })
+  }
+
+  const handleToggleEliminated = (gridSquareIndex: number, candidateN: number, eliminate?: boolean) => {
     const candidateKey = `${gridSquareIndex}-${candidateN}`
     setManualElimCandidates(prev => {
       if (prev.includes(candidateKey)) {
@@ -62,6 +112,8 @@ export default function Page() {
     setPuzzleStringStart("")
     setPuzzleStringCurrent("0".repeat(81))
     setPuzzleSolution("")
+    setLastClickedHighlightN(0)
+    setManualElimCandidates([])
   }
 
   const candidateModeClass: string = candidateMode ? "candidate-mode-on" : ""
@@ -87,7 +139,14 @@ export default function Page() {
         <div className="rules-title">Rules</div>
         <ol className="rules-list">
           {rulesArr.map((rule, index) => (
-            <RuleItem key={index} ruleN={index + 1} rule={rule} />
+            <RuleItem
+              key={index}
+              ruleN={index + 1}
+              rule={rule}
+              allSquares={allSquares}
+              handleCandidateEliminate={handleCandidateEliminate}
+              handleEntry={handleEntry}
+            />
           ))}
         </ol>
       </section>

@@ -4,13 +4,17 @@ import { useState } from "react"
 interface RuleItemProps {
   ruleN: number
   rule: Rule
+  allSquares: { entryValue: string; candidates: boolean[] }[]
+  handleCandidateEliminate: any
+  handleEntry: any
 }
 
-const RuleItem = ({ ruleN, rule }: RuleItemProps) => {
+const RuleItem = ({ ruleN, rule, allSquares, handleCandidateEliminate, handleEntry }: RuleItemProps) => {
   const [ruleOutcome, setRuleOutcome] = useState("")
+  const [isAutoAttempt, setIsAutoAttempt] = useState(false)
 
   function handleRuleAttempt() {
-    const ruleProgresses = rule.ruleProgresses()
+    const ruleProgresses = rule.ruleAttempt(allSquares, handleCandidateEliminate, handleEntry)
 
     const tempRuleOutcome = ruleProgresses ? "success" : "fail"
 
@@ -18,8 +22,10 @@ const RuleItem = ({ ruleN, rule }: RuleItemProps) => {
     setTimeout(() => {
       setRuleOutcome("")
     }, 300)
+  }
 
-    if (ruleProgresses) rule.ruleResolve()
+  function handleCheckboxChange() {
+    setIsAutoAttempt(prev => !prev)
   }
 
   return (
@@ -31,7 +37,14 @@ const RuleItem = ({ ruleN, rule }: RuleItemProps) => {
       <label htmlFor={"checkbox" + ruleN} className="checkbox-label">
         Auto Attempt:
       </label>
-      <input type="checkbox" name={"checkbox" + ruleN} id={"checkbox" + ruleN} className="checkbox" />
+      <input
+        type="checkbox"
+        name={"checkbox" + ruleN}
+        id={"checkbox" + ruleN}
+        className="checkbox"
+        checked={isAutoAttempt}
+        onChange={handleCheckboxChange}
+      />
     </li>
   )
 }
