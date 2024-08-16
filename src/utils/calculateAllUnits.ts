@@ -1,8 +1,8 @@
 const newZeroMatrix = () => {
-  return Array.from({ length: 9 }, () => Array(9).fill(0))
+  return Array.from({ length: 9 }, () => Array(9).fill("0"))
 }
 
-const calculateAllUnits = (puzzleString: string) => {
+const calculateAllUnits = (puzzleStringArray: string[]) => {
   const boxesMatrix = newZeroMatrix()
   const rowsMatrix = newZeroMatrix()
   const columnsMatrix = newZeroMatrix()
@@ -11,7 +11,7 @@ const calculateAllUnits = (puzzleString: string) => {
     const rowIndex = Math.floor(index / 9)
     const colIndex = index % 9
     const boxIndex = Math.floor(rowIndex / 3) * 3 + Math.floor(colIndex / 3)
-    const value = puzzleString[index]
+    const value = puzzleStringArray[index]
 
     boxesMatrix[boxIndex][(rowIndex % 3) * 3 + (colIndex % 3)] = value
     rowsMatrix[rowIndex][colIndex] = value

@@ -1,9 +1,59 @@
-import { Rule } from "./rulesInterface"
+import { Rule, Square } from "./rulesInterface"
 
 const nakedSingle: Rule = {
   ruleName: "Naked Single",
-  ruleAttempt: (allSquares: { entryValue: string; candidates: boolean[] }[]) => {
+  ruleAttempt: (allSquares, handleCandidateEliminate, handleEntry) => {
     console.log("naked single attempt")
+    console.log(allSquares)
+
+    const allSquaresByRow: Square[][] = Array.from({ length: 9 }, () => [])
+    const allSquaresByCol: Square[][] = Array.from({ length: 9 }, () => [])
+    const allSquaresByBox: Square[][] = Array.from({ length: 9 }, () => [])
+
+    allSquares.forEach((square, index) => {
+      const rowIndex = Math.floor(index / 9)
+      const colIndex = index % 9
+      const boxIndex = Math.floor(rowIndex / 3) * 3 + Math.floor(colIndex / 3)
+
+      allSquaresByRow[rowIndex].push(square)
+      allSquaresByCol[colIndex].push(square)
+      allSquaresByBox[boxIndex].push(square)
+    })
+
+    const allSquaresByUnit: Square[][] = assignAllSquaresByUnit()
+
+    function assignAllSquaresByUnit() {
+      let allSquaresByUnitTemp: Square[][] = []
+      for (let i = 0; i < 9; i++) {
+        allSquaresByUnitTemp.push(allSquaresByRow[i])
+        allSquaresByUnitTemp.push(allSquaresByCol[i])
+        allSquaresByUnitTemp.push(allSquaresByBox[i])
+      }
+      return allSquaresByUnitTemp
+    }
+
+    for (const unit of allSquaresByUnit) {
+      let instanceCount = 0
+      let targetGridSquareIndex = null
+      for (let i = 0; i < 9; i++) {
+        for (const square of unit) {
+          if (instanceCount > 1) break
+          if (square.entryValue != "0") continue
+          if (square.candidates[i]) {
+            instanceCount++
+            targetGridSquareIndex = square.gridSquareIndex
+          }
+        }
+        if (instanceCount === 1 && targetGridSquareIndex != null) {
+          const candidateNumber = i + 1
+          handleEntry(targetGridSquareIndex, candidateNumber.toString())
+          console.log("naked single of ", candidateNumber)
+          return true
+        }
+        instanceCount = 0
+      }
+    }
+    console.log("no naked singles")
     return false
   }
 }

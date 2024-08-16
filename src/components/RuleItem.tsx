@@ -4,7 +4,7 @@ import { useState } from "react"
 interface RuleItemProps {
   ruleN: number
   rule: Rule
-  allSquares: { entryValue: string; candidates: boolean[] }[]
+  allSquares: { entryValue: string; candidates: boolean[]; gridSquareIndex: number }[]
   handleCandidateEliminate: any
   handleEntry: any
 }

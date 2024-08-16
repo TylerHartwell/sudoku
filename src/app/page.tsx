@@ -40,7 +40,7 @@ export default function Page() {
   //Only recalculate allUnits when puzzleStringCurrent changes
   const allUnits = useMemo(() => {
     console.log("Calculating unit matrices...")
-    return calculateAllUnits(puzzleStringCurrent)
+    return calculateAllUnits(puzzleStringCurrent.split(""))
   }, [puzzleStringCurrent])
 
   const getCandidates = (gridSquareIndex: number) => {
@@ -72,7 +72,8 @@ export default function Page() {
   const allSquares = Array.from({ length: 81 }, (_, gridSquareIndex) => {
     return {
       entryValue: puzzleStringCurrent[gridSquareIndex],
-      candidates: getCandidates(gridSquareIndex)
+      candidates: getCandidates(gridSquareIndex),
+      gridSquareIndex
     }
   })
 

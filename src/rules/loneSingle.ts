@@ -2,7 +2,7 @@ import { Rule } from "./rulesInterface"
 
 const loneSingle: Rule = {
   ruleName: "Lone Single",
-  ruleAttempt: (allSquares: { entryValue: string; candidates: boolean[] }[], handleCandidateEliminate, handleEntry) => {
+  ruleAttempt: (allSquares, handleCandidateEliminate, handleEntry) => {
     console.log("lone single attempt")
     console.log(allSquares)
     for (const [squareIndex, square] of allSquares.entries()) {
