@@ -23,13 +23,13 @@ const nakedSingle: Rule = {
     const allSquaresByUnit: Square[][] = assignAllSquaresByUnit()
 
     function assignAllSquaresByUnit() {
-      let allSquaresByUnitTemp: Square[][] = []
+      let allSquaresByUnit: Square[][] = []
       for (let i = 0; i < 9; i++) {
-        allSquaresByUnitTemp.push(allSquaresByRow[i])
-        allSquaresByUnitTemp.push(allSquaresByCol[i])
-        allSquaresByUnitTemp.push(allSquaresByBox[i])
+        allSquaresByUnit.push(allSquaresByRow[i])
+        allSquaresByUnit.push(allSquaresByCol[i])
+        allSquaresByUnit.push(allSquaresByBox[i])
       }
-      return allSquaresByUnitTemp
+      return allSquaresByUnit
     }
 
     for (const unit of allSquaresByUnit) {
