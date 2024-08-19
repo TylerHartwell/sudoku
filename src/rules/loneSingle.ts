@@ -16,9 +16,9 @@ const loneSingle: Rule = {
         }
       }
       if (candidatateCount > 1 || candidatateCount == 0) continue
-      handleEntry(squareIndex, candidateNumber.toString())
+
       console.log("lone single of ", candidateNumber)
-      return true
+      return () => handleEntry(squareIndex, candidateNumber.toString())
     }
     console.log("no lone singles")
     return false

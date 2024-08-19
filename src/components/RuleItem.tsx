@@ -20,8 +20,9 @@ const RuleItem = ({ ruleN, rule, allSquares, handleCandidateEliminate, handleEnt
 
     setRuleOutcome(tempRuleOutcome)
     setTimeout(() => {
+      if (ruleProgresses) ruleProgresses()
       setRuleOutcome("")
-    }, 300)
+    }, 500)
   }
 
   function handleCheckboxChange() {

@@ -34,7 +34,7 @@ const nakedSingle: Rule = {
 
     for (const unit of allSquaresByUnit) {
       let instanceCount = 0
-      let targetGridSquareIndex = null
+      let targetGridSquareIndex: number | null = null
       for (let i = 0; i < 9; i++) {
         for (const square of unit) {
           if (instanceCount > 1) break
@@ -44,11 +44,11 @@ const nakedSingle: Rule = {
             targetGridSquareIndex = square.gridSquareIndex
           }
         }
-        if (instanceCount === 1 && targetGridSquareIndex != null) {
+        if (instanceCount === 1 && targetGridSquareIndex !== null) {
           const candidateNumber = i + 1
-          handleEntry(targetGridSquareIndex, candidateNumber.toString())
+          const finalTargetGridSquareIndex = targetGridSquareIndex //narrow type to number
           console.log("naked single of ", candidateNumber)
-          return true
+          return () => handleEntry(finalTargetGridSquareIndex, candidateNumber.toString())
         }
         instanceCount = 0
       }

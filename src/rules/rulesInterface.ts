@@ -4,7 +4,7 @@ export interface Rule {
     allSquares: Square[],
     handleCandidateEliminate: (gridSquareIndex: number, candidateN: number) => void,
     handleEntry: (gridSquareIndex: number, newEntry: string) => void
-  ) => boolean
+  ) => (() => void) | false
 }
 export interface Square {
   entryValue: string

@@ -104,7 +104,6 @@ const intersectionRemoval: Rule = {
 
           const offset = unitTypes.indexOf(peerUnitType)
           const peerUnit = allSquaresByUnit[peerUnitIndex * 3 + offset]
-          let hasElimination = false
 
           for (const square of peerUnit) {
             const rowIndex = Math.floor(square.gridSquareIndex / 9)
@@ -124,13 +123,9 @@ const intersectionRemoval: Rule = {
               ) &&
               !candidateObj.eliminated
             ) {
-              hasElimination = true
-              handleCandidateEliminate(square.gridSquareIndex, i + 1)
+              console.log("intersection eliminated for candidate", i + 1)
+              return () => handleCandidateEliminate(square.gridSquareIndex, i + 1)
             }
-          }
-          if (hasElimination) {
-            console.log("intersection eliminated for candidate", i + 1)
-            return true
           }
         }
       }
