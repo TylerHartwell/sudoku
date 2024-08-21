@@ -1,51 +1,25 @@
-import { Rule } from "@/rules/rulesInterface"
-import { useState } from "react"
-
+import { RuleOutcome } from "@/rules/rulesInterface"
 interface RuleItemProps {
   ruleN: number
-  rule: Rule
-  allSquares: { entryValue: string; candidates: boolean[]; gridSquareIndex: number }[]
-  handleCandidateEliminate: any
-  handleEntry: any
+  ruleName: string
+  isChecked: boolean
+  onCheckboxChange: () => void
+  ruleOutcome: RuleOutcome
+  setRuleOutcome: (newOutcome: RuleOutcome) => void
+  tryRuleAtIndex: () => boolean
 }
 
-const RuleItem = ({ ruleN, rule, allSquares, handleCandidateEliminate, handleEntry }: RuleItemProps) => {
-  const [ruleOutcome, setRuleOutcome] = useState("")
-  const [isAutoAttempt, setIsAutoAttempt] = useState(false)
-
-  function handleRuleAttempt() {
-    const ruleProgresses = rule.ruleAttempt(allSquares, handleCandidateEliminate, handleEntry)
-
-    const tempRuleOutcome = ruleProgresses ? "success" : "fail"
-
-    setRuleOutcome(tempRuleOutcome)
-    setTimeout(() => {
-      if (ruleProgresses) ruleProgresses()
-      setRuleOutcome("")
-    }, 500)
-  }
-
-  function handleCheckboxChange() {
-    setIsAutoAttempt(prev => !prev)
-  }
-
+const RuleItem = ({ ruleN, ruleName, isChecked, onCheckboxChange, ruleOutcome, tryRuleAtIndex }: RuleItemProps) => {
   return (
     <li className="rule-item">
-      <button className={`try-next-btn ${ruleOutcome}`} onClick={handleRuleAttempt}>
+      <button className={`try-next-btn ${ruleOutcome}`} onClick={tryRuleAtIndex}>
         Attempt
       </button>
-      <span className="rule-name">{rule.ruleName}</span>
+      <span className="rule-name">{ruleName}</span>
       <label htmlFor={"checkbox" + ruleN} className="checkbox-label">
         Auto Attempt:
       </label>
-      <input
-        type="checkbox"
-        name={"checkbox" + ruleN}
-        id={"checkbox" + ruleN}
-        className="checkbox"
-        checked={isAutoAttempt}
-        onChange={handleCheckboxChange}
-      />
+      <input type="checkbox" name={"checkbox" + ruleN} id={"checkbox" + ruleN} className="checkbox" checked={isChecked} onChange={onCheckboxChange} />
     </li>
   )
 }

@@ -3,9 +3,6 @@ import { Rule, Square } from "./rulesInterface"
 const nakedSingle: Rule = {
   ruleName: "Naked Single",
   ruleAttempt: (allSquares, handleCandidateEliminate, handleEntry) => {
-    console.log("naked single attempt")
-    console.log(allSquares)
-
     const allSquaresByRow: Square[][] = Array.from({ length: 9 }, () => [])
     const allSquaresByCol: Square[][] = Array.from({ length: 9 }, () => [])
     const allSquaresByBox: Square[][] = Array.from({ length: 9 }, () => [])
@@ -47,7 +44,7 @@ const nakedSingle: Rule = {
         if (instanceCount === 1 && targetGridSquareIndex !== null) {
           const candidateNumber = i + 1
           const finalTargetGridSquareIndex = targetGridSquareIndex //narrow type to number
-          console.log("naked single of ", candidateNumber)
+          console.log("naked single of ", candidateNumber, "at ", finalTargetGridSquareIndex)
           return () => handleEntry(finalTargetGridSquareIndex, candidateNumber.toString())
         }
         instanceCount = 0

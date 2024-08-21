@@ -4,13 +4,14 @@ import FetchPuzzleButton from "@/components/FetchPuzzleButton"
 import "./css/modern-normalize.css"
 import "./css/style.css"
 import Board from "@/components/board/Board"
-import { useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import CandidateContext from "@/contexts/CandidateContext"
 import PadNumber from "@/components/PadNumber"
 import RuleItem from "@/components/RuleItem"
 import rulesArr from "@/rules/rulesArr"
 import calculateAllUnits from "@/utils/calculateAllUnits"
 import truncateAndPad from "@/utils/truncateAndPad"
+import { RuleOutcome } from "@/rules/rulesInterface"
 
 export default function Page() {
   const [puzzleStringStart, setPuzzleStringStart] = useState("")
@@ -22,6 +23,10 @@ export default function Page() {
   const [candidateMode, setCandidateMode] = useState(false)
   const [boardIsSet, setBoardIsSet] = useState(false)
   const [manualElimCandidates, setManualElimCandidates] = useState<string[]>([])
+  const [checkedRules, setCheckedRules] = useState<number[]>([])
+  const [ruleOutcomes, setRuleOutcomes] = useState<RuleOutcome[]>(rulesArr.map(_ => ""))
+  const [needsRecheck, setNeedsRecheck] = useState(false)
+  const prevCheckedRulesRef = useRef<number[]>([])
 
   console.log("Page Render")
 
@@ -35,47 +40,117 @@ export default function Page() {
     }
   }, [puzzleStringStart])
 
-  const numbers = useMemo(() => Array.from({ length: 9 }, (_, i) => i + 1), [])
-
   //Only recalculate allUnits when puzzleStringCurrent changes
   const allUnits = useMemo(() => {
     console.log("Calculating unit matrices...")
     return calculateAllUnits(puzzleStringCurrent.split(""))
   }, [puzzleStringCurrent])
 
-  const getCandidates = (gridSquareIndex: number) => {
-    const candidateArr = Array.from({ length: 9 }, (_, i) => {
-      const candidateN = i + 1
-      const candidateKey = `${gridSquareIndex}-${candidateN}`
+  const getCandidates = useCallback(
+    (gridSquareIndex: number) => {
+      const candidateArr = Array.from({ length: 9 }, (_, i) => {
+        const candidateN = i + 1
+        const candidateKey = `${gridSquareIndex}-${candidateN}`
 
-      const rowIndex = Math.floor(gridSquareIndex / 9)
-      const colIndex = gridSquareIndex % 9
-      const boxRowIndex = Math.floor(rowIndex / 3)
-      const boxColIndex = Math.floor(colIndex / 3)
-      const boxIndex = boxRowIndex * 3 + boxColIndex
+        const rowIndex = Math.floor(gridSquareIndex / 9)
+        const colIndex = gridSquareIndex % 9
+        const boxRowIndex = Math.floor(rowIndex / 3)
+        const boxColIndex = Math.floor(colIndex / 3)
+        const boxIndex = boxRowIndex * 3 + boxColIndex
 
-      if (
-        allUnits.allBoxes[boxIndex].includes(candidateN.toString()) ||
-        allUnits.allRows[rowIndex].includes(candidateN.toString()) ||
-        allUnits.allColumns[colIndex].includes(candidateN.toString()) ||
-        puzzleStringCurrent[gridSquareIndex] != "0" ||
-        manualElimCandidates.includes(candidateKey)
-      ) {
-        return false
-      } else {
-        return true
-      }
-    })
-    return candidateArr
+        if (
+          allUnits.allBoxes[boxIndex].includes(candidateN.toString()) ||
+          allUnits.allRows[rowIndex].includes(candidateN.toString()) ||
+          allUnits.allColumns[colIndex].includes(candidateN.toString()) ||
+          puzzleStringCurrent[gridSquareIndex] != "0" ||
+          manualElimCandidates.includes(candidateKey)
+        ) {
+          return false
+        } else {
+          return true
+        }
+      })
+      return candidateArr
+    },
+    [allUnits, manualElimCandidates, puzzleStringCurrent]
+  )
+
+  const numbers = useMemo(() => Array.from({ length: 9 }, (_, i) => i + 1), [])
+
+  const allSquares = useMemo(
+    () =>
+      Array.from({ length: 81 }, (_, gridSquareIndex) => {
+        return {
+          entryValue: puzzleStringCurrent[gridSquareIndex],
+          candidates: getCandidates(gridSquareIndex),
+          gridSquareIndex
+        }
+      }),
+    [getCandidates, puzzleStringCurrent]
+  )
+
+  const handleCheckboxChange = (ruleIndex: number) => {
+    setCheckedRules(prev => (prev.includes(ruleIndex) ? prev.filter(n => n !== ruleIndex) : [...prev, ruleIndex]))
   }
 
-  const allSquares = Array.from({ length: 81 }, (_, gridSquareIndex) => {
-    return {
-      entryValue: puzzleStringCurrent[gridSquareIndex],
-      candidates: getCandidates(gridSquareIndex),
-      gridSquareIndex
+  const tryRuleAtIndex = useCallback(
+    (ruleIndex: number) => {
+      const ruleProgresses = rulesArr[ruleIndex].ruleAttempt(allSquares, handleCandidateEliminate, handleEntry)
+
+      const ruleOutcome: RuleOutcome = ruleProgresses ? "success" : "fail"
+      handleRuleOutcome(ruleIndex, ruleOutcome)
+      setTimeout(() => {
+        if (ruleProgresses) ruleProgresses()
+        handleRuleOutcome(ruleIndex, "")
+      }, 300)
+      return ruleOutcome === "success"
+    },
+    [allSquares]
+  )
+
+  const tryAutoSolves = useCallback(() => {
+    console.log("try auto solves")
+    let isSuccessfulCall = false
+
+    for (const ruleIndex of checkedRules) {
+      if (tryRuleAtIndex(ruleIndex)) {
+        isSuccessfulCall = true
+        break
+      }
     }
-  })
+
+    if (isSuccessfulCall) {
+      setNeedsRecheck(true)
+    }
+  }, [checkedRules, tryRuleAtIndex])
+
+  useEffect(() => {
+    const prevCheckedRules = prevCheckedRulesRef.current
+
+    const hasNewEntries = checkedRules.some(ruleIndex => !prevCheckedRules.includes(ruleIndex))
+
+    if (hasNewEntries) {
+      tryAutoSolves()
+    }
+    prevCheckedRulesRef.current = checkedRules
+  }, [checkedRules, tryAutoSolves])
+
+  useEffect(() => {
+    if (needsRecheck) {
+      setNeedsRecheck(false)
+      tryAutoSolves()
+    }
+  }, [needsRecheck, tryAutoSolves])
+
+  const handleRuleOutcome = (ruleIndex: number, newOutcome: RuleOutcome) => {
+    setRuleOutcomes(prev => {
+      const updatedOutcomes = [...prev]
+
+      updatedOutcomes[ruleIndex] = newOutcome
+
+      return updatedOutcomes
+    })
+  }
 
   const handleEntry = (gridSquareIndex: number, newEntry: string) => {
     setPuzzleStringCurrent(prev => {
@@ -94,7 +169,7 @@ export default function Page() {
     })
   }
 
-  const handleToggleEliminated = (gridSquareIndex: number, candidateN: number, eliminate?: boolean) => {
+  const handleToggleEliminated = (gridSquareIndex: number, candidateN: number) => {
     const candidateKey = `${gridSquareIndex}-${candidateN}`
     setManualElimCandidates(prev => {
       if (prev.includes(candidateKey)) {
@@ -143,10 +218,12 @@ export default function Page() {
             <RuleItem
               key={index}
               ruleN={index + 1}
-              rule={rule}
-              allSquares={allSquares}
-              handleCandidateEliminate={handleCandidateEliminate}
-              handleEntry={handleEntry}
+              ruleName={rule.ruleName}
+              isChecked={checkedRules.includes(index)}
+              onCheckboxChange={() => handleCheckboxChange(index)}
+              ruleOutcome={ruleOutcomes[index]}
+              setRuleOutcome={(newOutcome: RuleOutcome) => handleRuleOutcome(index, newOutcome)}
+              tryRuleAtIndex={() => tryRuleAtIndex(index)}
             />
           ))}
         </ol>

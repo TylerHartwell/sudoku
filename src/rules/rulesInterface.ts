@@ -11,3 +11,5 @@ export interface Square {
   candidates: boolean[]
   gridSquareIndex: number
 }
+
+export type RuleOutcome = "success" | "fail" | ""

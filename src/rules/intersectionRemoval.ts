@@ -16,8 +16,6 @@ interface Candidate {
 const intersectionRemoval: Rule = {
   ruleName: "Intersection Removal",
   ruleAttempt: (allSquares, handleCandidateEliminate) => {
-    console.log("intersection removal attempt")
-
     const allSquaresByRow: Square[][] = Array.from({ length: 9 }, () => [])
     const allSquaresByCol: Square[][] = Array.from({ length: 9 }, () => [])
     const allSquaresByBox: Square[][] = Array.from({ length: 9 }, () => [])
@@ -123,7 +121,7 @@ const intersectionRemoval: Rule = {
               ) &&
               !candidateObj.eliminated
             ) {
-              console.log("intersection eliminated for candidate", i + 1)
+              console.log("intersection eliminated for candidate ", i + 1, "at ", square.gridSquareIndex)
               return () => handleCandidateEliminate(square.gridSquareIndex, i + 1)
             }
           }

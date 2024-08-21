@@ -3,8 +3,6 @@ import { Rule } from "./rulesInterface"
 const loneSingle: Rule = {
   ruleName: "Lone Single",
   ruleAttempt: (allSquares, handleCandidateEliminate, handleEntry) => {
-    console.log("lone single attempt")
-    console.log(allSquares)
     for (const [squareIndex, square] of allSquares.entries()) {
       let candidatateCount = 0
       let candidateNumber = 0
@@ -17,7 +15,7 @@ const loneSingle: Rule = {
       }
       if (candidatateCount > 1 || candidatateCount == 0) continue
 
-      console.log("lone single of ", candidateNumber)
+      console.log("lone single of ", candidateNumber, "at ", squareIndex)
       return () => handleEntry(squareIndex, candidateNumber.toString())
     }
     console.log("no lone singles")
