@@ -3,13 +3,12 @@ interface RuleItemProps {
   ruleN: number
   ruleName: string
   isChecked: boolean
-  onCheckboxChange: () => void
+  handleCheckboxChange: () => void
   ruleOutcome: RuleOutcome
-  setRuleOutcome: (newOutcome: RuleOutcome) => void
   tryRuleAtIndex: () => boolean
 }
 
-const RuleItem = ({ ruleN, ruleName, isChecked, onCheckboxChange, ruleOutcome, tryRuleAtIndex }: RuleItemProps) => {
+const RuleItem = ({ ruleN, ruleName, isChecked, handleCheckboxChange, ruleOutcome, tryRuleAtIndex }: RuleItemProps) => {
   return (
     <li className="rule-item">
       <button className={`try-next-btn ${ruleOutcome}`} onClick={tryRuleAtIndex}>
@@ -19,7 +18,14 @@ const RuleItem = ({ ruleN, ruleName, isChecked, onCheckboxChange, ruleOutcome, t
       <label htmlFor={"checkbox" + ruleN} className="checkbox-label">
         Auto Attempt:
       </label>
-      <input type="checkbox" name={"checkbox" + ruleN} id={"checkbox" + ruleN} className="checkbox" checked={isChecked} onChange={onCheckboxChange} />
+      <input
+        type="checkbox"
+        name={"checkbox" + ruleN}
+        id={"checkbox" + ruleN}
+        className="checkbox"
+        checked={isChecked}
+        onChange={handleCheckboxChange}
+      />
     </li>
   )
 }

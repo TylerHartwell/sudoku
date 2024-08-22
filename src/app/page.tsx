@@ -24,25 +24,14 @@ export default function Page() {
   const [boardIsSet, setBoardIsSet] = useState(false)
   const [manualElimCandidates, setManualElimCandidates] = useState<string[]>([])
   const [checkedRules, setCheckedRules] = useState<number[]>([])
-  const [ruleOutcomes, setRuleOutcomes] = useState<RuleOutcome[]>(rulesArr.map(_ => ""))
-  const [needsRecheck, setNeedsRecheck] = useState(false)
-  const prevCheckedRulesRef = useRef<number[]>([])
+  const [ruleOutcomes, setRuleOutcomes] = useState<RuleOutcome[]>(rulesArr.map(_ => "default"))
+  const [currentAutoRuleIndex, setCurrentAutoRuleIndex] = useState<number>(0)
 
   console.log("Page Render")
 
-  //setPuzzleStringCurrent when puzzleStringStart changes
-  useEffect(() => {
-    console.log("useEffect: puzzleStringStart:", puzzleStringStart)
-    if (puzzleStringStart) {
-      setPuzzleStringCurrent(truncateAndPad(puzzleStringStart, 81, "0"))
-    } else {
-      setPuzzleStringCurrent("0".repeat(81))
-    }
-  }, [puzzleStringStart])
+  const numbers = useMemo(() => Array.from({ length: 9 }, (_, i) => i + 1), [])
 
-  //Only recalculate allUnits when puzzleStringCurrent changes
   const allUnits = useMemo(() => {
-    console.log("Calculating unit matrices...")
     return calculateAllUnits(puzzleStringCurrent.split(""))
   }, [puzzleStringCurrent])
 
@@ -75,8 +64,6 @@ export default function Page() {
     [allUnits, manualElimCandidates, puzzleStringCurrent]
   )
 
-  const numbers = useMemo(() => Array.from({ length: 9 }, (_, i) => i + 1), [])
-
   const allSquares = useMemo(
     () =>
       Array.from({ length: 81 }, (_, gridSquareIndex) => {
@@ -89,58 +76,47 @@ export default function Page() {
     [getCandidates, puzzleStringCurrent]
   )
 
-  const handleCheckboxChange = (ruleIndex: number) => {
-    setCheckedRules(prev => (prev.includes(ruleIndex) ? prev.filter(n => n !== ruleIndex) : [...prev, ruleIndex]))
-  }
-
   const tryRuleAtIndex = useCallback(
-    (ruleIndex: number) => {
+    (ruleIndex: number, isAuto: boolean = false) => {
+      console.log("tryRuleAtIndex ", ruleIndex, "isAuto ", isAuto)
+      const outcomeTime = isAuto ? 300 : 1000
       const ruleProgresses = rulesArr[ruleIndex].ruleAttempt(allSquares, handleCandidateEliminate, handleEntry)
 
       const ruleOutcome: RuleOutcome = ruleProgresses ? "success" : "fail"
+
       handleRuleOutcome(ruleIndex, ruleOutcome)
       setTimeout(() => {
-        if (ruleProgresses) ruleProgresses()
-        handleRuleOutcome(ruleIndex, "")
-      }, 300)
+        if (ruleProgresses) {
+          ruleProgresses()
+        }
+        handleRuleOutcome(ruleIndex, "default")
+      }, outcomeTime)
+
       return ruleOutcome === "success"
     },
     [allSquares]
   )
 
-  const tryAutoSolves = useCallback(() => {
-    console.log("try auto solves")
-    let isSuccessfulCall = false
+  const tryAutoSolves = () => {
+    console.log("tryAutoSolves")
+    if (currentAutoRuleIndex >= checkedRules.length) {
+      setCurrentAutoRuleIndex(0)
+      return
+    }
 
-    for (const ruleIndex of checkedRules) {
-      if (tryRuleAtIndex(ruleIndex)) {
-        isSuccessfulCall = true
-        break
+    const ruleIndex = checkedRules[currentAutoRuleIndex]
+    const attemptDelay = currentAutoRuleIndex === 0 ? 0 : 1000
+
+    const isSuccess = tryRuleAtIndex(ruleIndex, true)
+
+    setTimeout(() => {
+      if (tryRuleAtIndex(ruleIndex, true)) {
+        setCurrentAutoRuleIndex(0)
+      } else {
+        setCurrentAutoRuleIndex(prev => prev + 1)
       }
-    }
-
-    if (isSuccessfulCall) {
-      setNeedsRecheck(true)
-    }
-  }, [checkedRules, tryRuleAtIndex])
-
-  useEffect(() => {
-    const prevCheckedRules = prevCheckedRulesRef.current
-
-    const hasNewEntries = checkedRules.some(ruleIndex => !prevCheckedRules.includes(ruleIndex))
-
-    if (hasNewEntries) {
-      tryAutoSolves()
-    }
-    prevCheckedRulesRef.current = checkedRules
-  }, [checkedRules, tryAutoSolves])
-
-  useEffect(() => {
-    if (needsRecheck) {
-      setNeedsRecheck(false)
-      tryAutoSolves()
-    }
-  }, [needsRecheck, tryAutoSolves])
+    }, attemptDelay)
+  }
 
   const handleRuleOutcome = (ruleIndex: number, newOutcome: RuleOutcome) => {
     setRuleOutcomes(prev => {
@@ -180,13 +156,32 @@ export default function Page() {
     })
   }
 
+  const handleCheckboxChange = (ruleIndex: number) => {
+    const isNewCheck = !checkedRules.includes(ruleIndex)
+
+    setCheckedRules(prev => (isNewCheck ? [...prev, ruleIndex] : prev.filter(n => n !== ruleIndex)))
+
+    if (isNewCheck) {
+      console.log("isNewCheck")
+      tryAutoSolves()
+    }
+  }
+
+  const handlePuzzleStartChange = (newValue: string) => {
+    setPuzzleStringStart(newValue)
+    if (newValue) {
+      setPuzzleStringCurrent(truncateAndPad(newValue, 81, "0"))
+    } else {
+      setPuzzleStringCurrent("0".repeat(81))
+    }
+  }
+
   function resetBoardData() {
     setBoardIsSet(false)
     setCandidateMode(false)
     setShowCandidates(false)
     setHighlightN(0)
-    setPuzzleStringStart("")
-    setPuzzleStringCurrent("0".repeat(81))
+    handlePuzzleStartChange("")
     setPuzzleSolution("")
     setLastClickedHighlightN(0)
     setManualElimCandidates([])
@@ -220,9 +215,8 @@ export default function Page() {
               ruleN={index + 1}
               ruleName={rule.ruleName}
               isChecked={checkedRules.includes(index)}
-              onCheckboxChange={() => handleCheckboxChange(index)}
+              handleCheckboxChange={() => handleCheckboxChange(index)}
               ruleOutcome={ruleOutcomes[index]}
-              setRuleOutcome={(newOutcome: RuleOutcome) => handleRuleOutcome(index, newOutcome)}
               tryRuleAtIndex={() => tryRuleAtIndex(index)}
             />
           ))}
@@ -237,7 +231,7 @@ export default function Page() {
         <div className="control-buttons">
           <FetchPuzzleButton
             className={`fetch-grid-string-btn ${boardIsSetClass}`}
-            setPuzzleStringStart={setPuzzleStringStart}
+            handlePuzzleStartChange={handlePuzzleStartChange}
             setPuzzleSolution={setPuzzleSolution}
           >
             Fetch A New Puzzle
@@ -249,7 +243,7 @@ export default function Page() {
             id="grid-string"
             value={puzzleStringStart}
             onChange={e => {
-              setPuzzleStringStart(e.target.value)
+              handlePuzzleStartChange(e.target.value)
             }}
           />
           <button className="clear-all-btn" onClick={() => resetBoardData()}>

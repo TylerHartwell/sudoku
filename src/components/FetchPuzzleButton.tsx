@@ -3,12 +3,12 @@
 import { ReactNode, useState } from "react"
 
 const FetchPuzzleButton = ({
-  setPuzzleStringStart,
+  handlePuzzleStartChange,
   setPuzzleSolution,
   children,
   className
 }: {
-  setPuzzleStringStart: (puzzleStringStart: string) => void
+  handlePuzzleStartChange: (puzzleStringStart: string) => void
   setPuzzleSolution: (puzzleSolution: string) => void
   children: ReactNode
   className: string
@@ -26,7 +26,7 @@ const FetchPuzzleButton = ({
 
       const data = await response.json()
       console.log("Puzzle String: ", data)
-      setPuzzleStringStart(data.puzzle)
+      handlePuzzleStartChange(data.puzzle)
       setPuzzleSolution(data.solution)
     } catch (error) {
       console.log("PAGE ERROR: ", error)

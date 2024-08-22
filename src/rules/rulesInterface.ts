@@ -12,4 +12,4 @@ export interface Square {
   gridSquareIndex: number
 }
 
-export type RuleOutcome = "success" | "fail" | ""
+export type RuleOutcome = "success" | "fail" | "default"
