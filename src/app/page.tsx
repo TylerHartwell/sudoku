@@ -26,6 +26,7 @@ export default function Page() {
   const [checkedRules, setCheckedRules] = useState<number[]>([])
   const [ruleOutcomes, setRuleOutcomes] = useState<RuleOutcome[]>(rulesArr.map(_ => "default"))
   const [currentAutoRuleIndex, setCurrentAutoRuleIndex] = useState<number>(0)
+  const [queueAutoSolve, setQueueAutoSolve] = useState<boolean>(false)
 
   console.log("Page Render")
 
@@ -77,46 +78,54 @@ export default function Page() {
   )
 
   const tryRuleAtIndex = useCallback(
-    (ruleIndex: number, isAuto: boolean = false) => {
+    async (ruleIndex: number, isAuto: boolean = false) => {
       console.log("tryRuleAtIndex ", ruleIndex, "isAuto ", isAuto)
-      const outcomeTime = isAuto ? 300 : 1000
+      const outcomeTime = isAuto ? 0 : 500
       const ruleProgresses = rulesArr[ruleIndex].ruleAttempt(allSquares, handleCandidateEliminate, handleEntry)
 
       const ruleOutcome: RuleOutcome = ruleProgresses ? "success" : "fail"
 
       handleRuleOutcome(ruleIndex, ruleOutcome)
-      setTimeout(() => {
-        if (ruleProgresses) {
-          ruleProgresses()
-        }
-        handleRuleOutcome(ruleIndex, "default")
-      }, outcomeTime)
+
+      await new Promise(resolve => setTimeout(resolve, outcomeTime))
+
+      if (ruleProgresses) {
+        ruleProgresses()
+        setQueueAutoSolve(true)
+      }
+
+      handleRuleOutcome(ruleIndex, "default")
 
       return ruleOutcome === "success"
     },
     [allSquares]
   )
 
-  const tryAutoSolves = () => {
-    console.log("tryAutoSolves")
+  const tryAutoSolves = useCallback(async () => {
     if (currentAutoRuleIndex >= checkedRules.length) {
       setCurrentAutoRuleIndex(0)
+      setQueueAutoSolve(false)
       return
     }
-
     const ruleIndex = checkedRules[currentAutoRuleIndex]
-    const attemptDelay = currentAutoRuleIndex === 0 ? 0 : 1000
 
-    const isSuccess = tryRuleAtIndex(ruleIndex, true)
+    const isSuccess = await tryRuleAtIndex(ruleIndex, true)
 
-    setTimeout(() => {
-      if (tryRuleAtIndex(ruleIndex, true)) {
-        setCurrentAutoRuleIndex(0)
-      } else {
-        setCurrentAutoRuleIndex(prev => prev + 1)
-      }
-    }, attemptDelay)
-  }
+    if (isSuccess) {
+      setCurrentAutoRuleIndex(0)
+    } else {
+      setCurrentAutoRuleIndex(prev => prev + 1)
+    }
+
+    setQueueAutoSolve(true)
+  }, [checkedRules, currentAutoRuleIndex, tryRuleAtIndex])
+
+  useEffect(() => {
+    if (queueAutoSolve) {
+      setQueueAutoSolve(false)
+      tryAutoSolves()
+    }
+  }, [queueAutoSolve, tryAutoSolves])
 
   const handleRuleOutcome = (ruleIndex: number, newOutcome: RuleOutcome) => {
     setRuleOutcomes(prev => {
@@ -159,11 +168,13 @@ export default function Page() {
   const handleCheckboxChange = (ruleIndex: number) => {
     const isNewCheck = !checkedRules.includes(ruleIndex)
 
-    setCheckedRules(prev => (isNewCheck ? [...prev, ruleIndex] : prev.filter(n => n !== ruleIndex)))
+    setCheckedRules(prev => {
+      const updatedRules = isNewCheck ? [...prev, ruleIndex] : prev.filter(n => n !== ruleIndex)
+      return updatedRules.sort((a, b) => a - b)
+    })
 
     if (isNewCheck) {
-      console.log("isNewCheck")
-      tryAutoSolves()
+      setQueueAutoSolve(true)
     }
   }
 
@@ -218,6 +229,7 @@ export default function Page() {
               handleCheckboxChange={() => handleCheckboxChange(index)}
               ruleOutcome={ruleOutcomes[index]}
               tryRuleAtIndex={() => tryRuleAtIndex(index)}
+              allDefault={ruleOutcomes.every(outcome => outcome === "default")}
             />
           ))}
         </ol>
