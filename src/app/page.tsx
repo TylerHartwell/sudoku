@@ -10,23 +10,36 @@ import PadNumber from "@/components/PadNumber"
 import RuleItem from "@/components/RuleItem"
 import rulesArr from "@/rules/rulesArr"
 import calculateAllUnits from "@/utils/calculateAllUnits"
-import truncateAndPad from "@/utils/truncateAndPad"
 import { RuleOutcome } from "@/rules/rulesInterface"
+import useSudokuManagement from "@/hooks/useSudokuManagement"
 
 export default function Page() {
-  const [puzzleStringStart, setPuzzleStringStart] = useState("")
-  const [puzzleStringCurrent, setPuzzleStringCurrent] = useState(() => "0".repeat(81))
-  const [puzzleSolution, setPuzzleSolution] = useState("")
-  const [highlightN, setHighlightN] = useState<number>(0)
-  const [lastClickedHighlightN, setLastClickedHighlightN] = useState(0)
-  const [showCandidates, setShowCandidates] = useState(false)
-  const [candidateMode, setCandidateMode] = useState(false)
-  const [boardIsSet, setBoardIsSet] = useState(false)
-  const [manualElimCandidates, setManualElimCandidates] = useState<string[]>([])
   const [checkedRules, setCheckedRules] = useState<number[]>([])
-  const [ruleOutcomes, setRuleOutcomes] = useState<RuleOutcome[]>(rulesArr.map(_ => "default"))
   const [currentAutoRuleIndex, setCurrentAutoRuleIndex] = useState<number>(0)
   const [queueAutoSolve, setQueueAutoSolve] = useState<boolean>(false)
+  const {
+    ruleOutcomes,
+    handleRuleOutcome,
+    puzzleStringCurrent,
+    handleEntry,
+    puzzleStringStart,
+    handlePuzzleStartChange,
+    puzzleSolution,
+    handlePuzzleSolutionChange,
+    boardIsSet,
+    handleBoardSet,
+    highlightN,
+    handleHighlightNChange,
+    showCandidates,
+    toggleShowCandidates,
+    candidateMode,
+    toggleCandidateMode,
+    lastClickedHighlightN,
+    changeLastClickedHighlightN,
+    manualElimCandidates,
+    toggleManualElimCandidate,
+    clearManualElimCandidates
+  } = useSudokuManagement()
 
   console.log("Page Render")
 
@@ -79,9 +92,8 @@ export default function Page() {
 
   const tryRuleAtIndex = useCallback(
     async (ruleIndex: number, isAuto: boolean = false) => {
-      console.log("tryRuleAtIndex ", ruleIndex, "isAuto ", isAuto)
       const outcomeTime = isAuto ? 0 : 500
-      const ruleProgresses = rulesArr[ruleIndex].ruleAttempt(allSquares, handleCandidateEliminate, handleEntry)
+      const ruleProgresses = rulesArr[ruleIndex].ruleAttempt(allSquares, toggleManualElimCandidate, handleEntry)
 
       const ruleOutcome: RuleOutcome = ruleProgresses ? "success" : "fail"
 
@@ -127,44 +139,6 @@ export default function Page() {
     }
   }, [queueAutoSolve, tryAutoSolves])
 
-  const handleRuleOutcome = (ruleIndex: number, newOutcome: RuleOutcome) => {
-    setRuleOutcomes(prev => {
-      const updatedOutcomes = [...prev]
-
-      updatedOutcomes[ruleIndex] = newOutcome
-
-      return updatedOutcomes
-    })
-  }
-
-  const handleEntry = (gridSquareIndex: number, newEntry: string) => {
-    setPuzzleStringCurrent(prev => {
-      return prev.slice(0, gridSquareIndex) + newEntry + prev.slice(gridSquareIndex + 1)
-    })
-  }
-
-  const handleCandidateEliminate = (gridSquareIndex: number, candidateN: number) => {
-    const candidateKey = `${gridSquareIndex}-${candidateN}`
-    setManualElimCandidates(prev => {
-      if (!prev.includes(candidateKey)) {
-        return [...prev, candidateKey]
-      } else {
-        return prev
-      }
-    })
-  }
-
-  const handleToggleEliminated = (gridSquareIndex: number, candidateN: number) => {
-    const candidateKey = `${gridSquareIndex}-${candidateN}`
-    setManualElimCandidates(prev => {
-      if (prev.includes(candidateKey)) {
-        return prev.filter(key => key !== candidateKey)
-      } else {
-        return [...prev, candidateKey]
-      }
-    })
-  }
-
   const handleCheckboxChange = (ruleIndex: number) => {
     const isNewCheck = !checkedRules.includes(ruleIndex)
 
@@ -178,24 +152,15 @@ export default function Page() {
     }
   }
 
-  const handlePuzzleStartChange = (newValue: string) => {
-    setPuzzleStringStart(newValue)
-    if (newValue) {
-      setPuzzleStringCurrent(truncateAndPad(newValue, 81, "0"))
-    } else {
-      setPuzzleStringCurrent("0".repeat(81))
-    }
-  }
-
   function resetBoardData() {
-    setBoardIsSet(false)
-    setCandidateMode(false)
-    setShowCandidates(false)
-    setHighlightN(0)
+    handleBoardSet(false)
+    toggleCandidateMode(false)
+    toggleShowCandidates(false)
+    handleHighlightNChange(0)
     handlePuzzleStartChange("")
-    setPuzzleSolution("")
-    setLastClickedHighlightN(0)
-    setManualElimCandidates([])
+    handlePuzzleSolutionChange("")
+    changeLastClickedHighlightN(0)
+    clearManualElimCandidates()
   }
 
   const candidateModeClass: string = candidateMode ? "candidate-mode-on" : ""
@@ -207,11 +172,12 @@ export default function Page() {
     candidateMode,
     puzzleStringStart,
     puzzleStringCurrent,
-    setPuzzleStringCurrent,
+    handleEntry,
     boardIsSet,
     allUnits,
-    handleToggleEliminated,
-    manualElimCandidates
+    toggleManualElimCandidate,
+    manualElimCandidates,
+    setQueueAutoSolve
   }
 
   return (
@@ -244,7 +210,7 @@ export default function Page() {
           <FetchPuzzleButton
             className={`fetch-grid-string-btn ${boardIsSetClass}`}
             handlePuzzleStartChange={handlePuzzleStartChange}
-            setPuzzleSolution={setPuzzleSolution}
+            handlePuzzleSolutionChange={handlePuzzleSolutionChange}
           >
             Fetch A New Puzzle
           </FetchPuzzleButton>
@@ -261,10 +227,10 @@ export default function Page() {
           <button className="clear-all-btn" onClick={() => resetBoardData()}>
             Clear All
           </button>
-          <button className={`set-puzzle-btn ${boardIsSetClass}`} onClick={() => setBoardIsSet(true)}>
+          <button className={`set-puzzle-btn ${boardIsSetClass}`} onClick={() => handleBoardSet(true)}>
             Set Puzzle
           </button>
-          <button className="toggle-candidates-btn" onClick={() => setShowCandidates(prev => !prev)} disabled={candidateMode}>
+          <button className="toggle-candidates-btn" onClick={() => toggleShowCandidates()} disabled={candidateMode}>
             Toggle Candidates
           </button>
         </div>
@@ -275,19 +241,19 @@ export default function Page() {
             key={num}
             number={num}
             highlightN={highlightN}
-            setHighlightN={setHighlightN}
+            handleHighlightNChange={handleHighlightNChange}
             lastClickedHighlightN={lastClickedHighlightN}
-            setLastClickedHighlightN={setLastClickedHighlightN}
+            changeLastClickedHighlightN={changeLastClickedHighlightN}
           />
         ))}
         <div className="pad-mode-container">
-          <button className={`solution-mode-btn ${candidateModeClass}`} onClick={() => setCandidateMode(false)}>
+          <button className={`solution-mode-btn ${candidateModeClass}`} onClick={() => toggleCandidateMode(false)}>
             Solution Mode
           </button>
-          <div className={`mode-switch-outer ${candidateModeClass}`} onClick={() => setCandidateMode(prev => !prev)}>
+          <div className={`mode-switch-outer ${candidateModeClass}`} onClick={() => toggleCandidateMode()}>
             <div className={`mode-switch-inner ${candidateModeClass}`}></div>
           </div>
-          <button className={`candidate-mode-btn ${candidateModeClass}`} onClick={() => setCandidateMode(true)}>
+          <button className={`candidate-mode-btn ${candidateModeClass}`} onClick={() => toggleCandidateMode(true)}>
             Candidate Mode
           </button>
         </div>

@@ -2,7 +2,7 @@ import { Rule, Square } from "./rulesInterface"
 
 const nakedSingle: Rule = {
   ruleName: "Naked Single",
-  ruleAttempt: (allSquares, handleCandidateEliminate, handleEntry) => {
+  ruleAttempt: (allSquares, toggleManualElimCandidate, handleEntry) => {
     const allSquaresByRow: Square[][] = Array.from({ length: 9 }, () => [])
     const allSquaresByCol: Square[][] = Array.from({ length: 9 }, () => [])
     const allSquaresByBox: Square[][] = Array.from({ length: 9 }, () => [])

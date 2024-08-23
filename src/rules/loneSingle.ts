@@ -2,7 +2,7 @@ import { Rule } from "./rulesInterface"
 
 const loneSingle: Rule = {
   ruleName: "Lone Single",
-  ruleAttempt: (allSquares, handleCandidateEliminate, handleEntry) => {
+  ruleAttempt: (allSquares, toggleManualElimCandidate, handleEntry) => {
     for (const [squareIndex, square] of allSquares.entries()) {
       let candidatateCount = 0
       let candidateNumber = 0

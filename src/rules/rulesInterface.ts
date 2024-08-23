@@ -2,7 +2,7 @@ export interface Rule {
   ruleName: string
   ruleAttempt: (
     allSquares: Square[],
-    handleCandidateEliminate: (gridSquareIndex: number, candidateN: number) => void,
+    toggleManualElimCandidate: (gridSquareIndex: number, candidateN: number, shouldManualElim: boolean) => void,
     handleEntry: (gridSquareIndex: number, newEntry: string) => void
   ) => (() => void) | false
 }

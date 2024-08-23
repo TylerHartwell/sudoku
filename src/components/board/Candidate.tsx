@@ -15,7 +15,7 @@ interface CandidateProps {
 
 const Candidate = ({ gridSquareIndex, boxIndex, rowIndex, colIndex, candidateN, entryShownValue }: CandidateProps) => {
   const [isEliminated, setIsEliminated] = useState(false)
-  const { allUnits, highlightN, showCandidates, candidateMode, handleToggleEliminated, manualElimCandidates } = useContext(CandidateContext)
+  const { allUnits, highlightN, showCandidates, candidateMode, toggleManualElimCandidate, manualElimCandidates } = useContext(CandidateContext)
 
   const candidateKey = `${gridSquareIndex}-${candidateN}`
   const highlightClass = candidateN === highlightN && showCandidates && !isEliminated ? "highlight" : ""
@@ -37,7 +37,7 @@ const Candidate = ({ gridSquareIndex, boxIndex, rowIndex, colIndex, candidateN, 
 
   const toggleEliminated = () => {
     if (manualElimCandidates.includes(candidateKey) || !isEliminated) {
-      handleToggleEliminated(gridSquareIndex, candidateN)
+      toggleManualElimCandidate(gridSquareIndex, candidateN)
     }
   }
 

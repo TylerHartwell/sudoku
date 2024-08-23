@@ -16,7 +16,7 @@ const Entry = ({ gridSquareIndex, boxIndex, rowIndex, colIndex, shownValue }: En
   const [localShownValue, setLocalShownValue] = useState(shownValue)
   const [isLocked, setIsLocked] = useState(false)
   const [isWrong, setIsWrong] = useState(false)
-  const { setPuzzleStringCurrent, allUnits, candidateMode, boardIsSet, highlightN } = useContext(CandidateContext)
+  const { setPuzzleStringCurrent, allUnits, candidateMode, boardIsSet, highlightN, setQueueAutoSolve, handleEntry } = useContext(CandidateContext)
   const entryRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -57,7 +57,8 @@ const Entry = ({ gridSquareIndex, boxIndex, rowIndex, colIndex, shownValue }: En
       setIsWrong(true)
       return
     }
-    setPuzzleStringCurrent((prev: string) => prev.slice(0, gridSquareIndex) + replacementChar + prev.slice(gridSquareIndex + 1))
+    handleEntry(gridSquareIndex, replacementChar)
+    setQueueAutoSolve(true)
   }
 
   const handleClick = () => {

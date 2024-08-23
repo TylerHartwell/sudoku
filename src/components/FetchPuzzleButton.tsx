@@ -4,12 +4,12 @@ import { ReactNode, useState } from "react"
 
 const FetchPuzzleButton = ({
   handlePuzzleStartChange,
-  setPuzzleSolution,
+  handlePuzzleSolutionChange,
   children,
   className
 }: {
   handlePuzzleStartChange: (puzzleStringStart: string) => void
-  setPuzzleSolution: (puzzleSolution: string) => void
+  handlePuzzleSolutionChange: (puzzleSolution: string) => void
   children: ReactNode
   className: string
 }) => {
@@ -24,12 +24,11 @@ const FetchPuzzleButton = ({
         throw new Error("Network response was not ok")
       }
 
-      const data = await response.json()
-      console.log("Puzzle String: ", data)
+      const data: { puzzle: string; solution: string; _id: string } = await response.json()
       handlePuzzleStartChange(data.puzzle)
-      setPuzzleSolution(data.solution)
+      handlePuzzleSolutionChange(data.solution)
     } catch (error) {
-      console.log("PAGE ERROR: ", error)
+      console.log("PUZZLE FETCH ERROR: ", error)
     } finally {
       setLoading(false)
     }
