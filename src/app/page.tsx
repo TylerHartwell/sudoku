@@ -4,19 +4,13 @@ import FetchPuzzleButton from "@/components/FetchPuzzleButton"
 import "./css/modern-normalize.css"
 import "./css/style.css"
 import Board from "@/components/board/Board"
-import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import CandidateContext from "@/contexts/CandidateContext"
 import PadNumber from "@/components/PadNumber"
 import RuleItem from "@/components/RuleItem"
 import rulesArr from "@/rules/rulesArr"
-import calculateAllUnits from "@/utils/calculateAllUnits"
-import { RuleOutcome } from "@/rules/rulesInterface"
 import useSudokuManagement from "@/hooks/useSudokuManagement"
 
 export default function Page() {
-  const [checkedRules, setCheckedRules] = useState<number[]>([])
-  const [currentAutoRuleIndex, setCurrentAutoRuleIndex] = useState<number>(0)
-  const [queueAutoSolve, setQueueAutoSolve] = useState<boolean>(false)
   const {
     ruleOutcomes,
     handleRuleOutcome,
@@ -38,130 +32,24 @@ export default function Page() {
     changeLastClickedHighlightN,
     manualElimCandidates,
     toggleManualElimCandidate,
-    clearManualElimCandidates
+    clearManualElimCandidates,
+    queueAutoSolve,
+    handleQueueAutoSolve,
+    checkedRules,
+    handleCheckboxChange,
+    currentAutoRuleIndex,
+    resetCurrentAutoRuleIndex,
+    increaseCurrentAutoRuleIndex,
+    numbers,
+    allUnits,
+    getCandidates,
+    allSquares,
+    tryRuleAtIndex,
+    tryAutoSolves,
+    resetBoardData
   } = useSudokuManagement()
 
   console.log("Page Render")
-
-  const numbers = useMemo(() => Array.from({ length: 9 }, (_, i) => i + 1), [])
-
-  const allUnits = useMemo(() => {
-    return calculateAllUnits(puzzleStringCurrent.split(""))
-  }, [puzzleStringCurrent])
-
-  const getCandidates = useCallback(
-    (gridSquareIndex: number) => {
-      const candidateArr = Array.from({ length: 9 }, (_, i) => {
-        const candidateN = i + 1
-        const candidateKey = `${gridSquareIndex}-${candidateN}`
-
-        const rowIndex = Math.floor(gridSquareIndex / 9)
-        const colIndex = gridSquareIndex % 9
-        const boxRowIndex = Math.floor(rowIndex / 3)
-        const boxColIndex = Math.floor(colIndex / 3)
-        const boxIndex = boxRowIndex * 3 + boxColIndex
-
-        if (
-          allUnits.allBoxes[boxIndex].includes(candidateN.toString()) ||
-          allUnits.allRows[rowIndex].includes(candidateN.toString()) ||
-          allUnits.allColumns[colIndex].includes(candidateN.toString()) ||
-          puzzleStringCurrent[gridSquareIndex] != "0" ||
-          manualElimCandidates.includes(candidateKey)
-        ) {
-          return false
-        } else {
-          return true
-        }
-      })
-      return candidateArr
-    },
-    [allUnits, manualElimCandidates, puzzleStringCurrent]
-  )
-
-  const allSquares = useMemo(
-    () =>
-      Array.from({ length: 81 }, (_, gridSquareIndex) => {
-        return {
-          entryValue: puzzleStringCurrent[gridSquareIndex],
-          candidates: getCandidates(gridSquareIndex),
-          gridSquareIndex
-        }
-      }),
-    [getCandidates, puzzleStringCurrent]
-  )
-
-  const tryRuleAtIndex = useCallback(
-    async (ruleIndex: number, isAuto: boolean = false) => {
-      const outcomeTime = isAuto ? 0 : 500
-      const ruleProgresses = rulesArr[ruleIndex].ruleAttempt(allSquares, toggleManualElimCandidate, handleEntry)
-
-      const ruleOutcome: RuleOutcome = ruleProgresses ? "success" : "fail"
-
-      handleRuleOutcome(ruleIndex, ruleOutcome)
-
-      await new Promise(resolve => setTimeout(resolve, outcomeTime))
-
-      if (ruleProgresses) {
-        ruleProgresses()
-        setQueueAutoSolve(true)
-      }
-
-      handleRuleOutcome(ruleIndex, "default")
-
-      return ruleOutcome === "success"
-    },
-    [allSquares]
-  )
-
-  const tryAutoSolves = useCallback(async () => {
-    if (currentAutoRuleIndex >= checkedRules.length) {
-      setCurrentAutoRuleIndex(0)
-      setQueueAutoSolve(false)
-      return
-    }
-    const ruleIndex = checkedRules[currentAutoRuleIndex]
-
-    const isSuccess = await tryRuleAtIndex(ruleIndex, true)
-
-    if (isSuccess) {
-      setCurrentAutoRuleIndex(0)
-    } else {
-      setCurrentAutoRuleIndex(prev => prev + 1)
-    }
-
-    setQueueAutoSolve(true)
-  }, [checkedRules, currentAutoRuleIndex, tryRuleAtIndex])
-
-  useEffect(() => {
-    if (queueAutoSolve) {
-      setQueueAutoSolve(false)
-      tryAutoSolves()
-    }
-  }, [queueAutoSolve, tryAutoSolves])
-
-  const handleCheckboxChange = (ruleIndex: number) => {
-    const isNewCheck = !checkedRules.includes(ruleIndex)
-
-    setCheckedRules(prev => {
-      const updatedRules = isNewCheck ? [...prev, ruleIndex] : prev.filter(n => n !== ruleIndex)
-      return updatedRules.sort((a, b) => a - b)
-    })
-
-    if (isNewCheck) {
-      setQueueAutoSolve(true)
-    }
-  }
-
-  function resetBoardData() {
-    handleBoardSet(false)
-    toggleCandidateMode(false)
-    toggleShowCandidates(false)
-    handleHighlightNChange(0)
-    handlePuzzleStartChange("")
-    handlePuzzleSolutionChange("")
-    changeLastClickedHighlightN(0)
-    clearManualElimCandidates()
-  }
 
   const candidateModeClass: string = candidateMode ? "candidate-mode-on" : ""
   const boardIsSetClass: string = boardIsSet ? "board-is-set" : ""
@@ -177,7 +65,7 @@ export default function Page() {
     allUnits,
     toggleManualElimCandidate,
     manualElimCandidates,
-    setQueueAutoSolve
+    handleQueueAutoSolve
   }
 
   return (
