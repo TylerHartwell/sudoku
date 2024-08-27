@@ -222,6 +222,16 @@ body {
   font-weight: bold;
 }
 
+.mark-good.candidate {
+  background-color: rgb(45, 241, 77);
+  font-weight: bold;
+}
+
+.mark-bad.candidate {
+  background-color: red;
+  font-weight: bold;
+}
+
 .highlight.entry {
   text-shadow: -1px -1px 0 currentColor, 1px -1px 0 currentColor, -1px 1px 0 currentColor, 1px 1px 0 currentColor;
 }

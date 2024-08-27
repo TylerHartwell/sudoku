@@ -6,12 +6,12 @@ import CandidateContext from "@/contexts/CandidateContext"
 const Square = ({ boxIndex, boxSquareIndex }: { boxIndex: number; boxSquareIndex: number }) => {
   const { puzzleStringCurrent } = useContext(CandidateContext)
 
-  const { rowIndex, colIndex, gridSquareIndex } = useMemo(() => {
+  const gridSquareIndex = useMemo(() => {
     const rowIndex = Math.floor(boxIndex / 3) * 3 + Math.floor(boxSquareIndex / 3)
     const colIndex = (boxIndex % 3) * 3 + (boxSquareIndex % 3)
     const gridSquareIndex = rowIndex * 9 + colIndex
 
-    return { rowIndex, colIndex, gridSquareIndex }
+    return gridSquareIndex
   }, [boxIndex, boxSquareIndex])
 
   const shownValue = puzzleStringCurrent[gridSquareIndex] == "0" ? "" : puzzleStringCurrent[gridSquareIndex]
@@ -19,23 +19,9 @@ const Square = ({ boxIndex, boxSquareIndex }: { boxIndex: number; boxSquareIndex
   return (
     <div className="square">
       {Array.from({ length: 9 }).map((_, index) => (
-        <Candidate
-          key={index}
-          gridSquareIndex={gridSquareIndex}
-          boxIndex={boxIndex}
-          rowIndex={rowIndex}
-          colIndex={colIndex}
-          candidateN={index + 1}
-          entryShownValue={shownValue}
-        />
+        <Candidate key={index} gridSquareIndex={gridSquareIndex} candidateIndex={index} entryShownValue={shownValue} />
       ))}
-      <Entry
-        gridSquareIndex={gridSquareIndex}
-        boxIndex={boxIndex}
-        rowIndex={rowIndex}
-        colIndex={colIndex}
-        shownValue={shownValue}
-      />
+      <Entry gridSquareIndex={gridSquareIndex} shownValue={shownValue} />
     </div>
   )
 }

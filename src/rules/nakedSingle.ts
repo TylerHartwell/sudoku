@@ -45,13 +45,16 @@ const nakedSingle: Rule = {
           const candidateNumber = i + 1
           const finalTargetGridSquareIndex = targetGridSquareIndex //narrow type to number
           console.log("naked single of ", candidateNumber, "at ", finalTargetGridSquareIndex)
-          return () => handleEntry(finalTargetGridSquareIndex, candidateNumber.toString())
+          return {
+            hasProgress: true,
+            resolve: () => handleEntry(finalTargetGridSquareIndex, candidateNumber.toString())
+          }
         }
         instanceCount = 0
       }
     }
     console.log("no naked singles")
-    return false
+    return { hasProgress: false }
   }
 }
 

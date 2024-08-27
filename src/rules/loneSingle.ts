@@ -3,23 +3,30 @@ import { Rule } from "./rulesInterface"
 const loneSingle: Rule = {
   ruleName: "Lone Single",
   ruleAttempt: (allSquares, toggleManualElimCandidate, handleEntry) => {
-    for (const [squareIndex, square] of allSquares.entries()) {
-      let candidatateCount = 0
-      let candidateNumber = 0
-      for (const [candidateIndex, candidate] of square.candidates.entries()) {
-        if (candidate) {
-          candidatateCount++
-          if (candidatateCount > 1) break
-          candidateNumber = candidateIndex + 1
+    for (const [gridSquareIndex, square] of allSquares.entries()) {
+      let possibleCount = 0
+      let targetCandidateIndex
+      for (const [candidateIndex, possible] of square.candidates.entries()) {
+        if (possible) {
+          possibleCount++
+          if (possibleCount > 1) break
+          targetCandidateIndex = candidateIndex
         }
       }
-      if (candidatateCount > 1 || candidatateCount == 0) continue
+      if (possibleCount > 1 || possibleCount == 0) continue
 
-      console.log("lone single of ", candidateNumber, "at ", squareIndex)
-      return () => handleEntry(squareIndex, candidateNumber.toString())
+      const candidateIndex = targetCandidateIndex as number
+      const candidateNumber = candidateIndex + 1
+      console.log("lone single of ", candidateNumber, "at ", gridSquareIndex)
+
+      return {
+        hasProgress: true,
+        candidatesToMarkGood: [{ gridSquareIndex, candidateIndex }],
+        resolve: () => handleEntry(gridSquareIndex, candidateNumber.toString())
+      }
     }
     console.log("no lone singles")
-    return false
+    return { hasProgress: false }
   }
 }
 

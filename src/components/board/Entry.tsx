@@ -2,22 +2,21 @@
 
 import { useRef, useState, useContext, useEffect, useMemo } from "react"
 import CandidateContext from "@/contexts/CandidateContext"
+import getRowColBox from "@/utils/getRowColBox"
 
 interface EntryProps {
   gridSquareIndex: number
   shownValue: string
-  boxIndex: number
-  rowIndex: number
-  colIndex: number
 }
 
-const Entry = ({ gridSquareIndex, boxIndex, rowIndex, colIndex, shownValue }: EntryProps) => {
+const Entry = ({ gridSquareIndex, shownValue }: EntryProps) => {
   const shownValueRef = useRef(shownValue)
   const [localShownValue, setLocalShownValue] = useState(shownValue)
   const [isLocked, setIsLocked] = useState(false)
   const [isWrong, setIsWrong] = useState(false)
-  const { setPuzzleStringCurrent, allUnits, candidateMode, boardIsSet, highlightN, handleQueueAutoSolve, handleEntry } = useContext(CandidateContext)
+  const { allUnits, candidateMode, boardIsSet, highlightN, handleQueueAutoSolve, handleEntry } = useContext(CandidateContext)
   const entryRef = useRef<HTMLDivElement>(null)
+  const { rowIndex, colIndex, boxIndex } = getRowColBox(gridSquareIndex)
 
   useEffect(() => {
     shownValueRef.current = shownValue

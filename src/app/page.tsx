@@ -46,7 +46,11 @@ export default function Page() {
     allSquares,
     tryRuleAtIndex,
     tryAutoSolves,
-    resetBoardData
+    resetBoardData,
+    goodCandidates,
+    toggleGoodCandidates,
+    badCandidates,
+    toggleBadCandidates
   } = useSudokuManagement()
 
   console.log("Page Render")
@@ -65,7 +69,9 @@ export default function Page() {
     allUnits,
     toggleManualElimCandidate,
     manualElimCandidates,
-    handleQueueAutoSolve
+    handleQueueAutoSolve,
+    goodCandidates,
+    badCandidates
   }
 
   return (

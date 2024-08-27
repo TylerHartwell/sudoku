@@ -18,6 +18,8 @@ function useSudokuManagement() {
   const [checkedRules, setCheckedRules] = useState<number[]>([])
   const [currentAutoRuleIndex, setCurrentAutoRuleIndex] = useState<number>(0)
   const [queueAutoSolve, setQueueAutoSolve] = useState<boolean>(false)
+  const [goodCandidates, setGoodCandidates] = useState<string[]>([])
+  const [badCandidates, setBadCandidates] = useState<string[]>([])
 
   const numbers = useMemo(() => Array.from({ length: 9 }, (_, i) => i + 1), [])
 
@@ -68,21 +70,31 @@ function useSudokuManagement() {
 
   const tryRuleAtIndex = useCallback(
     async (ruleIndex: number, isAuto: boolean = false) => {
-      const outcomeTime = isAuto ? 0 : 500
-      const ruleProgresses = rulesArr[ruleIndex].ruleAttempt(allSquares, toggleManualElimCandidate, handleEntry)
+      const outcomeTime = isAuto ? 50 : 500
+      const ruleResult = rulesArr[ruleIndex].ruleAttempt(allSquares, toggleManualElimCandidate, handleEntry)
 
-      const ruleOutcome: RuleOutcome = ruleProgresses ? "success" : "fail"
+      const ruleOutcome: RuleOutcome = ruleResult.hasProgress ? "success" : "fail"
 
       handleRuleOutcome(ruleIndex, ruleOutcome)
+      if (ruleResult.candidatesToMarkGood !== undefined) {
+        ruleResult.candidatesToMarkGood.forEach(candidate => {
+          toggleGoodCandidates(candidate.gridSquareIndex, candidate.candidateIndex, true)
+        })
+      }
 
       await new Promise(resolve => setTimeout(resolve, outcomeTime))
 
-      if (ruleProgresses) {
-        ruleProgresses()
+      if (ruleResult.hasProgress && ruleResult.resolve) {
+        ruleResult.resolve()
         handleQueueAutoSolve(true)
       }
 
       handleRuleOutcome(ruleIndex, "default")
+      if (ruleResult.candidatesToMarkGood !== undefined) {
+        ruleResult.candidatesToMarkGood.forEach(candidate => {
+          toggleGoodCandidates(candidate.gridSquareIndex, candidate.candidateIndex, false)
+        })
+      }
 
       return ruleOutcome === "success"
     },
@@ -161,6 +173,52 @@ function useSudokuManagement() {
       }
 
       if (shouldManualElim) {
+        if (!prev.includes(candidateKey)) {
+          return [...prev, candidateKey]
+        } else {
+          return prev
+        }
+      }
+
+      return prev.filter(key => key !== candidateKey)
+    })
+  }
+
+  const toggleGoodCandidates = (gridSquareIndex: number, candidateIndex: number, shouldMark?: boolean) => {
+    const candidateKey = `${gridSquareIndex}-${candidateIndex}`
+    setGoodCandidates(prev => {
+      if (shouldMark === undefined) {
+        if (!prev.includes(candidateKey)) {
+          return [...prev, candidateKey]
+        } else {
+          return prev.filter(key => key !== candidateKey)
+        }
+      }
+
+      if (shouldMark) {
+        if (!prev.includes(candidateKey)) {
+          return [...prev, candidateKey]
+        } else {
+          return prev
+        }
+      }
+
+      return prev.filter(key => key !== candidateKey)
+    })
+  }
+
+  const toggleBadCandidates = (gridSquareIndex: number, candidateIndex: number, shouldMark?: boolean) => {
+    const candidateKey = `${gridSquareIndex}-${candidateIndex}`
+    setBadCandidates(prev => {
+      if (shouldMark === undefined) {
+        if (!prev.includes(candidateKey)) {
+          return [...prev, candidateKey]
+        } else {
+          return prev.filter(key => key !== candidateKey)
+        }
+      }
+
+      if (shouldMark) {
         if (!prev.includes(candidateKey)) {
           return [...prev, candidateKey]
         } else {
@@ -266,7 +324,11 @@ function useSudokuManagement() {
     allSquares,
     tryRuleAtIndex,
     tryAutoSolves,
-    resetBoardData
+    resetBoardData,
+    goodCandidates,
+    toggleGoodCandidates,
+    badCandidates,
+    toggleBadCandidates
   }
 }
 

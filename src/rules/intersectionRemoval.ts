@@ -122,14 +122,17 @@ const intersectionRemoval: Rule = {
               !candidateObj.eliminated
             ) {
               console.log("intersection eliminated for candidate ", i + 1, "at ", square.gridSquareIndex)
-              return () => toggleManualElimCandidate(square.gridSquareIndex, i + 1, true)
+              return {
+                hasProgress: true,
+                resolve: () => toggleManualElimCandidate(square.gridSquareIndex, i + 1, true)
+              }
             }
           }
         }
       }
     }
     console.log("no intersection removal")
-    return false
+    return { hasProgress: false }
   }
 }
 

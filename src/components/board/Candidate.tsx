@@ -1,39 +1,34 @@
 "use client"
 
-import { useEffect, useMemo, useRef, useState } from "react"
 import { useContext } from "react"
 import CandidateContext from "@/contexts/CandidateContext"
+import getRowColBox from "@/utils/getRowColBox"
 
 interface CandidateProps {
-  boxIndex: number
-  candidateN: number
-  rowIndex: number
-  colIndex: number
   gridSquareIndex: number
+  candidateIndex: number
   entryShownValue: string
 }
 
-const Candidate = ({ gridSquareIndex, boxIndex, rowIndex, colIndex, candidateN, entryShownValue }: CandidateProps) => {
-  const [isEliminated, setIsEliminated] = useState(false)
-  const { allUnits, highlightN, showCandidates, candidateMode, toggleManualElimCandidate, manualElimCandidates } = useContext(CandidateContext)
+const Candidate = ({ gridSquareIndex, candidateIndex, entryShownValue }: CandidateProps) => {
+  const { allUnits, highlightN, showCandidates, candidateMode, toggleManualElimCandidate, manualElimCandidates, goodCandidates, badCandidates } =
+    useContext(CandidateContext)
 
-  const candidateKey = `${gridSquareIndex}-${candidateN}`
+  const candidateKey = `${gridSquareIndex}-${candidateIndex}`
+  const { rowIndex, colIndex, boxIndex } = getRowColBox(gridSquareIndex)
+  const candidateN = candidateIndex + 1
+
+  const isEliminated =
+    entryShownValue ||
+    manualElimCandidates.includes(candidateKey) ||
+    allUnits.allBoxes[boxIndex].includes(candidateN.toString()) ||
+    allUnits.allRows[rowIndex].includes(candidateN.toString()) ||
+    allUnits.allColumns[colIndex].includes(candidateN.toString())
+
   const highlightClass = candidateN === highlightN && showCandidates && !isEliminated ? "highlight" : ""
   const noPointerClass = !candidateMode || (isEliminated && !manualElimCandidates.includes(candidateKey)) ? "no-pointer" : ""
-
-  useEffect(() => {
-    if (
-      allUnits.allBoxes[boxIndex].includes(candidateN.toString()) ||
-      allUnits.allRows[rowIndex].includes(candidateN.toString()) ||
-      allUnits.allColumns[colIndex].includes(candidateN.toString()) ||
-      entryShownValue ||
-      manualElimCandidates.includes(candidateKey)
-    ) {
-      setIsEliminated(true)
-    } else {
-      setIsEliminated(false)
-    }
-  }, [entryShownValue, allUnits, boxIndex, candidateN, colIndex, rowIndex, gridSquareIndex, manualElimCandidates, candidateKey])
+  const markGoodClass = goodCandidates.includes(candidateKey) ? "mark-good" : ""
+  const markBadClass = badCandidates.includes(candidateKey) ? "mark-bad" : ""
 
   const toggleEliminated = () => {
     if (manualElimCandidates.includes(candidateKey) || !isEliminated) {
@@ -42,7 +37,7 @@ const Candidate = ({ gridSquareIndex, boxIndex, rowIndex, colIndex, candidateN, 
   }
 
   return (!showCandidates && !candidateMode) || entryShownValue ? null : (
-    <div className={`candidate ${highlightClass} ${noPointerClass}`} onClick={toggleEliminated}>
+    <div className={`candidate ${highlightClass} ${noPointerClass} ${markGoodClass} ${markBadClass}`} onClick={toggleEliminated}>
       {!isEliminated ? candidateN.toString() : ""}
     </div>
   )

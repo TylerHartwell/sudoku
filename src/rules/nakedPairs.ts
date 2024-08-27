@@ -109,7 +109,10 @@ const nakedPairs: Rule = {
 
               if (actions.length !== 0) {
                 console.log("has elimination for pair ", firstIndexOfPair + 1, "and ", secondIndexOfPair + 1, "in unit ", unitIndex)
-                return () => actions.forEach(action => action())
+                return {
+                  hasProgress: true,
+                  resolve: () => actions.forEach(action => action())
+                }
               }
             }
           }
@@ -118,7 +121,7 @@ const nakedPairs: Rule = {
     }
 
     console.log("no naked pairs")
-    return false
+    return { hasProgress: false }
 
     function removeNakedPairCandidatesFrom(
       unit: Square[],
