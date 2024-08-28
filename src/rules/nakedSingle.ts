@@ -32,22 +32,23 @@ const nakedSingle: Rule = {
     for (const unit of allSquaresByUnit) {
       let instanceCount = 0
       let targetGridSquareIndex: number | null = null
-      for (let i = 0; i < 9; i++) {
+      for (let candidateIndex = 0; candidateIndex < 9; candidateIndex++) {
         for (const square of unit) {
           if (instanceCount > 1) break
           if (square.entryValue != "0") continue
-          if (square.candidates[i]) {
+          if (square.candidates[candidateIndex]) {
             instanceCount++
             targetGridSquareIndex = square.gridSquareIndex
           }
         }
         if (instanceCount === 1 && targetGridSquareIndex !== null) {
-          const candidateNumber = i + 1
-          const finalTargetGridSquareIndex = targetGridSquareIndex //narrow type to number
-          console.log("naked single of ", candidateNumber, "at ", finalTargetGridSquareIndex)
+          const candidateNumber = candidateIndex + 1
+          const gridSquareIndex = targetGridSquareIndex //narrow type to number
+          console.log("naked single of ", candidateNumber, "at ", gridSquareIndex)
           return {
             hasProgress: true,
-            resolve: () => handleEntry(finalTargetGridSquareIndex, candidateNumber.toString())
+            candidatesToMarkGood: [{ gridSquareIndex, candidateIndex }],
+            resolve: () => handleEntry(gridSquareIndex, candidateNumber.toString())
           }
         }
         instanceCount = 0

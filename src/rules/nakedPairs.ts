@@ -32,7 +32,7 @@ function createCandidateObj(candidateIndex: number, possible: boolean, squareInd
 
 const nakedPairs: Rule = {
   ruleName: "Naked Pairs",
-  ruleAttempt: (allSquares, toggleManualElimCandidate) => {
+  ruleAttempt: (allSquares, toggleManualElimCandidate, handleEntry) => {
     const allSquaresByRow: Square[][] = Array.from({ length: 9 }, () => [])
     const allSquaresByCol: Square[][] = Array.from({ length: 9 }, () => [])
     const allSquaresByBox: Square[][] = Array.from({ length: 9 }, () => [])
@@ -134,10 +134,10 @@ const nakedPairs: Rule = {
       for (const square of unit) {
         if (square.gridSquareIndex != pair1SquareIndex && square.gridSquareIndex != pair2SquareIndex) {
           if (square.candidates[firstIndexOfPair]) {
-            actions.push(() => toggleManualElimCandidate(square.gridSquareIndex, firstIndexOfPair + 1, true))
+            actions.push(() => toggleManualElimCandidate(square.gridSquareIndex, firstIndexOfPair, true))
           }
           if (square.candidates[secondIndexOfPair]) {
-            actions.push(() => toggleManualElimCandidate(square.gridSquareIndex, secondIndexOfPair + 1, true))
+            actions.push(() => toggleManualElimCandidate(square.gridSquareIndex, secondIndexOfPair, true))
           }
         }
       }

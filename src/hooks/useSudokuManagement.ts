@@ -29,9 +29,9 @@ function useSudokuManagement() {
 
   const getCandidates = useCallback(
     (gridSquareIndex: number) => {
-      const candidateArr = Array.from({ length: 9 }, (_, i) => {
-        const candidateN = i + 1
-        const candidateKey = `${gridSquareIndex}-${candidateN}`
+      const candidateArr = Array.from({ length: 9 }, (_, candidateIndex) => {
+        const candidateN = candidateIndex + 1
+        const candidateKey = `${gridSquareIndex}-${candidateIndex}`
 
         const rowIndex = Math.floor(gridSquareIndex / 9)
         const colIndex = gridSquareIndex % 9
@@ -65,7 +65,7 @@ function useSudokuManagement() {
           gridSquareIndex
         }
       }),
-    [getCandidates, puzzleStringCurrent]
+    [getCandidates, puzzleStringCurrent, manualElimCandidates]
   )
 
   const tryRuleAtIndex = useCallback(
@@ -81,6 +81,11 @@ function useSudokuManagement() {
           toggleGoodCandidates(candidate.gridSquareIndex, candidate.candidateIndex, true)
         })
       }
+      if (ruleResult.candidatesToMarkBad !== undefined) {
+        ruleResult.candidatesToMarkBad.forEach(candidate => {
+          toggleBadCandidates(candidate.gridSquareIndex, candidate.candidateIndex, true)
+        })
+      }
 
       await new Promise(resolve => setTimeout(resolve, outcomeTime))
 
@@ -93,6 +98,11 @@ function useSudokuManagement() {
       if (ruleResult.candidatesToMarkGood !== undefined) {
         ruleResult.candidatesToMarkGood.forEach(candidate => {
           toggleGoodCandidates(candidate.gridSquareIndex, candidate.candidateIndex, false)
+        })
+      }
+      if (ruleResult.candidatesToMarkBad !== undefined) {
+        ruleResult.candidatesToMarkBad.forEach(candidate => {
+          toggleBadCandidates(candidate.gridSquareIndex, candidate.candidateIndex, false)
         })
       }
 
@@ -161,8 +171,8 @@ function useSudokuManagement() {
     setManualElimCandidates([])
   }
 
-  const toggleManualElimCandidate = (gridSquareIndex: number, candidateN: number, shouldManualElim?: boolean) => {
-    const candidateKey = `${gridSquareIndex}-${candidateN}`
+  const toggleManualElimCandidate = (gridSquareIndex: number, candidateIndex: number, shouldManualElim?: boolean) => {
+    const candidateKey = `${gridSquareIndex}-${candidateIndex}`
     setManualElimCandidates(prev => {
       if (shouldManualElim === undefined) {
         if (!prev.includes(candidateKey)) {

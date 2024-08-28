@@ -1,132 +1,92 @@
-import { Rule, Square } from "./rulesInterface"
+import getRowColBox from "@/utils/getRowColBox"
+import { Candidate, Rule, Square, UnitType } from "./rulesInterface"
+import getAllSquaresByUnit from "@/utils/getAllSquaresByUnit"
 
-interface Candidate {
-  eliminated: boolean
-  rowIndex: number
-  colIndex: number
-  boxIndex: number
-}
-
-// export interface Square {
-//   entryValue: string
-//   candidates: boolean[]
-//   gridSquareIndex: number
-// }
+//if all the candidates of a number in a unit are also all in a second unit, any other candidates matching that number in the second unit can be eliminated
 
 const intersectionRemoval: Rule = {
   ruleName: "Intersection Removal",
-  ruleAttempt: (allSquares, toggleManualElimCandidate) => {
-    const allSquaresByRow: Square[][] = Array.from({ length: 9 }, () => [])
-    const allSquaresByCol: Square[][] = Array.from({ length: 9 }, () => [])
-    const allSquaresByBox: Square[][] = Array.from({ length: 9 }, () => [])
-
-    allSquares.forEach((square, index) => {
-      const rowIndex = Math.floor(index / 9)
-      const colIndex = index % 9
-      const boxIndex = Math.floor(rowIndex / 3) * 3 + Math.floor(colIndex / 3)
-
-      allSquaresByRow[rowIndex].push(square)
-      allSquaresByCol[colIndex].push(square)
-      allSquaresByBox[boxIndex].push(square)
-    })
-
-    const allSquaresByUnit: Square[][] = assignAllSquaresByUnit()
-
-    function assignAllSquaresByUnit() {
-      let allSquaresByUnit: Square[][] = []
-      for (let i = 0; i < 9; i++) {
-        allSquaresByUnit.push(allSquaresByRow[i])
-        allSquaresByUnit.push(allSquaresByCol[i])
-        allSquaresByUnit.push(allSquaresByBox[i])
-      }
-      return allSquaresByUnit
-    }
+  ruleAttempt: (allSquares, toggleManualElimCandidate, handleEntry) => {
+    const allSquaresByUnit: Square[][] = getAllSquaresByUnit(allSquares)
+    const unitTypes: UnitType[] = ["row", "col", "box"]
 
     for (const [unitIndex, unit] of allSquaresByUnit.entries()) {
-      for (let i = 0; i < 9; i++) {
+      const currentUnitType = unitTypes[unitIndex % 3]
+      for (let candidateIndex = 0; candidateIndex < 9; candidateIndex++) {
         const candidateObjArr: Candidate[] = []
+        let isIntersector = false
 
         for (const square of unit) {
           if (square.entryValue !== "0") continue
 
-          const rowIndex = Math.floor(square.gridSquareIndex / 9)
-          const colIndex = square.gridSquareIndex % 9
+          if (square.candidates[candidateIndex]) {
+            if (candidateObjArr.length >= 3) {
+              isIntersector = false
+              break
+            }
+            isIntersector = true
 
-          const boxIndex = Math.floor(rowIndex / 3) * 3 + Math.floor(colIndex / 3)
-
-          const candidateObj: Candidate = {
-            eliminated: !square.candidates[i],
-            rowIndex,
-            colIndex,
-            boxIndex
-          }
-
-          if (!candidateObj.eliminated) {
-            candidateObjArr.push(candidateObj)
-
-            if (candidateObjArr.length > 3) break
+            candidateObjArr.push({
+              gridSquareIndex: square.gridSquareIndex,
+              candidateIndex,
+              possible: square.candidates[candidateIndex]
+            })
           }
         }
 
-        if (candidateObjArr.length > 1 && candidateObjArr.length < 4) {
-          const unitTypes = ["row", "col", "box"]
-          let currentUnitType = unitTypes[unitIndex % 3]
-          let rowIndexOfFirst = candidateObjArr[0].rowIndex
-          let colIndexOfFirst = candidateObjArr[0].colIndex
-          let boxIndexOfFirst = candidateObjArr[0].boxIndex
-          let peerUnitType: string | undefined
-          let peerUnitIndex: number | undefined
-          let hasPeerUnit = false
-          for (const unitType of unitTypes) {
-            if (currentUnitType === unitType) continue
-            if (unitType === "row" && candidateObjArr.every(candidateObj => candidateObj.rowIndex === rowIndexOfFirst)) {
-              hasPeerUnit = true
-              peerUnitIndex = rowIndexOfFirst
-              peerUnitType = unitType
-              break
-            }
-            if (unitType === "col" && candidateObjArr.every(candidateObj => candidateObj.colIndex === colIndexOfFirst)) {
-              hasPeerUnit = true
-              peerUnitIndex = colIndexOfFirst
-              peerUnitType = unitType
-              break
-            }
-            if (unitType === "box" && candidateObjArr.every(candidateObj => candidateObj.boxIndex === boxIndexOfFirst)) {
-              hasPeerUnit = true
-              peerUnitIndex = boxIndexOfFirst
-              peerUnitType = unitType
-              break
-            }
+        if (!isIntersector || candidateObjArr.length <= 1) continue
+
+        const { rowIndex, colIndex, boxIndex } = getRowColBox(candidateObjArr[0].gridSquareIndex)
+        let peerUnitType: UnitType | undefined
+        let peerUnitIndex: number | undefined
+
+        for (const unitType of unitTypes) {
+          if (currentUnitType === unitType) continue
+          if (unitType === "row" && candidateObjArr.every(candidateObj => getRowColBox(candidateObj.gridSquareIndex).rowIndex === rowIndex)) {
+            peerUnitIndex = rowIndex
+            peerUnitType = unitType
+            break
           }
-          if (!peerUnitType || peerUnitIndex === undefined) continue
+          if (unitType === "col" && candidateObjArr.every(candidateObj => getRowColBox(candidateObj.gridSquareIndex).colIndex === colIndex)) {
+            peerUnitIndex = colIndex
+            peerUnitType = unitType
+            break
+          }
+          if (unitType === "box" && candidateObjArr.every(candidateObj => getRowColBox(candidateObj.gridSquareIndex).boxIndex === boxIndex)) {
+            peerUnitIndex = boxIndex
+            peerUnitType = unitType
+            break
+          }
+        }
 
-          const offset = unitTypes.indexOf(peerUnitType)
-          const peerUnit = allSquaresByUnit[peerUnitIndex * 3 + offset]
+        if (peerUnitType === undefined || peerUnitIndex === undefined) continue
 
-          for (const square of peerUnit) {
-            const rowIndex = Math.floor(square.gridSquareIndex / 9)
-            const colIndex = square.gridSquareIndex % 9
+        const offset = unitTypes.indexOf(peerUnitType)
 
-            const boxIndex = Math.floor(rowIndex / 3) * 3 + Math.floor(colIndex / 3)
+        const peerUnit = allSquaresByUnit[peerUnitIndex * 3 + offset]
+        const candidatesToMarkGood = candidateObjArr
+        const candidatesToMarkBad = []
+        const actions: (() => void)[] = []
 
-            const candidateObj: Candidate = {
-              eliminated: !square.candidates[i],
-              rowIndex,
-              colIndex,
-              boxIndex
-            }
-            if (
-              !candidateObjArr.some(
-                cand => cand.rowIndex === candidateObj.rowIndex && cand.colIndex === candidateObj.colIndex && cand.boxIndex === candidateObj.boxIndex
-              ) &&
-              !candidateObj.eliminated
-            ) {
-              console.log("intersection eliminated for candidate ", i + 1, "at ", square.gridSquareIndex)
-              return {
-                hasProgress: true,
-                resolve: () => toggleManualElimCandidate(square.gridSquareIndex, i + 1, true)
-              }
-            }
+        for (const square of peerUnit) {
+          const gridSquareIndex = square.gridSquareIndex
+          const possible = square.candidates[candidateIndex]
+
+          const isInCurrentUnit = candidateObjArr.some(candidateObj => candidateObj.gridSquareIndex === gridSquareIndex)
+
+          if (!isInCurrentUnit && possible) {
+            console.log("intersection eliminated for candidate ", candidateIndex + 1, "at ", gridSquareIndex)
+            candidatesToMarkBad.push({ gridSquareIndex, candidateIndex, possible })
+            actions.push(() => toggleManualElimCandidate(gridSquareIndex, candidateIndex, true))
+          }
+        }
+
+        if (actions.length > 0) {
+          return {
+            hasProgress: true,
+            candidatesToMarkGood,
+            candidatesToMarkBad,
+            resolve: () => actions.forEach(action => action())
           }
         }
       }

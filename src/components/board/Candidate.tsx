@@ -27,12 +27,12 @@ const Candidate = ({ gridSquareIndex, candidateIndex, entryShownValue }: Candida
 
   const highlightClass = candidateN === highlightN && showCandidates && !isEliminated ? "highlight" : ""
   const noPointerClass = !candidateMode || (isEliminated && !manualElimCandidates.includes(candidateKey)) ? "no-pointer" : ""
-  const markGoodClass = goodCandidates.includes(candidateKey) ? "mark-good" : ""
-  const markBadClass = badCandidates.includes(candidateKey) ? "mark-bad" : ""
+  const markGoodClass = goodCandidates.includes(candidateKey) && !isEliminated ? "mark-good" : ""
+  const markBadClass = badCandidates.includes(candidateKey) && !isEliminated ? "mark-bad" : ""
 
   const toggleEliminated = () => {
     if (manualElimCandidates.includes(candidateKey) || !isEliminated) {
-      toggleManualElimCandidate(gridSquareIndex, candidateN)
+      toggleManualElimCandidate(gridSquareIndex, candidateIndex)
     }
   }
 
