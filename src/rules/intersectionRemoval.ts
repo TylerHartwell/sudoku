@@ -19,7 +19,9 @@ const intersectionRemoval: Rule = {
         for (const square of unit) {
           if (square.entryValue !== "0") continue
 
-          if (square.candidates[candidateIndex]) {
+          const possible = square.candidates[candidateIndex]
+
+          if (possible) {
             if (candidateObjArr.length >= 3) {
               isIntersector = false
               break
@@ -29,7 +31,7 @@ const intersectionRemoval: Rule = {
             candidateObjArr.push({
               gridSquareIndex: square.gridSquareIndex,
               candidateIndex,
-              possible: square.candidates[candidateIndex]
+              possible
             })
           }
         }

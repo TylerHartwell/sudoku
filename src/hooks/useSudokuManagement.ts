@@ -65,7 +65,7 @@ function useSudokuManagement() {
           gridSquareIndex
         }
       }),
-    [getCandidates, puzzleStringCurrent, manualElimCandidates]
+    [getCandidates, puzzleStringCurrent]
   )
 
   const tryRuleAtIndex = useCallback(
@@ -141,7 +141,7 @@ function useSudokuManagement() {
       handleQueueAutoSolve(false)
       tryAutoSolves()
     }
-  }, [queueAutoSolve, tryAutoSolves])
+  }, [boardIsSet, queueAutoSolve, tryAutoSolves])
 
   const resetCurrentAutoRuleIndex = () => {
     setCurrentAutoRuleIndex(0)

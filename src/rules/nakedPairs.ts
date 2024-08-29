@@ -1,63 +1,11 @@
-import { Rule, Square } from "./rulesInterface"
-
-interface Candidate {
-  candidateIndex: number
-  possible: boolean
-  squareIndex: number
-  rowIndex: number
-  colIndex: number
-  boxIndex: number
-}
-
-// export interface Square {
-//   entryValue: string
-//   candidates: boolean[]
-//   gridSquareIndex: number
-// }
-
-function createCandidateObj(candidateIndex: number, possible: boolean, squareIndex: number): Candidate {
-  const rowIndex = Math.floor(squareIndex / 9)
-  const colIndex = squareIndex % 9
-  const boxIndex = Math.floor(rowIndex / 3) * 3 + Math.floor(colIndex / 3)
-
-  return {
-    candidateIndex,
-    possible,
-    squareIndex,
-    rowIndex,
-    colIndex,
-    boxIndex
-  }
-}
+import getRowColBox from "@/utils/getRowColBox"
+import { Candidate, Rule, Square } from "./rulesInterface"
+import getAllSquaresByUnit from "@/utils/getAllSquaresByUnit"
 
 const nakedPairs: Rule = {
   ruleName: "Naked Pairs",
   ruleAttempt: (allSquares, toggleManualElimCandidate, handleEntry) => {
-    const allSquaresByRow: Square[][] = Array.from({ length: 9 }, () => [])
-    const allSquaresByCol: Square[][] = Array.from({ length: 9 }, () => [])
-    const allSquaresByBox: Square[][] = Array.from({ length: 9 }, () => [])
-
-    allSquares.forEach((square, index) => {
-      const rowIndex = Math.floor(index / 9)
-      const colIndex = index % 9
-      const boxIndex = Math.floor(rowIndex / 3) * 3 + Math.floor(colIndex / 3)
-
-      allSquaresByRow[rowIndex].push(square)
-      allSquaresByCol[colIndex].push(square)
-      allSquaresByBox[boxIndex].push(square)
-    })
-
-    const allSquaresByUnit: Square[][] = assignAllSquaresByUnit()
-
-    function assignAllSquaresByUnit() {
-      let allSquaresByUnit: Square[][] = []
-      for (let i = 0; i < 9; i++) {
-        allSquaresByUnit.push(allSquaresByRow[i])
-        allSquaresByUnit.push(allSquaresByCol[i])
-        allSquaresByUnit.push(allSquaresByBox[i])
-      }
-      return allSquaresByUnit
-    }
+    const allSquaresByUnit: Square[][] = getAllSquaresByUnit(allSquares)
 
     for (const [unitIndex, unit] of allSquaresByUnit.entries()) {
       let groupSize = 2
@@ -66,11 +14,12 @@ const nakedPairs: Rule = {
       for (const square of unit) {
         if (square.entryValue !== "0") continue
 
+        const gridSquareIndex = square.gridSquareIndex
         const candidateObjArr: Candidate[] = []
+
         for (const [candidateIndex, possible] of square.candidates.entries()) {
-          const candidateObj: Candidate = createCandidateObj(candidateIndex, possible, square.gridSquareIndex)
-          if (candidateObj.possible) {
-            candidateObjArr.push(candidateObj)
+          if (possible) {
+            candidateObjArr.push({ gridSquareIndex, candidateIndex, possible })
           }
         }
 
@@ -92,25 +41,29 @@ const nakedPairs: Rule = {
             ) {
               const firstIndexOfPair = groupOfSize[i][0].candidateIndex
               const secondIndexOfPair = groupOfSize[i][1].candidateIndex
-              const pair1SquareIndex = groupOfSize[i][0].squareIndex
-              const pair2SquareIndex = groupOfSize[j][0].squareIndex
+              const pair1GridSquareIndex = groupOfSize[i][0].gridSquareIndex
+              const pair2GridSquareIndex = groupOfSize[j][0].gridSquareIndex
 
               //eliminate others from unit if present
               const unit = allSquaresByUnit[unitIndex]
-              const actions = removeNakedPairCandidatesFrom(unit, pair1SquareIndex, pair2SquareIndex, firstIndexOfPair, secondIndexOfPair)
 
+              const actions = removeNakedPairCandidatesFrom(unit, pair1GridSquareIndex, pair2GridSquareIndex, firstIndexOfPair, secondIndexOfPair)
               const isUnitABox = unitIndex % 3 === 2
 
-              if (!isUnitABox && groupOfSize[i][0].boxIndex == groupOfSize[j][0].boxIndex) {
+              if (
+                !isUnitABox &&
+                getRowColBox(groupOfSize[i][0].gridSquareIndex).boxIndex == getRowColBox(groupOfSize[j][0].gridSquareIndex).boxIndex
+              ) {
                 //eliminate others from box if present
-                const unit = allSquaresByUnit[groupOfSize[i][0].boxIndex * 3 + 2]
-                actions.push(...removeNakedPairCandidatesFrom(unit, pair1SquareIndex, pair2SquareIndex, firstIndexOfPair, secondIndexOfPair))
+                const unit = allSquaresByUnit[getRowColBox(groupOfSize[i][0].gridSquareIndex).boxIndex * 3 + 2]
+                actions.push(...removeNakedPairCandidatesFrom(unit, pair1GridSquareIndex, pair2GridSquareIndex, firstIndexOfPair, secondIndexOfPair))
               }
 
               if (actions.length !== 0) {
                 console.log("has elimination for pair ", firstIndexOfPair + 1, "and ", secondIndexOfPair + 1, "in unit ", unitIndex)
                 return {
                   hasProgress: true,
+                  // candidatesToMarkBad: ,
                   resolve: () => actions.forEach(action => action())
                 }
               }
