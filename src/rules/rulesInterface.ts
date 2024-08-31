@@ -1,10 +1,6 @@
 export interface Rule {
   ruleName: string
-  ruleAttempt: (
-    allSquares: Square[],
-    toggleManualElimCandidate: (gridSquareIndex: number, candidateIndex: number, shouldManualElim: boolean) => void,
-    handleEntry: (gridSquareIndex: number, newEntry: string) => void
-  ) => {
+  ruleAttempt: (props: RuleAttemptParams) => {
     hasProgress: boolean
     candidatesToMarkGood?: {
       gridSquareIndex: number
@@ -17,6 +13,13 @@ export interface Rule {
     resolve?: () => void
   }
 }
+
+export interface RuleAttemptParams {
+  allSquares: Square[]
+  toggleManualElimCandidate: (gridSquareIndex: number, candidateIndex: number, shouldManualElim: boolean) => void
+  handleEntry: (gridSquareIndex: number, newEntry: string) => void
+}
+
 export interface Square {
   gridSquareIndex: number
   entryValue: string

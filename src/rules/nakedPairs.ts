@@ -4,13 +4,12 @@ import getAllSquaresByUnit from "@/utils/getAllSquaresByUnit"
 
 const nakedPairs: Rule = {
   ruleName: "Naked Pairs",
-  ruleAttempt: (allSquares, toggleManualElimCandidate, handleEntry) => {
+  ruleAttempt: ({ allSquares, toggleManualElimCandidate }) => {
     const allSquaresByUnit: Square[][] = getAllSquaresByUnit(allSquares)
+    const groupSize = 2
 
     for (const [unitIndex, unit] of allSquaresByUnit.entries()) {
-      let groupSize = 2
-      let groupOfSize: Candidate[][] = []
-      let groupOfAll = []
+      const groupOfSize = []
       for (const square of unit) {
         if (square.entryValue !== "0") continue
 
@@ -23,14 +22,10 @@ const nakedPairs: Rule = {
           }
         }
 
-        if (candidateObjArr.length > 1) {
-          groupOfAll.push(candidateObjArr)
+        if (candidateObjArr.length == groupSize) {
+          groupOfSize.push(candidateObjArr)
         }
       }
-
-      groupOfSize = groupOfAll.filter(candidateObjArr => {
-        return candidateObjArr.length == groupSize
-      })
 
       if (groupOfSize.length >= groupSize) {
         for (let i = 0; i < groupOfSize.length - 1; i++) {
@@ -39,10 +34,10 @@ const nakedPairs: Rule = {
               groupOfSize[i][0].candidateIndex == groupOfSize[j][0].candidateIndex &&
               groupOfSize[i][1].candidateIndex == groupOfSize[j][1].candidateIndex
             ) {
-              const firstIndexOfPair = groupOfSize[i][0].candidateIndex
-              const secondIndexOfPair = groupOfSize[i][1].candidateIndex
-              const pair1GridSquareIndex = groupOfSize[i][0].gridSquareIndex
-              const pair2GridSquareIndex = groupOfSize[j][0].gridSquareIndex
+              const firstIndexOfGroup = groupOfSize[i][0].candidateIndex
+              const secondIndexOfGroup = groupOfSize[i][1].candidateIndex
+              const firstGroupGridSquareIndex = groupOfSize[i][0].gridSquareIndex
+              const secondGroupGridSquareIndex = groupOfSize[j][0].gridSquareIndex
 
               //eliminate others from unit if present
               const unit = allSquaresByUnit[unitIndex]
@@ -52,14 +47,14 @@ const nakedPairs: Rule = {
               const processUnit = (unit: Square[]) => {
                 for (const square of unit) {
                   const gridSquareIndex = square.gridSquareIndex
-                  if (gridSquareIndex !== pair1GridSquareIndex && gridSquareIndex !== pair2GridSquareIndex) {
-                    if (square.candidates[firstIndexOfPair]) {
-                      candidatesToMarkBad.push({ gridSquareIndex, candidateIndex: firstIndexOfPair, possible: true })
-                      actions.push(() => toggleManualElimCandidate(gridSquareIndex, firstIndexOfPair, true))
+                  if (gridSquareIndex !== firstGroupGridSquareIndex && gridSquareIndex !== secondGroupGridSquareIndex) {
+                    if (square.candidates[firstIndexOfGroup]) {
+                      candidatesToMarkBad.push({ gridSquareIndex, candidateIndex: firstIndexOfGroup, possible: true })
+                      actions.push(() => toggleManualElimCandidate(gridSquareIndex, firstIndexOfGroup, true))
                     }
-                    if (square.candidates[secondIndexOfPair]) {
-                      candidatesToMarkBad.push({ gridSquareIndex, candidateIndex: secondIndexOfPair, possible: true })
-                      actions.push(() => toggleManualElimCandidate(gridSquareIndex, secondIndexOfPair, true))
+                    if (square.candidates[secondIndexOfGroup]) {
+                      candidatesToMarkBad.push({ gridSquareIndex, candidateIndex: secondIndexOfGroup, possible: true })
+                      actions.push(() => toggleManualElimCandidate(gridSquareIndex, secondIndexOfGroup, true))
                     }
                   }
                 }
@@ -68,24 +63,21 @@ const nakedPairs: Rule = {
 
               const isUnitABox = unitIndex % 3 === 2
 
-              if (
-                !isUnitABox &&
-                getRowColBox(groupOfSize[i][0].gridSquareIndex).boxIndex == getRowColBox(groupOfSize[j][0].gridSquareIndex).boxIndex
-              ) {
+              if (!isUnitABox && getRowColBox(firstGroupGridSquareIndex).boxIndex == getRowColBox(secondGroupGridSquareIndex).boxIndex) {
                 //eliminate others from box if present
-                const unit = allSquaresByUnit[getRowColBox(groupOfSize[i][0].gridSquareIndex).boxIndex * 3 + 2]
+                const unit = allSquaresByUnit[getRowColBox(firstGroupGridSquareIndex).boxIndex * 3 + 2]
                 processUnit(unit)
               }
 
               if (actions.length !== 0) {
-                console.log("has elimination for pair ", firstIndexOfPair + 1, "and ", secondIndexOfPair + 1, "in unit ", unitIndex)
+                console.log("has elimination for pair ", firstIndexOfGroup + 1, "and ", secondIndexOfGroup + 1, "in unit ", unitIndex)
                 return {
                   hasProgress: true,
                   candidatesToMarkGood: [
-                    { gridSquareIndex: pair1GridSquareIndex, candidateIndex: firstIndexOfPair },
-                    { gridSquareIndex: pair1GridSquareIndex, candidateIndex: secondIndexOfPair },
-                    { gridSquareIndex: pair2GridSquareIndex, candidateIndex: firstIndexOfPair },
-                    { gridSquareIndex: pair2GridSquareIndex, candidateIndex: secondIndexOfPair }
+                    { gridSquareIndex: firstGroupGridSquareIndex, candidateIndex: firstIndexOfGroup },
+                    { gridSquareIndex: firstGroupGridSquareIndex, candidateIndex: secondIndexOfGroup },
+                    { gridSquareIndex: secondGroupGridSquareIndex, candidateIndex: firstIndexOfGroup },
+                    { gridSquareIndex: secondGroupGridSquareIndex, candidateIndex: secondIndexOfGroup }
                   ],
                   candidatesToMarkBad,
                   resolve: () => actions.forEach(action => action())
@@ -99,28 +91,6 @@ const nakedPairs: Rule = {
 
     console.log("no naked pairs")
     return { hasProgress: false }
-
-    // function removeNakedPairCandidatesFrom(
-    //   unit: Square[],
-    //   pair1SquareIndex: number,
-    //   pair2SquareIndex: number,
-    //   firstIndexOfPair: number,
-    //   secondIndexOfPair: number
-    // ) {
-    //   const actions: (() => void)[] = []
-    //   for (const square of unit) {
-    //     if (square.gridSquareIndex != pair1SquareIndex && square.gridSquareIndex != pair2SquareIndex) {
-    //       if (square.candidates[firstIndexOfPair]) {
-    //         cand
-    //         actions.push(() => toggleManualElimCandidate(square.gridSquareIndex, firstIndexOfPair, true))
-    //       }
-    //       if (square.candidates[secondIndexOfPair]) {
-    //         actions.push(() => toggleManualElimCandidate(square.gridSquareIndex, secondIndexOfPair, true))
-    //       }
-    //     }
-    //   }
-    //   return actions
-    // }
   }
 }
 

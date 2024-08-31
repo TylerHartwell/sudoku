@@ -71,7 +71,7 @@ function useSudokuManagement() {
   const tryRuleAtIndex = useCallback(
     async (ruleIndex: number, isAuto: boolean = false) => {
       const outcomeTime = isAuto ? 50 : 500
-      const ruleResult = rulesArr[ruleIndex].ruleAttempt(allSquares, toggleManualElimCandidate, handleEntry)
+      const ruleResult = rulesArr[ruleIndex].ruleAttempt({ allSquares, toggleManualElimCandidate, handleEntry })
 
       const ruleOutcome: RuleOutcome = ruleResult.hasProgress ? "success" : "fail"
 

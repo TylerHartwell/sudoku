@@ -5,7 +5,7 @@ import { Rule, Square } from "./rulesInterface"
 
 const hiddenSingle: Rule = {
   ruleName: "Hidden Single",
-  ruleAttempt: (allSquares, toggleManualElimCandidate, handleEntry) => {
+  ruleAttempt: ({ allSquares, handleEntry }) => {
     const allSquaresByUnit: Square[][] = getAllSquaresByUnit(allSquares)
 
     for (const unit of allSquaresByUnit) {

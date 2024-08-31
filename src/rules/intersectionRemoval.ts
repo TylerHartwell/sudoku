@@ -6,7 +6,7 @@ import getAllSquaresByUnit from "@/utils/getAllSquaresByUnit"
 
 const intersectionRemoval: Rule = {
   ruleName: "Intersection Removal",
-  ruleAttempt: (allSquares, toggleManualElimCandidate, handleEntry) => {
+  ruleAttempt: ({ allSquares, toggleManualElimCandidate }) => {
     const allSquaresByUnit: Square[][] = getAllSquaresByUnit(allSquares)
     const unitTypes: UnitType[] = ["row", "col", "box"]
 

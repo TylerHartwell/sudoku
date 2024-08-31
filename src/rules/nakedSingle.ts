@@ -4,7 +4,7 @@ import { Rule } from "./rulesInterface"
 
 const nakedSingle: Rule = {
   ruleName: "Naked Single",
-  ruleAttempt: (allSquares, toggleManualElimCandidate, handleEntry) => {
+  ruleAttempt: ({ allSquares, handleEntry }) => {
     for (const [gridSquareIndex, square] of allSquares.entries()) {
       let possibleCount = 0
       let targetCandidateIndex
