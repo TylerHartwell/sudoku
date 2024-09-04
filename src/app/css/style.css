@@ -165,7 +165,7 @@ body {
 }
 
 .entry {
-  font-size: 1em;
+  font-size: 2em;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -183,7 +183,7 @@ body {
   justify-content: center;
   align-items: center;
   overflow: hidden;
-  border: 1px dashed #0000ff22;
+
   width: 98%;
   height: 98%;
 }
@@ -204,13 +204,17 @@ body {
   position: relative;
 }
 
+.fetch-grid-string-btn {
+  margin: 10px auto 0px;
+}
+
 /* style toggles */
 .board-is-set {
   display: none;
 }
 
 .set {
-  background-color: rgba(153, 165, 180, 0.75);
+  background-color: rgba(142, 153, 167, 0.349);
 }
 
 .wrong {
@@ -243,6 +247,10 @@ body {
 .no-pointer {
   pointer-events: none;
   cursor: default;
+}
+
+.candidate:not(.no-pointer) {
+  border: 1px dashed #0000ff31;
 }
 
 .grid-string {
@@ -420,7 +428,7 @@ button:active {
 
   .entry:focus {
     outline: none;
-    border: 4px solid blue;
+    border: 2px solid green;
   }
 
   .try-next-btn:hover:disabled {
@@ -450,7 +458,7 @@ button:active {
     overflow-x: hidden;
   }
   .container {
-    grid-template-columns: minmax(min-content, 95vw);
+    grid-template-columns: minmax(min-content, 80vw);
     margin-left: 5px;
   }
 }

@@ -2,7 +2,7 @@
 
 import { useContext } from "react"
 import CandidateContext from "@/contexts/CandidateContext"
-import getRowColBox from "@/utils/getRowColBox"
+import getPeerGridSquareIndices from "@/utils/getPeerGridSquareIndices"
 
 interface CandidateProps {
   gridSquareIndex: number
@@ -11,22 +11,25 @@ interface CandidateProps {
 }
 
 const Candidate = ({ gridSquareIndex, candidateIndex, entryShownValue }: CandidateProps) => {
-  const { allUnits, highlightN, showCandidates, candidateMode, toggleManualElimCandidate, manualElimCandidates, goodCandidates, badCandidates } =
-    useContext(CandidateContext)
+  const {
+    puzzleStringCurrent,
+    highlightN,
+    showCandidates,
+    candidateMode,
+    toggleManualElimCandidate,
+    manualElimCandidates,
+    goodCandidates,
+    badCandidates
+  } = useContext(CandidateContext)
 
   const candidateKey = `${gridSquareIndex}-${candidateIndex}`
-  const { rowIndex, colIndex, boxIndex } = getRowColBox(gridSquareIndex)
   const candidateN = candidateIndex + 1
+  const isAlreadyInUnit = getPeerGridSquareIndices(gridSquareIndex).some(i => puzzleStringCurrent[i] === candidateN.toString())
 
-  const isEliminated =
-    entryShownValue ||
-    manualElimCandidates.includes(candidateKey) ||
-    allUnits.allBoxes[boxIndex].includes(candidateN.toString()) ||
-    allUnits.allRows[rowIndex].includes(candidateN.toString()) ||
-    allUnits.allColumns[colIndex].includes(candidateN.toString())
+  const isEliminated = entryShownValue || isAlreadyInUnit || manualElimCandidates.includes(candidateKey)
 
-  const highlightClass = candidateN === highlightN && showCandidates && !isEliminated ? "highlight" : ""
-  const noPointerClass = !candidateMode || (isEliminated && !manualElimCandidates.includes(candidateKey)) ? "no-pointer" : ""
+  const highlightClass = candidateN === highlightN && (showCandidates || candidateMode) && !isEliminated ? "highlight" : ""
+  const noPointerClass = isEliminated && !manualElimCandidates.includes(candidateKey) ? "no-pointer" : ""
   const markGoodClass = goodCandidates.includes(candidateKey) && !isEliminated ? "mark-good" : ""
   const markBadClass = badCandidates.includes(candidateKey) && !isEliminated ? "mark-bad" : ""
 

@@ -41,7 +41,6 @@ export default function Page() {
     resetCurrentAutoRuleIndex,
     increaseCurrentAutoRuleIndex,
     numbers,
-    allUnits,
     getCandidates,
     allSquares,
     tryRuleAtIndex,
@@ -50,7 +49,8 @@ export default function Page() {
     goodCandidates,
     toggleGoodCandidates,
     badCandidates,
-    toggleBadCandidates
+    toggleBadCandidates,
+    getPeerSquares
   } = useSudokuManagement()
 
   console.log("Page Render")
@@ -59,6 +59,7 @@ export default function Page() {
   const boardIsSetClass: string = boardIsSet ? "board-is-set" : ""
 
   const contextObj = {
+    getPeerSquares,
     highlightN,
     showCandidates,
     candidateMode,
@@ -66,7 +67,6 @@ export default function Page() {
     puzzleStringCurrent,
     handleEntry,
     boardIsSet,
-    allUnits,
     toggleManualElimCandidate,
     manualElimCandidates,
     handleQueueAutoSolve,

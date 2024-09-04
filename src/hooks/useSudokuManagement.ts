@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from "react"
-import { RuleOutcome } from "@/rules/rulesInterface"
+import { RuleOutcome, Square } from "@/rules/rulesInterface"
 import rulesArr from "@/rules/rulesArr"
 import truncateAndPad from "@/utils/truncateAndPad"
-import calculateAllUnits from "@/utils/calculateAllUnits"
+import getPeerGridSquareIndices from "@/utils/getPeerGridSquareIndices"
 
 function useSudokuManagement() {
   const [ruleOutcomes, setRuleOutcomes] = useState<RuleOutcome[]>(rulesArr.map(_ => "default"))
@@ -23,29 +23,17 @@ function useSudokuManagement() {
 
   const numbers = useMemo(() => Array.from({ length: 9 }, (_, i) => i + 1), [])
 
-  const allUnits = useMemo(() => {
-    return calculateAllUnits(puzzleStringCurrent.split(""))
-  }, [puzzleStringCurrent])
-
   const getCandidates = useCallback(
     (gridSquareIndex: number) => {
       const candidateArr = Array.from({ length: 9 }, (_, candidateIndex) => {
         const candidateN = candidateIndex + 1
         const candidateKey = `${gridSquareIndex}-${candidateIndex}`
 
-        const rowIndex = Math.floor(gridSquareIndex / 9)
-        const colIndex = gridSquareIndex % 9
-        const boxRowIndex = Math.floor(rowIndex / 3)
-        const boxColIndex = Math.floor(colIndex / 3)
-        const boxIndex = boxRowIndex * 3 + boxColIndex
+        const isSquareOccupied = puzzleStringCurrent[gridSquareIndex] != "0"
 
-        if (
-          allUnits.allBoxes[boxIndex].includes(candidateN.toString()) ||
-          allUnits.allRows[rowIndex].includes(candidateN.toString()) ||
-          allUnits.allColumns[colIndex].includes(candidateN.toString()) ||
-          puzzleStringCurrent[gridSquareIndex] != "0" ||
-          manualElimCandidates.includes(candidateKey)
-        ) {
+        const isAlreadyInUnit = getPeerGridSquareIndices(gridSquareIndex).some(i => puzzleStringCurrent[i] === candidateN.toString())
+
+        if (isSquareOccupied || isAlreadyInUnit || manualElimCandidates.includes(candidateKey)) {
           return false
         } else {
           return true
@@ -53,10 +41,10 @@ function useSudokuManagement() {
       })
       return candidateArr
     },
-    [allUnits, manualElimCandidates, puzzleStringCurrent]
+    [manualElimCandidates, puzzleStringCurrent]
   )
 
-  const allSquares = useMemo(
+  const allSquares: Square[] = useMemo(
     () =>
       Array.from({ length: 81 }, (_, gridSquareIndex) => {
         return {
@@ -66,6 +54,43 @@ function useSudokuManagement() {
         }
       }),
     [getCandidates, puzzleStringCurrent]
+  )
+
+  const getPeerSquares = useCallback(
+    (gridSquareIndex: number) => {
+      return allSquares.filter(square => getPeerGridSquareIndices(gridSquareIndex).includes(square.gridSquareIndex))
+    },
+    [allSquares]
+  )
+
+  const handleEntry = useCallback(
+    (gridSquareIndex: number, newEntry: string) => {
+      const newEntryValue = newEntry ? newEntry : "0"
+      setPuzzleStringCurrent(prev => {
+        return prev.slice(0, gridSquareIndex) + newEntryValue + prev.slice(gridSquareIndex + 1)
+      })
+      if (newEntry) {
+        const candidateIndex = Number(newEntryValue) - 1
+        getPeerSquares(gridSquareIndex).forEach(square => {
+          const candidateKey = `${square.gridSquareIndex}-${candidateIndex}`
+          if (manualElimCandidates.includes(candidateKey)) {
+            console.log(square.gridSquareIndex, candidateIndex)
+            toggleManualElimCandidate(square.gridSquareIndex, candidateIndex, false)
+          }
+
+          if (square.gridSquareIndex == gridSquareIndex) {
+            square.candidates.forEach((possible, i) => {
+              const candidateKey = `${gridSquareIndex}-${i}`
+              if (manualElimCandidates.includes(candidateKey)) {
+                console.log(gridSquareIndex, i)
+                toggleManualElimCandidate(gridSquareIndex, i, false)
+              }
+            })
+          }
+        })
+      }
+    },
+    [getPeerSquares, manualElimCandidates]
   )
 
   const tryRuleAtIndex = useCallback(
@@ -108,7 +133,7 @@ function useSudokuManagement() {
 
       return ruleOutcome === "success"
     },
-    [allSquares]
+    [allSquares, handleEntry]
   )
 
   const tryAutoSolves = useCallback(async () => {
@@ -273,12 +298,6 @@ function useSudokuManagement() {
     }
   }
 
-  const handleEntry = (gridSquareIndex: number, newEntry: string) => {
-    setPuzzleStringCurrent(prev => {
-      return prev.slice(0, gridSquareIndex) + newEntry + prev.slice(gridSquareIndex + 1)
-    })
-  }
-
   const handleRuleOutcome = (ruleIndex: number, newOutcome: RuleOutcome) => {
     setRuleOutcomes(prev => {
       const updatedOutcomes = [...prev]
@@ -290,7 +309,6 @@ function useSudokuManagement() {
   function resetBoardData() {
     handleBoardSet(false)
     toggleCandidateMode(false)
-    toggleShowCandidates(false)
     handleHighlightNChange(0)
     handlePuzzleStartChange("")
     handlePuzzleSolutionChange("")
@@ -329,7 +347,6 @@ function useSudokuManagement() {
     resetCurrentAutoRuleIndex,
     increaseCurrentAutoRuleIndex,
     numbers,
-    allUnits,
     getCandidates,
     allSquares,
     tryRuleAtIndex,
@@ -338,7 +355,8 @@ function useSudokuManagement() {
     goodCandidates,
     toggleGoodCandidates,
     badCandidates,
-    toggleBadCandidates
+    toggleBadCandidates,
+    getPeerSquares
   }
 }
 
