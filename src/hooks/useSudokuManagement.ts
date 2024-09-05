@@ -10,6 +10,7 @@ function useSudokuManagement() {
   const [puzzleStringStart, setPuzzleStringStart] = useState("")
   const [puzzleSolution, setPuzzleSolution] = useState("")
   const [boardIsSet, setBoardIsSet] = useState(false)
+  const [boardIsSolved, setBoardIsSolved] = useState(false)
   const [highlightN, setHighlightN] = useState<number>(0)
   const [showCandidates, setShowCandidates] = useState(false)
   const [candidateMode, setCandidateMode] = useState(false)
@@ -168,6 +169,12 @@ function useSudokuManagement() {
     }
   }, [boardIsSet, queueAutoSolve, tryAutoSolves])
 
+  useEffect(() => {
+    if (boardIsSet && puzzleStringCurrent == puzzleSolution) {
+      setBoardIsSolved(true)
+    }
+  }, [boardIsSet, puzzleSolution, puzzleStringCurrent])
+
   const resetCurrentAutoRuleIndex = () => {
     setCurrentAutoRuleIndex(0)
   }
@@ -307,6 +314,7 @@ function useSudokuManagement() {
   }
 
   function resetBoardData() {
+    setBoardIsSolved(false)
     handleBoardSet(false)
     toggleCandidateMode(false)
     handleHighlightNChange(0)
@@ -319,12 +327,10 @@ function useSudokuManagement() {
 
   return {
     ruleOutcomes,
-    handleRuleOutcome,
     puzzleStringCurrent,
     handleEntry,
     puzzleStringStart,
     handlePuzzleStartChange,
-    puzzleSolution,
     handlePuzzleSolutionChange,
     boardIsSet,
     handleBoardSet,
@@ -338,25 +344,16 @@ function useSudokuManagement() {
     changeLastClickedHighlightN,
     manualElimCandidates,
     toggleManualElimCandidate,
-    clearManualElimCandidates,
-    queueAutoSolve,
     handleQueueAutoSolve,
     checkedRules,
     handleCheckboxChange,
-    currentAutoRuleIndex,
-    resetCurrentAutoRuleIndex,
-    increaseCurrentAutoRuleIndex,
     numbers,
-    getCandidates,
-    allSquares,
     tryRuleAtIndex,
-    tryAutoSolves,
     resetBoardData,
     goodCandidates,
-    toggleGoodCandidates,
     badCandidates,
-    toggleBadCandidates,
-    getPeerSquares
+    getPeerSquares,
+    boardIsSolved
   }
 }
 

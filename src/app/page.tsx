@@ -13,12 +13,10 @@ import useSudokuManagement from "@/hooks/useSudokuManagement"
 export default function Page() {
   const {
     ruleOutcomes,
-    handleRuleOutcome,
     puzzleStringCurrent,
     handleEntry,
     puzzleStringStart,
     handlePuzzleStartChange,
-    puzzleSolution,
     handlePuzzleSolutionChange,
     boardIsSet,
     handleBoardSet,
@@ -32,25 +30,16 @@ export default function Page() {
     changeLastClickedHighlightN,
     manualElimCandidates,
     toggleManualElimCandidate,
-    clearManualElimCandidates,
-    queueAutoSolve,
     handleQueueAutoSolve,
     checkedRules,
     handleCheckboxChange,
-    currentAutoRuleIndex,
-    resetCurrentAutoRuleIndex,
-    increaseCurrentAutoRuleIndex,
     numbers,
-    getCandidates,
-    allSquares,
     tryRuleAtIndex,
-    tryAutoSolves,
     resetBoardData,
     goodCandidates,
-    toggleGoodCandidates,
     badCandidates,
-    toggleBadCandidates,
-    getPeerSquares
+    getPeerSquares,
+    boardIsSolved
   } = useSudokuManagement()
 
   console.log("Page Render")
@@ -71,7 +60,8 @@ export default function Page() {
     manualElimCandidates,
     handleQueueAutoSolve,
     goodCandidates,
-    badCandidates
+    badCandidates,
+    boardIsSolved
   }
 
   return (

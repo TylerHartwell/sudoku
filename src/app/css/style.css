@@ -52,6 +52,10 @@ body {
   min-height: 350px;
 }
 
+.solved {
+  border: 5px solid yellow;
+}
+
 .controls {
   grid-area: controls;
   display: flex;
@@ -165,7 +169,7 @@ body {
 }
 
 .entry {
-  font-size: 2em;
+  font-size: 200%;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -458,7 +462,7 @@ button:active {
     overflow-x: hidden;
   }
   .container {
-    grid-template-columns: minmax(min-content, 80vw);
+    grid-template-columns: minmax(min-content, 95vw);
     margin-left: 5px;
   }
 }
