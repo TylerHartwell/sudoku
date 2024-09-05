@@ -1,52 +1,46 @@
 "use client"
 
-import { useEffect, useMemo, useRef, useState } from "react"
 import { useContext } from "react"
 import CandidateContext from "@/contexts/CandidateContext"
+import getPeerGridSquareIndices from "@/utils/getPeerGridSquareIndices"
 
 interface CandidateProps {
-  boxIndex: number
-  candidateN: number
-  rowIndex: number
-  colIndex: number
   gridSquareIndex: number
+  candidateIndex: number
   entryShownValue: string
 }
 
-const Candidate = ({ boxIndex, candidateN, rowIndex, colIndex, gridSquareIndex, entryShownValue }: CandidateProps) => {
-  const [isEliminated, setIsEliminated] = useState(false)
-  const toggledByUser = useRef(false)
-  const { highlightN, showCandidates, candidateMode, puzzleStringCurrent, allBoxes, allColumns, allRows } =
-    useContext(CandidateContext)
+const Candidate = ({ gridSquareIndex, candidateIndex, entryShownValue }: CandidateProps) => {
+  const {
+    puzzleStringCurrent,
+    highlightN,
+    showCandidates,
+    candidateMode,
+    toggleManualElimCandidate,
+    manualElimCandidates,
+    goodCandidates,
+    badCandidates
+  } = useContext(CandidateContext)
 
-  const highlightClass = useMemo(() => {
-    return candidateN === highlightN && showCandidates && !isEliminated ? "highlight" : ""
-  }, [highlightN, showCandidates, isEliminated, candidateN])
+  const candidateKey = `${gridSquareIndex}-${candidateIndex}`
+  const candidateN = candidateIndex + 1
+  const isAlreadyInUnit = getPeerGridSquareIndices(gridSquareIndex).some(i => puzzleStringCurrent[i] === candidateN.toString())
 
-  const noPointerClass = useMemo(() => (!candidateMode ? "no-pointer" : ""), [candidateMode])
+  const isEliminated = entryShownValue || isAlreadyInUnit || manualElimCandidates.includes(candidateKey)
 
-  useEffect(() => {
-    if (
-      allBoxes[boxIndex].includes(candidateN) ||
-      allRows[rowIndex].includes(candidateN) ||
-      allColumns[colIndex].includes(candidateN) ||
-      puzzleStringCurrent[gridSquareIndex] != "0"
-    ) {
-      setIsEliminated(true)
-    } else {
-      if (!toggledByUser.current) {
-        setIsEliminated(false)
-      }
-    }
-  }, [puzzleStringCurrent, allBoxes, allColumns, allRows, boxIndex, candidateN, colIndex, rowIndex, gridSquareIndex])
+  const highlightClass = candidateN === highlightN && (showCandidates || candidateMode) && !isEliminated ? "highlight" : ""
+  const noPointerClass = isEliminated && !manualElimCandidates.includes(candidateKey) ? "no-pointer" : ""
+  const markGoodClass = goodCandidates.includes(candidateKey) && !isEliminated ? "mark-good" : ""
+  const markBadClass = badCandidates.includes(candidateKey) && !isEliminated ? "mark-bad" : ""
 
   const toggleEliminated = () => {
-    toggledByUser.current = !isEliminated
-    setIsEliminated(prevState => !prevState)
+    if (manualElimCandidates.includes(candidateKey) || !isEliminated) {
+      toggleManualElimCandidate(gridSquareIndex, candidateIndex)
+    }
   }
 
   return (!showCandidates && !candidateMode) || entryShownValue ? null : (
-    <div className={`candidate ${highlightClass} ${noPointerClass}`} onClick={toggleEliminated}>
+    <div className={`candidate ${highlightClass} ${noPointerClass} ${markGoodClass} ${markBadClass}`} onClick={toggleEliminated}>
       {!isEliminated ? candidateN.toString() : ""}
     </div>
   )

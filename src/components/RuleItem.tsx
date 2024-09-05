@@ -1,37 +1,32 @@
-import { Rule } from "@/rules/rulesInterface"
-import { useState } from "react"
-
+import { RuleOutcome } from "@/rules/rulesInterface"
 interface RuleItemProps {
   ruleN: number
-  rule: Rule
+  ruleName: string
+  isChecked: boolean
+  handleCheckboxChange: () => void
+  ruleOutcome: RuleOutcome
+  tryRuleAtIndex: () => Promise<boolean>
+  allDefault: boolean
 }
 
-const RuleItem = ({ ruleN, rule }: RuleItemProps) => {
-  const [ruleOutcome, setRuleOutcome] = useState("")
-
-  function handleRuleAttempt() {
-    const ruleProgresses = rule.ruleProgresses()
-
-    const tempRuleOutcome = ruleProgresses ? "success" : "fail"
-
-    setRuleOutcome(tempRuleOutcome)
-    setTimeout(() => {
-      setRuleOutcome("")
-    }, 300)
-
-    if (ruleProgresses) rule.ruleResolve()
-  }
-
+const RuleItem = ({ ruleN, ruleName, isChecked, handleCheckboxChange, ruleOutcome, tryRuleAtIndex, allDefault }: RuleItemProps) => {
   return (
     <li className="rule-item">
-      <button className={`try-next-btn ${ruleOutcome}`} onClick={handleRuleAttempt}>
+      <button className={`try-next-btn ${ruleOutcome}`} onClick={tryRuleAtIndex} disabled={!allDefault}>
         Attempt
       </button>
-      <span className="rule-name">{rule.ruleName}</span>
+      <span className="rule-name">{ruleName}</span>
       <label htmlFor={"checkbox" + ruleN} className="checkbox-label">
         Auto Attempt:
       </label>
-      <input type="checkbox" name={"checkbox" + ruleN} id={"checkbox" + ruleN} className="checkbox" />
+      <input
+        type="checkbox"
+        name={"checkbox" + ruleN}
+        id={"checkbox" + ruleN}
+        className="checkbox"
+        checked={isChecked}
+        onChange={handleCheckboxChange}
+      />
     </li>
   )
 }
