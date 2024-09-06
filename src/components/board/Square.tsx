@@ -18,10 +18,10 @@ const Square = ({ boxIndex, boxSquareIndex }: { boxIndex: number; boxSquareIndex
 
   return (
     <div className="square">
+      <Entry gridSquareIndex={gridSquareIndex} shownValue={shownValue} />
       {Array.from({ length: 9 }).map((_, index) => (
         <Candidate key={index} gridSquareIndex={gridSquareIndex} candidateIndex={index} entryShownValue={shownValue} />
       ))}
-      <Entry gridSquareIndex={gridSquareIndex} shownValue={shownValue} />
     </div>
   )
 }

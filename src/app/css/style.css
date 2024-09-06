@@ -181,15 +181,27 @@ body {
   cursor: default;
 }
 
+.entry:focus {
+  outline: none;
+  border: 5px solid green;
+}
+
+.entry.candidate-mode:not(:hover) {
+  pointer-events: none;
+}
+
 .candidate {
   font-size: 0.8em;
   display: flex;
   justify-content: center;
   align-items: center;
   overflow: hidden;
-
   width: 98%;
   height: 98%;
+}
+
+.candidate.candidate-mode:not(:hover) {
+  pointer-events: none;
 }
 
 /* .control children */
@@ -248,12 +260,12 @@ body {
   font-weight: bold;
 }
 
-.no-pointer {
+/* .no-pointer {
   pointer-events: none;
-  cursor: default;
-}
+  cursor: wait;
+} */
 
-.candidate:not(.no-pointer) {
+.candidate.toggleable {
   border: 1px dashed #0000ff31;
 }
 
@@ -395,7 +407,7 @@ button:active {
       "numberpad"
       "rules"
       "controls";
-    grid-template-columns: minmax(min-content, 98vw);
+    grid-template-columns: minmax(min-content, 95vw);
     grid-template-rows: repeat(5, min-content);
     margin: 2px auto;
 
@@ -421,18 +433,13 @@ button:active {
     font-weight: bold;
   }
 
-  .candidate:hover {
+  .candidate.toggleable:hover {
     background-color: #ff5353;
     font-weight: bold;
   }
 
-  .entry:hover {
+  .entry:hover:not(:focus):not(.candidate-mode) {
     border: 1px solid rgb(80, 80, 80);
-  }
-
-  .entry:focus {
-    outline: none;
-    border: 2px solid green;
   }
 
   .try-next-btn:hover:disabled {
