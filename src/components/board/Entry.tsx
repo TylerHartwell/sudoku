@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef, useState, useContext, useEffect, useMemo } from "react"
+import { useRef, useState, useContext, useEffect } from "react"
 import CandidateContext from "@/contexts/CandidateContext"
 import getPeerGridSquareIndices from "@/utils/getPeerGridSquareIndices"
 import classNames from "classnames"
@@ -15,9 +15,17 @@ const Entry = ({ gridSquareIndex, shownValue }: EntryProps) => {
   const [localShownValue, setLocalShownValue] = useState(shownValue)
   const [isLocked, setIsLocked] = useState(false)
   const [isWrong, setIsWrong] = useState(false)
-  const { puzzleStringCurrent, candidateMode, boardIsSet, highlightN, handleQueueAutoSolve, handleEntry } = useContext(CandidateContext)
+  const {
+    puzzleStringCurrent,
+    candidateMode,
+    boardIsSet,
+    highlightN,
+    handleQueueAutoSolve,
+    handleEntry,
+    toggleManualElimCandidate,
+    manualElimCandidates
+  } = useContext(CandidateContext)
   const entryRef = useRef<HTMLDivElement>(null)
-  const [isFocused, setIsFocused] = useState(false)
 
   useEffect(() => {
     shownValueRef.current = shownValue
@@ -53,11 +61,24 @@ const Entry = ({ gridSquareIndex, shownValue }: EntryProps) => {
 
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     e.preventDefault()
-    console.log("wow")
 
     if (!isLocked) {
-      if (candidateMode) {
-        console.log(e.pointerType)
+      if (candidateMode && e.pointerType === "touch") {
+        if (entryRef.current !== document.activeElement) {
+          entryRef.current?.focus()
+        } else {
+          if (highlightN != 0) {
+            const candidateIndex = highlightN - 1
+            const candidateKey = `${gridSquareIndex}-${candidateIndex}`
+            const candidateN = highlightN
+            const isAlreadyInUnit = getPeerGridSquareIndices(gridSquareIndex).some(i => puzzleStringCurrent[i] === candidateN.toString())
+
+            const isEliminated = shownValue || isAlreadyInUnit || manualElimCandidates.includes(candidateKey)
+            const isToggleable = !isEliminated || manualElimCandidates.includes(candidateKey)
+
+            if (isToggleable) toggleManualElimCandidate(gridSquareIndex, candidateIndex)
+          } else (document.activeElement as HTMLElement)?.blur()
+        }
         return
       }
       if (entryRef.current !== document.activeElement) {

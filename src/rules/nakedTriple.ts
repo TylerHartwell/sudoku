@@ -123,7 +123,6 @@ const nakedTriple: Rule = {
       }
     }
 
-    console.log("no naked triples")
     return { hasProgress: false }
   }
 }

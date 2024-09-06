@@ -22,11 +22,6 @@ function useSudokuManagement() {
   const [goodCandidates, setGoodCandidates] = useState<string[]>([])
   const [badCandidates, setBadCandidates] = useState<string[]>([])
 
-  // const [pointerDownTarget, setPointerDownTarget] = useState(null)
-  // const [lastPointerType, setLastPointerType] = useState<"mouse" | "touch">("mouse")
-  // const [lastSelectedPadNum, setLastSelectedPadNum] = useState(null)
-  // const [currentlySelectedEntryEl, setCurrentlySelectedEntryEl] = useState(null)
-
   const numbers = useMemo(() => Array.from({ length: 9 }, (_, i) => i + 1), [])
 
   const getCandidates = useCallback(
@@ -80,7 +75,6 @@ function useSudokuManagement() {
         getPeerSquares(gridSquareIndex).forEach(square => {
           const candidateKey = `${square.gridSquareIndex}-${candidateIndex}`
           if (manualElimCandidates.includes(candidateKey)) {
-            console.log(square.gridSquareIndex, candidateIndex)
             toggleManualElimCandidate(square.gridSquareIndex, candidateIndex, false)
           }
 
@@ -88,7 +82,6 @@ function useSudokuManagement() {
             square.candidates.forEach((possible, i) => {
               const candidateKey = `${gridSquareIndex}-${i}`
               if (manualElimCandidates.includes(candidateKey)) {
-                console.log(gridSquareIndex, i)
                 toggleManualElimCandidate(gridSquareIndex, i, false)
               }
             })

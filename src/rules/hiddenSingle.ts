@@ -36,7 +36,6 @@ const hiddenSingle: Rule = {
         }
       }
     }
-    console.log("no hidden singles")
     return { hasProgress: false }
   }
 }

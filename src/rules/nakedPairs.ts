@@ -89,7 +89,6 @@ const nakedPairs: Rule = {
       }
     }
 
-    console.log("no naked pairs")
     return { hasProgress: false }
   }
 }

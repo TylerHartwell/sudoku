@@ -38,7 +38,6 @@ const Candidate = ({ gridSquareIndex, candidateIndex, entryShownValue }: Candida
 
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     e.preventDefault()
-    console.log("wee")
     if (e.pointerType === "mouse" && isToggleable) {
       toggleEliminated()
     }

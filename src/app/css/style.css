@@ -186,10 +186,6 @@ body {
   border: 5px solid green;
 }
 
-.entry.candidate-mode:not(:hover) {
-  pointer-events: none;
-}
-
 .candidate {
   font-size: 0.8em;
   display: flex;
@@ -198,10 +194,6 @@ body {
   overflow: hidden;
   width: 98%;
   height: 98%;
-}
-
-.candidate.candidate-mode:not(:hover) {
-  pointer-events: none;
 }
 
 /* .control children */
@@ -259,11 +251,6 @@ body {
 .highlight.pad-number {
   font-weight: bold;
 }
-
-/* .no-pointer {
-  pointer-events: none;
-  cursor: wait;
-} */
 
 .candidate.toggleable {
   border: 1px dashed #0000ff31;
@@ -427,6 +414,17 @@ button:active {
   }
 }
 
+@media (hover: none) {
+  .candidate.candidate-mode {
+    pointer-events: none;
+  }
+
+  .entry:focus.candidate-mode {
+    outline: none;
+    border: 5px solid red;
+  }
+}
+
 @media (hover: hover) and (pointer: fine) {
   .pad-number:hover {
     cursor: pointer;
@@ -436,6 +434,10 @@ button:active {
   .candidate.toggleable:hover {
     background-color: #ff5353;
     font-weight: bold;
+  }
+
+  .entry.candidate-mode {
+    pointer-events: none;
   }
 
   .entry:hover:not(:focus):not(.candidate-mode) {
