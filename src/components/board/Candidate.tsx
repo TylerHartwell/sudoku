@@ -3,6 +3,7 @@
 import { useContext } from "react"
 import CandidateContext from "@/contexts/CandidateContext"
 import getPeerGridSquareIndices from "@/utils/getPeerGridSquareIndices"
+import classNames from "classnames"
 
 interface CandidateProps {
   gridSquareIndex: number
@@ -27,11 +28,7 @@ const Candidate = ({ gridSquareIndex, candidateIndex, entryShownValue }: Candida
   const isAlreadyInUnit = getPeerGridSquareIndices(gridSquareIndex).some(i => puzzleStringCurrent[i] === candidateN.toString())
 
   const isEliminated = entryShownValue || isAlreadyInUnit || manualElimCandidates.includes(candidateKey)
-
-  const highlightClass = candidateN === highlightN && (showCandidates || candidateMode) && !isEliminated ? "highlight" : ""
-  const noPointerClass = isEliminated && !manualElimCandidates.includes(candidateKey) ? "no-pointer" : ""
-  const markGoodClass = goodCandidates.includes(candidateKey) && !isEliminated ? "mark-good" : ""
-  const markBadClass = badCandidates.includes(candidateKey) && !isEliminated ? "mark-bad" : ""
+  const isToggleable = !isEliminated || manualElimCandidates.includes(candidateKey)
 
   const toggleEliminated = () => {
     if (manualElimCandidates.includes(candidateKey) || !isEliminated) {
@@ -39,8 +36,23 @@ const Candidate = ({ gridSquareIndex, candidateIndex, entryShownValue }: Candida
     }
   }
 
+  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    e.preventDefault()
+    if (e.pointerType === "mouse" && isToggleable) {
+      toggleEliminated()
+    }
+  }
+
+  const candidateClassName = classNames({
+    highlight: candidateN === highlightN && (showCandidates || candidateMode) && !isEliminated,
+    "toggleable": isToggleable,
+    "candidate-mode": candidateMode,
+    "mark-good": goodCandidates.includes(candidateKey) && !isEliminated,
+    "mark-bad": badCandidates.includes(candidateKey) && !isEliminated
+  })
+
   return (!showCandidates && !candidateMode) || entryShownValue ? null : (
-    <div className={`candidate ${highlightClass} ${noPointerClass} ${markGoodClass} ${markBadClass}`} onClick={toggleEliminated}>
+    <div className={`candidate ${candidateClassName}`} onPointerDown={handlePointerDown}>
       {!isEliminated ? candidateN.toString() : ""}
     </div>
   )

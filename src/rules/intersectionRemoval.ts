@@ -93,7 +93,6 @@ const intersectionRemoval: Rule = {
         }
       }
     }
-    console.log("no intersection removal")
     return { hasProgress: false }
   }
 }

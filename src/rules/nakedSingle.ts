@@ -27,7 +27,6 @@ const nakedSingle: Rule = {
         resolve: () => handleEntry(gridSquareIndex, candidateNumber.toString())
       }
     }
-    console.log("no naked singles")
     return { hasProgress: false }
   }
 }

@@ -42,8 +42,6 @@ export default function Page() {
     boardIsSolved
   } = useSudokuManagement()
 
-  console.log("Page Render")
-
   const candidateModeClass: string = candidateMode ? "candidate-mode-on" : ""
   const boardIsSetClass: string = boardIsSet ? "board-is-set" : ""
 
