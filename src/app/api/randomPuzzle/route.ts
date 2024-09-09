@@ -12,7 +12,9 @@ export async function GET(req: NextRequest, res: NextResponse) {
     const randomDocument = await collection.find().skip(randomIndex).limit(1).toArray()
 
     if (randomDocument.length > 0) {
-      return NextResponse.json(randomDocument[0])
+      const response = NextResponse.json(randomDocument[0])
+      response.headers.set("Cache-Control", "no-store")
+      return response
     } else {
       return NextResponse.json({ error: "No puzzles" }, { status: 500 })
     }
