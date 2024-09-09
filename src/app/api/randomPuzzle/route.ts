@@ -13,7 +13,9 @@ export async function GET(req: NextRequest, res: NextResponse) {
 
     if (randomDocument.length > 0) {
       const response = NextResponse.json(randomDocument[0])
-      response.headers.set("Cache-Control", "no-store")
+      response.headers.set("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate")
+      response.headers.set("Pragma", "no-cache")
+      response.headers.set("Expires", "0")
       return response
     } else {
       return NextResponse.json({ error: "No puzzles" }, { status: 500 })
