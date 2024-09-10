@@ -3,6 +3,7 @@ import { RuleOutcome, Square } from "@/rules/rulesInterface"
 import rulesArr from "@/rules/rulesArr"
 import truncateAndPad from "@/utils/truncateAndPad"
 import getPeerGridSquareIndices from "@/utils/getPeerGridSquareIndices"
+import replaceNonDigitsWithZero from "@/utils/replaceNonDigitsWithZero"
 
 function useSudokuManagement() {
   const [ruleOutcomes, setRuleOutcomes] = useState<RuleOutcome[]>(rulesArr.map(_ => "default"))
@@ -297,7 +298,8 @@ function useSudokuManagement() {
   const handlePuzzleStartChange = (newValue: string) => {
     setPuzzleStringStart(newValue)
     if (newValue) {
-      setPuzzleStringCurrent(truncateAndPad(newValue, 81, "0"))
+      const puzzleString = replaceNonDigitsWithZero(newValue)
+      setPuzzleStringCurrent(truncateAndPad(puzzleString, 81, "0"))
     } else {
       setPuzzleStringCurrent("0".repeat(81))
     }
@@ -315,6 +317,8 @@ function useSudokuManagement() {
     setBoardIsSolved(false)
     handleBoardSet(false)
     toggleCandidateMode(false)
+    toggleShowCandidates(false)
+    setCheckedRules([])
     handleHighlightNChange(0)
     handlePuzzleStartChange("")
     handlePuzzleSolutionChange("")
