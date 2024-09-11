@@ -4,29 +4,30 @@ import { ReactNode, useState } from "react"
 
 const FetchPuzzleButton = ({
   handlePuzzleStartChange,
-  handlePuzzleSolutionChange,
   children,
-  className
+  className,
+  difficulty
 }: {
   handlePuzzleStartChange: (puzzleStringStart: string) => void
-  handlePuzzleSolutionChange: (puzzleSolution: string) => void
   children: ReactNode
   className: string
+  difficulty: "easy" | "medium" | "hard" | "diabolical"
 }) => {
   const [loading, setLoading] = useState(false)
 
   const handleClick = async () => {
     try {
       setLoading(true)
-      const response = await fetch("/api/randomPuzzle")
+      console.log(difficulty)
+      const response = await fetch(`/api/randomPuzzle?difficulty=${difficulty}`)
 
       if (!response.ok) {
         throw new Error("Network response was not ok")
       }
 
-      const data: { puzzle: string; solution: string; _id: string } = await response.json()
+      const data: { puzzle: string; difficulty: number } = await response.json()
+      console.log(data.difficulty)
       handlePuzzleStartChange(data.puzzle)
-      handlePuzzleSolutionChange(data.solution)
     } catch (error) {
       console.log("PUZZLE FETCH ERROR: ", error)
     } finally {

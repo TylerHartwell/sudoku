@@ -9,7 +9,6 @@ function useSudokuManagement() {
   const [ruleOutcomes, setRuleOutcomes] = useState<RuleOutcome[]>(rulesArr.map(_ => "default"))
   const [puzzleStringCurrent, setPuzzleStringCurrent] = useState(() => "0".repeat(81))
   const [puzzleStringStart, setPuzzleStringStart] = useState("")
-  const [puzzleSolution, setPuzzleSolution] = useState("")
   const [boardIsSet, setBoardIsSet] = useState(false)
   const [boardIsSolved, setBoardIsSolved] = useState(false)
   const [highlightN, setHighlightN] = useState<number>(0)
@@ -22,6 +21,7 @@ function useSudokuManagement() {
   const [queueAutoSolve, setQueueAutoSolve] = useState<boolean>(false)
   const [goodCandidates, setGoodCandidates] = useState<string[]>([])
   const [badCandidates, setBadCandidates] = useState<string[]>([])
+  const [difficulty, setDifficulty] = useState<"easy" | "medium" | "hard" | "diabolical">("easy")
 
   const numbers = useMemo(() => Array.from({ length: 9 }, (_, i) => i + 1), [])
 
@@ -162,17 +162,21 @@ function useSudokuManagement() {
   }, [checkedRules, currentAutoRuleIndex, tryRuleAtIndex])
 
   useEffect(() => {
-    if (queueAutoSolve && boardIsSet) {
+    if (queueAutoSolve && boardIsSet && !boardIsSolved) {
       handleQueueAutoSolve(false)
       tryAutoSolves()
     }
-  }, [boardIsSet, queueAutoSolve, tryAutoSolves])
+  }, [boardIsSet, boardIsSolved, queueAutoSolve, tryAutoSolves])
 
   useEffect(() => {
-    if (boardIsSet && puzzleStringCurrent == puzzleSolution) {
+    if (boardIsSet && checkBoardSolution(puzzleStringCurrent)) {
       setBoardIsSolved(true)
     }
-  }, [boardIsSet, puzzleSolution, puzzleStringCurrent])
+  }, [boardIsSet, puzzleStringCurrent])
+
+  const checkBoardSolution = (puzzleStringCurrent: string) => {
+    return !puzzleStringCurrent.includes("0")
+  }
 
   const resetCurrentAutoRuleIndex = () => {
     setCurrentAutoRuleIndex(0)
@@ -291,10 +295,6 @@ function useSudokuManagement() {
     setBoardIsSet(isSet)
   }
 
-  const handlePuzzleSolutionChange = (newValue: string) => {
-    setPuzzleSolution(newValue)
-  }
-
   const handlePuzzleStartChange = (newValue: string) => {
     setPuzzleStringStart(newValue)
     if (newValue) {
@@ -313,6 +313,10 @@ function useSudokuManagement() {
     })
   }
 
+  const handleDifficulty = (diff: "easy" | "medium" | "hard" | "diabolical") => {
+    setDifficulty(diff)
+  }
+
   function resetBoardData() {
     setBoardIsSolved(false)
     handleBoardSet(false)
@@ -321,7 +325,6 @@ function useSudokuManagement() {
     setCheckedRules([])
     handleHighlightNChange(0)
     handlePuzzleStartChange("")
-    handlePuzzleSolutionChange("")
     changeLastClickedHighlightN(0)
     clearManualElimCandidates()
     handleQueueAutoSolve(false)
@@ -333,7 +336,6 @@ function useSudokuManagement() {
     handleEntry,
     puzzleStringStart,
     handlePuzzleStartChange,
-    handlePuzzleSolutionChange,
     boardIsSet,
     handleBoardSet,
     highlightN,
@@ -355,7 +357,9 @@ function useSudokuManagement() {
     goodCandidates,
     badCandidates,
     getPeerSquares,
-    boardIsSolved
+    boardIsSolved,
+    difficulty,
+    handleDifficulty
   }
 }
 

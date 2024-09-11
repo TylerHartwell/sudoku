@@ -17,7 +17,6 @@ export default function Page() {
     handleEntry,
     puzzleStringStart,
     handlePuzzleStartChange,
-    handlePuzzleSolutionChange,
     boardIsSet,
     handleBoardSet,
     highlightN,
@@ -39,7 +38,9 @@ export default function Page() {
     goodCandidates,
     badCandidates,
     getPeerSquares,
-    boardIsSolved
+    boardIsSolved,
+    difficulty,
+    handleDifficulty
   } = useSudokuManagement()
 
   const candidateModeClass: string = candidateMode ? "candidate-mode-on" : ""
@@ -89,13 +90,28 @@ export default function Page() {
       <section className="controls">
         <div className="controls-title">Controls</div>
         <div className="control-buttons">
-          <FetchPuzzleButton
-            className={`fetch-grid-string-btn ${boardIsSetClass}`}
-            handlePuzzleStartChange={handlePuzzleStartChange}
-            handlePuzzleSolutionChange={handlePuzzleSolutionChange}
-          >
-            Fetch A New Puzzle
-          </FetchPuzzleButton>
+          <div className="flex justify-between w-full m-1">
+            <div className="flex-1"></div>
+            <FetchPuzzleButton
+              className={`fetch-grid-string-btn justify-self-center ${boardIsSetClass}`}
+              handlePuzzleStartChange={handlePuzzleStartChange}
+              difficulty={difficulty}
+            >
+              Fetch A New Puzzle
+            </FetchPuzzleButton>
+            <div className="flex-1 flex items-center">
+              <select
+                className={`difficulty m-1 py-0.5 ${boardIsSetClass}`}
+                value={difficulty}
+                onChange={e => handleDifficulty(e.target.value as "easy" | "medium" | "hard" | "diabolical")}
+              >
+                <option value="easy">Easy</option>
+                <option value="medium">Medium</option>
+                <option value="hard">Hard</option>
+                <option value="diabolical">Diabolical</option>
+              </select>
+            </div>
+          </div>
           <input
             type="text"
             placeholder="paste or enter 81-character grid string"
@@ -106,15 +122,17 @@ export default function Page() {
               handlePuzzleStartChange(e.target.value)
             }}
           />
-          <button className="clear-all-btn" onClick={() => resetBoardData()}>
-            Clear All
-          </button>
-          <button className={`set-puzzle-btn ${boardIsSetClass}`} onClick={() => handleBoardSet(true)}>
-            Set Puzzle
-          </button>
-          <button className="toggle-candidates-btn" onClick={() => toggleShowCandidates()} disabled={candidateMode}>
-            Toggle Candidates
-          </button>
+          <div className="flex w-full">
+            <button className="clear-all-btn" onClick={() => resetBoardData()}>
+              Clear All
+            </button>
+            <button className={`set-puzzle-btn ${boardIsSetClass}`} onClick={() => handleBoardSet(true)}>
+              Set Puzzle
+            </button>
+            <button className="toggle-candidates-btn" onClick={() => toggleShowCandidates()} disabled={candidateMode}>
+              Toggle Candidates
+            </button>
+          </div>
         </div>
       </section>
       <section className="numberpad">

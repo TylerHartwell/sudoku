@@ -9,12 +9,23 @@ export async function GET(req: NextRequest, res: NextResponse) {
     const db = client.db("sudoku")
     const collection = db.collection("puzzles")
 
-    const count = await collection.countDocuments()
-    const randomIndex = Math.floor(Math.random() * count)
-    const randomDocument = await collection.find().skip(randomIndex).limit(1).toArray()
+    const difficultyLevel = req.nextUrl.searchParams.get("difficulty")
 
-    if (randomDocument.length > 0) {
-      const response = NextResponse.json(randomDocument[0])
+    let difficultyFilter = {}
+    if (difficultyLevel === "easy") {
+      difficultyFilter = { difficulty: { $lt: 1.5 } }
+    } else if (difficultyLevel === "medium") {
+      difficultyFilter = { difficulty: { $gte: 1.5, $lt: 3.5 } }
+    } else if (difficultyLevel === "hard") {
+      difficultyFilter = { difficulty: { $gte: 3.5, $lt: 5 } }
+    } else if (difficultyLevel === "diabolical") {
+      difficultyFilter = { difficulty: { $gte: 5 } }
+    }
+
+    const [randomDocument] = await collection.aggregate([{ $match: difficultyFilter }, { $sample: { size: 1 } }]).toArray()
+
+    if (randomDocument) {
+      const response = NextResponse.json(randomDocument)
       response.headers.set("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate")
       response.headers.set("Pragma", "no-cache")
       response.headers.set("Expires", "0")

@@ -204,16 +204,12 @@ body {
 
 .control-buttons {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
+  flex-direction: column;
   width: 100%;
   border: none;
   align-items: center;
   position: relative;
-}
-
-.fetch-grid-string-btn {
-  margin: 10px auto 0px;
+  gap: 2px;
 }
 
 /* style toggles */
@@ -277,7 +273,6 @@ body {
 .clear-all-btn {
   max-width: min-content;
   margin: 2px;
-  margin-right: auto;
   border: none;
   border-radius: 10px;
   box-shadow: black 0px 0px 3px;
