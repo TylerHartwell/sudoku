@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server"
 import clientPromise from "../../../lib/mongodb"
+import rateLimitMiddleware from "../../../middleware/rateLimiter"
 
 export const dynamic = "force-dynamic"
 
-export async function GET(req: NextRequest, res: NextResponse) {
+const handler = async (req: NextRequest, res: NextResponse) => {
   try {
     const client = await clientPromise
     const db = client.db("sudoku")
@@ -37,3 +38,5 @@ export async function GET(req: NextRequest, res: NextResponse) {
     return new Response(JSON.stringify(error))
   }
 }
+
+export const GET = rateLimitMiddleware(handler)
