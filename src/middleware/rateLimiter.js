@@ -1,3 +1,5 @@
+import { NextResponse } from "next/server"
+
 const rateLimitMap = new Map()
 
 let globalRateLimit = {
@@ -50,12 +52,12 @@ export default function rateLimitMiddleware(handler) {
 
     // If the global rate limit is hit and the IP is not within the exception, block the request
     if (globalRateLimit.count >= globalLimit) {
-      return new Response("Global Rate Limit Exceeded", { status: 429 })
+      return new NextResponse("Global Rate Limit Exceeded", { status: 429 })
     }
 
     // If the per-IP limit is hit, block the request
     if (ipData.count >= perIpLimit) {
-      return new Response("Per-IP Rate Limit Exceeded", { status: 429 })
+      return new NextResponse("Per-IP Rate Limit Exceeded", { status: 429 })
     }
 
     // Increment both the global and per-IP request counts
