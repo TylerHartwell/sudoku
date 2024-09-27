@@ -147,13 +147,13 @@ export default function Page() {
           />
         ))}
         <div className="pad-mode-container">
-          <button className={`solution-mode-btn ${candidateModeClass}`} onClick={() => toggleCandidateMode(false)}>
+          <button className={`solution-mode-btn ${candidateMode ? "" : "font-bold pointer-events-none"}`} onClick={() => toggleCandidateMode(false)}>
             Solution Mode
           </button>
           <div className={`mode-switch-outer ${candidateModeClass}`} onClick={() => toggleCandidateMode()}>
             <div className={`mode-switch-inner ${candidateModeClass}`}></div>
           </div>
-          <button className={`candidate-mode-btn ${candidateModeClass}`} onClick={() => toggleCandidateMode(true)}>
+          <button className={`candidate-mode-btn ${candidateMode ? "font-bold pointer-events-none" : ""}`} onClick={() => toggleCandidateMode(true)}>
             Candidate Mode
           </button>
         </div>

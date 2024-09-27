@@ -44,7 +44,7 @@ const Candidate = ({ gridSquareIndex, candidateIndex, entryShownValue }: Candida
   }
 
   const candidateClassName = classNames({
-    highlight: candidateN === highlightN && (showCandidates || candidateMode) && !isEliminated,
+    "highlight": candidateN === highlightN && (showCandidates || candidateMode) && !isEliminated,
     "toggleable": isToggleable,
     "candidate-mode": candidateMode,
     "mark-good": goodCandidates.includes(candidateKey) && !isEliminated,
@@ -52,7 +52,7 @@ const Candidate = ({ gridSquareIndex, candidateIndex, entryShownValue }: Candida
   })
 
   return (!showCandidates && !candidateMode) || entryShownValue ? null : (
-    <div className={`candidate ${candidateClassName}`} onPointerDown={handlePointerDown}>
+    <div className={`candidate ${candidateClassName} no-hover:pointer-events-none`} onPointerDown={handlePointerDown}>
       {!isEliminated ? candidateN.toString() : ""}
     </div>
   )

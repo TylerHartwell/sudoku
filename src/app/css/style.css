@@ -74,6 +74,7 @@ body {
   margin: auto 0;
   flex-wrap: wrap;
 }
+
 .pad-number {
   width: calc(100% / 9);
   padding: 5px 0;
@@ -101,15 +102,7 @@ body {
   align-items: center;
   background-color: transparent;
 }
-.solution-mode-btn {
-  font-weight: bold;
-}
-.solution-mode-btn.candidate-mode-on {
-  font-weight: normal;
-}
-.candidate-mode-btn.candidate-mode-on {
-  font-weight: bold;
-}
+
 .mode-switch-outer {
   height: 50px;
   width: 100px;
@@ -166,24 +159,6 @@ body {
   border: 1px solid grey;
   aspect-ratio: 1;
   font-size: 100%;
-}
-
-.entry {
-  font-size: 200%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
-  border: none;
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  cursor: default;
-}
-
-.entry:focus {
-  outline: none;
-  border: 5px solid green;
 }
 
 .candidate {
@@ -409,17 +384,6 @@ button:active {
   }
 }
 
-@media (hover: none) {
-  .candidate.candidate-mode {
-    pointer-events: none;
-  }
-
-  .entry:focus.candidate-mode {
-    outline: none;
-    border: 5px solid red;
-  }
-}
-
 @media (hover: hover) and (pointer: fine) {
   .pad-number:hover {
     cursor: pointer;
@@ -439,34 +403,18 @@ button:active {
     border: 1px solid rgb(80, 80, 80);
   }
 
-  .try-next-btn:hover:disabled {
-    box-shadow: black 0px 0px 4px;
-    cursor: default;
-  }
-  .toggle-candidates-btn:hover:disabled {
-    box-shadow: black 0px 0px 3px;
-    cursor: default;
-  }
-
   button:hover {
     box-shadow: 0 0 4px 1px black;
     cursor: pointer;
   }
-
-  .candidate-mode-btn.candidate-mode-on:hover,
-  .solution-mode-btn:not(.candidate-mode-on):hover {
-    box-shadow: none;
-    cursor: default;
-    transform: scale(1);
-  }
 }
 
 @media (hover: hover) and (pointer: fine) and (max-width: 799px) {
-  body {
+  /* body {
     overflow-x: hidden;
-  }
-  .container {
+  } */
+  /* .container {
     grid-template-columns: minmax(min-content, 95vw);
     margin-left: 5px;
-  }
+  } */
 }

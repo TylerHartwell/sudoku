@@ -112,7 +112,9 @@ const Entry = ({ gridSquareIndex, shownValue }: EntryProps) => {
   return (
     <div
       ref={entryRef}
-      className={`entry ${entryClassName}`}
+      className={`entry ${entryClassName} flex justify-center items-center size-full absolute text-[200%] cursor-default overflow-hidden focus:outline-none focus:border-[5px] focus:border-green-600  ${
+        candidateMode ? " no-hover:focus:border-red-500" : ""
+      }`}
       tabIndex={isLocked ? -1 : gridSquareIndex + 1}
       onPointerDown={handlePointerDown}
       onKeyDown={handleKeyDown}
