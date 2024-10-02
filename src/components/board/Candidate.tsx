@@ -4,6 +4,7 @@ import { useContext } from "react"
 import CandidateContext from "@/contexts/CandidateContext"
 import getPeerGridSquareIndices from "@/utils/getPeerGridSquareIndices"
 import classNames from "classnames"
+import clsx from "clsx"
 
 interface CandidateProps {
   gridSquareIndex: number
@@ -43,16 +44,18 @@ const Candidate = ({ gridSquareIndex, candidateIndex, entryShownValue }: Candida
     }
   }
 
-  const candidateClassName = classNames({
-    "highlight": candidateN === highlightN && (showCandidates || candidateMode) && !isEliminated,
-    "toggleable": isToggleable,
-    "candidate-mode": candidateMode,
-    "mark-good": goodCandidates.includes(candidateKey) && !isEliminated,
-    "mark-bad": badCandidates.includes(candidateKey) && !isEliminated
-  })
-
   return (!showCandidates && !candidateMode) || entryShownValue ? null : (
-    <div className={`candidate ${candidateClassName} no-hover:pointer-events-none`} onPointerDown={handlePointerDown}>
+    <div
+      className={clsx(
+        "candidate text-[0.8em] flex justify-center items-center overflow-hidden w-[98%] h-[98%] no-hover-device:pointer-events-none",
+        candidateN === highlightN && (showCandidates || candidateMode) && !isEliminated && "bg-[rgb(248,248,120)] font-bold",
+        isToggleable && "border-[1px] border-dashed border-[#0000ff31] hover-fine-device:hover:font-bold hover-fine-device:hover:bg-[#ff5353]",
+        candidateMode && "candidate-mode",
+        goodCandidates.includes(candidateKey) && !isEliminated && "bg-[rgb(45,241,77)] font-bold",
+        badCandidates.includes(candidateKey) && !isEliminated && "bg-[red] font-bold"
+      )}
+      onPointerDown={handlePointerDown}
+    >
       {!isEliminated ? candidateN.toString() : ""}
     </div>
   )

@@ -35,8 +35,8 @@ const PadNumber = ({ number, highlightN, handleHighlightNChange, lastClickedHigh
   return (
     <div
       className={clsx(
-        `pad-number pad${number} w-[calc(100%/9)] py-[5px] px-0 h-[1fr] text-center text-[2em] select-none`,
-        number === highlightN && "highlight"
+        `pad-number pad${number} w-[calc(100%/9)] py-[5px] px-0 h-[1fr] text-center text-[2em] select-none hover-fine-device:hover:cursor-pointer hover-fine-device:hover:font-bold`,
+        number === highlightN && "font-bold"
       )}
       onMouseEnter={handleMouseEnter}
       onClick={handleClick}

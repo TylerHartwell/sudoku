@@ -9,7 +9,14 @@ const config: Config = {
         "gradient-conic": "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))"
       },
       screens: {
-        "no-hover": { "raw": "(hover: none)" }
+        "no-hover-device": { "raw": "(hover: none)" },
+        "max-799": { "max": "799px" },
+        "hover-fine-device-max-799": {
+          "raw": "(hover: hover) and (pointer: fine) and (max-width: 799px)"
+        },
+        "hover-fine-device": {
+          "raw": "(hover: hover) and (pointer: fine)"
+        }
       }
     }
   },

@@ -2,7 +2,6 @@
 
 import FetchPuzzleButton from "@/components/FetchPuzzleButton"
 import "./css/modern-normalize.css"
-import "./css/style.css"
 import Board from "@/components/board/Board"
 import CandidateContext from "@/contexts/CandidateContext"
 import PadNumber from "@/components/PadNumber"
@@ -44,9 +43,6 @@ export default function Page() {
     handleDifficulty
   } = useSudokuManagement()
 
-  const candidateModeClass: string = candidateMode ? "candidate-mode-on" : ""
-  const boardIsSetClass: string = boardIsSet ? "board-is-set" : ""
-
   const contextObj = {
     getPeerSquares,
     highlightN,
@@ -65,9 +61,9 @@ export default function Page() {
   }
 
   return (
-    <div className="container m-auto p-[2px] grid [grid-template-areas:'title_title''rules_board''controls_numberpad'] grid-rows-[min-content_1fr_min-content] grid-cols-[minmax(min-content,_40%)_1fr] min-h-min max-h-full min-w-min max-w-[125vh]">
+    <div className="container m-auto max-799:my-[2px] hover-fine-device-max-799:ml-[5px] p-[2px] grid [grid-template-areas:'title_title''rules_board''controls_numberpad'] max-799:[grid-template-areas:'title''board''numberpad''rules''controls'] grid-rows-[min-content_1fr_min-content] max-799:grid-rows-[repeat(5,min-content)] grid-cols-[minmax(min-content,_40%)_1fr] max-799:grid-cols-[minmax(min-content,95vw)] min-h-min max-h-full max-799:max-h-min min-w-min max-w-[125vh] max-799:max-w-max">
       <section className="title [grid-area:title] text-center text-[2em]">SUDOKU RULER</section>
-      <section className="rules [grid-area:rules] text-center">
+      <section className="rules [grid-area:rules] text-center max-799:max-w-full max-799:mt-[10px]">
         <div>Rules</div>
         <ol className="border-none my-0 mx-[10px] flex flex-col list-none p-0">
           {rulesArr.map((rule, index) => (
@@ -88,13 +84,13 @@ export default function Page() {
         <Board />
       </CandidateContext.Provider>
 
-      <section className="controls [grid-area:controls] flex flex-col justify-start items-center border-none w-auto">
-        <div className="controls-title">Controls</div>
-        <div className="control-buttons">
+      <section className="controls [grid-area:controls] flex flex-col justify-start items-center border-none w-auto max-799:mt-[10px]">
+        <div className="controls-title text-center border-none">Controls</div>
+        <div className="flex flex-col w-full border-none items-center relative gap-[2px]">
           <div className="flex justify-between w-full m-1">
             <div className="flex-1"></div>
             <FetchPuzzleButton
-              className={`fetch-grid-string-btn w-max rounded-[10px] shadow-[black_0px_0px_3px] justify-self-center ${boardIsSetClass}`}
+              className={clsx("fetch-grid-string-btn w-max rounded-[10px] shadow-[black_0px_0px_3px] justify-self-center", boardIsSet && "hidden")}
               handlePuzzleStartChange={handlePuzzleStartChange}
               difficulty={difficulty}
             >
@@ -102,7 +98,7 @@ export default function Page() {
             </FetchPuzzleButton>
             <div className="flex-1 flex items-center">
               <select
-                className={`difficulty m-1 py-0.5 ${boardIsSetClass}`}
+                className={clsx("difficulty m-1 py-0.5", boardIsSet && "hidden")}
                 value={difficulty}
                 onChange={e => handleDifficulty(e.target.value as "easy" | "medium" | "hard" | "diabolical")}
               >
@@ -116,7 +112,7 @@ export default function Page() {
           <input
             type="text"
             placeholder="paste or enter 81-character grid string"
-            className={`grid-string w-full border-none h-[2em] text-[.85em] m-[2px] select-text ${boardIsSetClass}`}
+            className={clsx("grid-string w-full border-none h-[2em] text-[.85em] m-[2px] select-text", boardIsSet && "hidden")}
             id="grid-string"
             value={puzzleStringStart}
             onChange={e => {
@@ -128,7 +124,10 @@ export default function Page() {
               Clear All
             </button>
             <button
-              className={`set-puzzle-btn w-min rounded-[10px] shadow-[black_0px_0px_3px] justify-self-center active:bg-yellow-200 ${boardIsSetClass}`}
+              className={clsx(
+                "set-puzzle-btn w-min rounded-[10px] shadow-[black_0px_0px_3px] justify-self-center active:bg-yellow-200",
+                boardIsSet && "hidden"
+              )}
               onClick={() => handleBoardSet(true)}
             >
               Set Puzzle
@@ -171,7 +170,12 @@ export default function Page() {
             )}
             onClick={() => toggleCandidateMode()}
           >
-            <div className={`mode-switch-inner ${candidateModeClass}`}></div>
+            <div
+              className={clsx(
+                "mode-switch-inner h-[40px] w-[40px] rounded-[50%] bg-white absolute top-[50%] -translate-y-1/2 pointer-events-none duration-300",
+                candidateMode ? "left-[calc(100%-5px)] -translate-x-full" : "left-[5px] translate-x-0"
+              )}
+            ></div>
           </div>
           <button
             className={clsx(

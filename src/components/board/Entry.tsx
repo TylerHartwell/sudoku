@@ -4,6 +4,7 @@ import { useRef, useState, useContext, useEffect } from "react"
 import CandidateContext from "@/contexts/CandidateContext"
 import getPeerGridSquareIndices from "@/utils/getPeerGridSquareIndices"
 import classNames from "classnames"
+import clsx from "clsx"
 
 interface EntryProps {
   gridSquareIndex: number
@@ -102,19 +103,20 @@ const Entry = ({ gridSquareIndex, shownValue }: EntryProps) => {
     }
   }
 
-  const entryClassName = classNames({
-    highlight: shownValue === highlightN.toString(),
-    wrong: isWrong,
-    "candidate-mode": candidateMode,
-    set: isLocked
-  })
-
   return (
     <div
       ref={entryRef}
-      className={`entry ${entryClassName} flex justify-center items-center size-full absolute text-[200%] cursor-default overflow-hidden focus:outline-none focus:border-[5px] focus:border-green-600  ${
-        candidateMode ? " no-hover:focus:border-red-500" : ""
-      }`}
+      className={clsx(
+        "entry flex justify-center items-center size-full absolute text-[200%] cursor-default overflow-hidden focus:outline-none focus:border-[5px] focus:border-green-600",
+        candidateMode && "no-hover-device:focus:border-red-500 hover-fine-device:pointer-events-none",
+        !candidateMode && "hover-fine-device:hover:border-[1px] hover-fine-device:hover:border-[rgb(80,80,80)]",
+        //equal priority focus styles follow after hover styles so they take precedence
+        !candidateMode && "hover-fine-device:focus:border-[5px] hover-fine-device:focus:border-green-600",
+        isLocked && "bg-[rgba(142,153,167,0.349)]",
+        isWrong && "bg-red-500",
+        shownValue === highlightN.toString() &&
+          "[text-shadow:_-1px_-1px_0_currentColor,1px_-1px_0_currentColor,-1px_1px_0_currentColor,1px_1px_0_currentColor]"
+      )}
       tabIndex={isLocked ? -1 : gridSquareIndex + 1}
       onPointerDown={handlePointerDown}
       onKeyDown={handleKeyDown}

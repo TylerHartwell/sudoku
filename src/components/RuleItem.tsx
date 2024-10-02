@@ -1,4 +1,5 @@
 import { RuleOutcome } from "@/rules/rulesInterface"
+import clsx from "clsx"
 interface RuleItemProps {
   ruleN: number
   ruleName: string
@@ -13,7 +14,11 @@ const RuleItem = ({ ruleN, ruleName, isChecked, handleCheckboxChange, ruleOutcom
   return (
     <li className="flex justify-between items-center h-[30px] border-none">
       <button
-        className={`try-next-btn border-none rounded-[10px] m-[2px] px-[5px] py-[2px] shadow-[black_0px_0px_4px] whitespace-nowrap w-[70px] transition-colors ease-out duration-300 ${ruleOutcome}`}
+        className={clsx(
+          "try-next-btn border-none rounded-[10px] m-[2px] px-[5px] py-[2px] shadow-[black_0px_0px_4px] whitespace-nowrap w-[70px] transition-colors ease-out duration-300",
+          ruleOutcome === "success" && "bg-[green]",
+          ruleOutcome === "fail" && "bg-[red]"
+        )}
         onClick={tryRuleAtIndex}
         disabled={!allDefault}
       >
