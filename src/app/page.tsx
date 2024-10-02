@@ -9,6 +9,7 @@ import PadNumber from "@/components/PadNumber"
 import RuleItem from "@/components/RuleItem"
 import rulesArr from "@/rules/rulesArr"
 import useSudokuManagement from "@/hooks/useSudokuManagement"
+import clsx from "clsx"
 
 export default function Page() {
   const {
@@ -64,11 +65,11 @@ export default function Page() {
   }
 
   return (
-    <div className="container">
-      <section className="title">SUDOKU RULER</section>
-      <section className="rules">
-        <div className="rules-title">Rules</div>
-        <ol className="rules-list">
+    <div className="container m-auto p-[2px] grid [grid-template-areas:'title_title''rules_board''controls_numberpad'] grid-rows-[min-content_1fr_min-content] grid-cols-[minmax(min-content,_40%)_1fr] min-h-min max-h-full min-w-min max-w-[125vh]">
+      <section className="title [grid-area:title] text-center text-[2em]">SUDOKU RULER</section>
+      <section className="rules [grid-area:rules] text-center">
+        <div>Rules</div>
+        <ol className="border-none my-0 mx-[10px] flex flex-col list-none p-0">
           {rulesArr.map((rule, index) => (
             <RuleItem
               key={index}
@@ -87,13 +88,13 @@ export default function Page() {
         <Board />
       </CandidateContext.Provider>
 
-      <section className="controls">
+      <section className="controls [grid-area:controls] flex flex-col justify-start items-center border-none w-auto">
         <div className="controls-title">Controls</div>
         <div className="control-buttons">
           <div className="flex justify-between w-full m-1">
             <div className="flex-1"></div>
             <FetchPuzzleButton
-              className={`fetch-grid-string-btn justify-self-center ${boardIsSetClass}`}
+              className={`fetch-grid-string-btn w-max rounded-[10px] shadow-[black_0px_0px_3px] justify-self-center ${boardIsSetClass}`}
               handlePuzzleStartChange={handlePuzzleStartChange}
               difficulty={difficulty}
             >
@@ -115,27 +116,34 @@ export default function Page() {
           <input
             type="text"
             placeholder="paste or enter 81-character grid string"
-            className={`grid-string ${boardIsSetClass}`}
+            className={`grid-string w-full border-none h-[2em] text-[.85em] m-[2px] select-text ${boardIsSetClass}`}
             id="grid-string"
             value={puzzleStringStart}
             onChange={e => {
               handlePuzzleStartChange(e.target.value)
             }}
           />
-          <div className="flex w-full">
-            <button className="clear-all-btn" onClick={() => resetBoardData()}>
+          <div className="grid grid-cols-3 w-full p-[2px]">
+            <button className="clear-all-btn w-min rounded-[10px] shadow-[black_0px_0px_3px]" onClick={() => resetBoardData()}>
               Clear All
             </button>
-            <button className={`set-puzzle-btn ${boardIsSetClass}`} onClick={() => handleBoardSet(true)}>
+            <button
+              className={`set-puzzle-btn w-min rounded-[10px] shadow-[black_0px_0px_3px] justify-self-center active:bg-yellow-200 ${boardIsSetClass}`}
+              onClick={() => handleBoardSet(true)}
+            >
               Set Puzzle
             </button>
-            <button className="toggle-candidates-btn" onClick={() => toggleShowCandidates()} disabled={candidateMode}>
+            <button
+              className="toggle-candidates-btn w-min rounded-[10px] shadow-[black_0px_0px_3px] justify-self-end col-start-3 disabled:opacity-50"
+              onClick={() => toggleShowCandidates()}
+              disabled={candidateMode}
+            >
               Toggle Candidates
             </button>
           </div>
         </div>
       </section>
-      <section className="numberpad">
+      <section className="numberpad [grid-area:numberpad] h-full flex border-none my-auto mx-0 flex-wrap">
         {numbers.map(num => (
           <PadNumber
             key={num}
@@ -146,14 +154,32 @@ export default function Page() {
             changeLastClickedHighlightN={changeLastClickedHighlightN}
           />
         ))}
-        <div className="pad-mode-container">
-          <button className={`solution-mode-btn ${candidateMode ? "" : "font-bold pointer-events-none"}`} onClick={() => toggleCandidateMode(false)}>
+        <div className="pad-mode-container flex my-[5px] mx-auto justify-center items-center">
+          <button
+            className={clsx(
+              "solution-mode-btn h-[90%] w-[100px] border-none flex rounded-[10px] p-[5px] text-center justify-center items-center bg-transparent",
+              !candidateMode && "font-bold pointer-events-none"
+            )}
+            onClick={() => toggleCandidateMode(false)}
+          >
             Solution Mode
           </button>
-          <div className={`mode-switch-outer ${candidateModeClass}`} onClick={() => toggleCandidateMode()}>
+          <div
+            className={clsx(
+              "mode-switch-outer h-[50px] w-[100px] rounded-[25px] relative my-auto mx-[5px] duration-300 cursor-pointer",
+              candidateMode ? "bg-[#d14141]" : "bg-[rgb(43,143,43)]"
+            )}
+            onClick={() => toggleCandidateMode()}
+          >
             <div className={`mode-switch-inner ${candidateModeClass}`}></div>
           </div>
-          <button className={`candidate-mode-btn ${candidateMode ? "font-bold pointer-events-none" : ""}`} onClick={() => toggleCandidateMode(true)}>
+          <button
+            className={clsx(
+              "candidate-mode-btn h-[90%] w-[100px] border-none flex rounded-[10px] p-[5px] text-center justify-center items-center bg-transparent",
+              candidateMode && "font-bold pointer-events-none"
+            )}
+            onClick={() => toggleCandidateMode(true)}
+          >
             Candidate Mode
           </button>
         </div>
