@@ -44,19 +44,24 @@ const Candidate = ({ gridSquareIndex, candidateIndex, entryShownValue }: Candida
     }
   }
 
-  return (!showCandidates && !candidateMode) || entryShownValue ? null : (
-    <div
-      className={clsx(
-        "candidate text-[0.8em] flex justify-center items-center overflow-hidden w-[98%] h-[98%] no-hover-device:pointer-events-none",
-        candidateN === highlightN && (showCandidates || candidateMode) && !isEliminated && "bg-[rgb(248,248,120)] font-bold",
-        isToggleable && "border-[1px] border-dashed border-[#0000ff31] hover-fine-device:hover:font-bold hover-fine-device:hover:bg-[#ff5353]",
-        candidateMode && "candidate-mode",
-        goodCandidates.includes(candidateKey) && !isEliminated && "bg-[rgb(45,241,77)] font-bold",
-        badCandidates.includes(candidateKey) && !isEliminated && "bg-[red] font-bold"
-      )}
-      onPointerDown={handlePointerDown}
-    >
-      {!isEliminated ? candidateN.toString() : ""}
+  //md:text-[clamp(8px,2vh,26px)]
+  //text-[clamp(8px,3vw,30px)]
+  return (
+    <div className="relative size-full">
+      <div
+        className={clsx(
+          "candidate absolute text-[3vw] flex justify-center items-center size-full no-hover-device:pointer-events-none",
+          ((!showCandidates && !candidateMode) || entryShownValue) && "invisible",
+          candidateN === highlightN && (showCandidates || candidateMode) && !isEliminated && "bg-[rgb(248,248,120)] font-bold",
+          isToggleable && "border-[1px] border-dashed border-[#0000ff31] hover-fine-device:hover:font-bold hover-fine-device:hover:bg-[#ff5353]",
+          candidateMode && "candidate-mode",
+          goodCandidates.includes(candidateKey) && !isEliminated && "bg-[rgb(45,241,77)] font-bold",
+          badCandidates.includes(candidateKey) && !isEliminated && "bg-[red] font-bold"
+        )}
+        onPointerDown={handlePointerDown}
+      >
+        {!isEliminated ? candidateN.toString() : ""}
+      </div>
     </div>
   )
 }

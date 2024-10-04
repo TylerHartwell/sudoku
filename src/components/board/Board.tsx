@@ -9,7 +9,7 @@ const Board = () => {
   return (
     <section
       className={clsx(
-        "board select-none [grid-area:board] grid grid-cols-[1fr_1fr_1fr] grid-rows-[1fr_1fr_1fr] border-black border-[1px] aspect-square min-h-[350px]",
+        "board select-none grid grid-cols-[1fr_1fr_1fr] grid-rows-[1fr_1fr_1fr] border-black border-[1px] ",
         boardIsSolved && "border-[5px] border-yellow-300"
       )}
     >

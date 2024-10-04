@@ -10,10 +10,6 @@ const config: Config = {
       },
       screens: {
         "no-hover-device": { "raw": "(hover: none)" },
-        "max-799": { "max": "799px" },
-        "hover-fine-device-max-799": {
-          "raw": "(hover: hover) and (pointer: fine) and (max-width: 799px)"
-        },
         "hover-fine-device": {
           "raw": "(hover: hover) and (pointer: fine)"
         }

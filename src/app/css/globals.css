@@ -10,6 +10,15 @@ button {
 button:active:not(:disabled) {
   transform: scale(0.98);
 }
+.b1 {
+  border: 3px solid white;
+}
+.b2 {
+  border: 3px solid rgb(60, 255, 1);
+}
+.b3 {
+  border: 3px solid rgb(3, 104, 255);
+}
 
 @media (hover: hover) and (pointer: fine) {
   button:hover:not(:disabled) {
