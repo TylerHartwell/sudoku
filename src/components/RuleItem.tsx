@@ -24,8 +24,8 @@ const RuleItem = ({ ruleN, ruleName, isChecked, handleCheckboxChange, ruleOutcom
       >
         Attempt
       </button>
-      <span className="mx-[10px] whitespace-nowrap">{ruleName}</span>
-      <label htmlFor={"checkbox" + ruleN} className="border-none ml-auto whitespace-nowrap">
+      <span className="mx-[10px] whitespace-nowrap text-[clamp(12px,4vw,16px)]">{ruleName}</span>
+      <label htmlFor={"checkbox" + ruleN} className="border-none ml-auto whitespace-nowrap text-[clamp(12px,4vw,16px)]">
         Auto:
       </label>
       <input
