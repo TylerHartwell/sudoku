@@ -64,7 +64,7 @@ export default function Page() {
     <div className="primary md:w-auto md:min-w-fit md:h-max md:min-h-min flex flex-col items-center md:overflow-y-auto ">
       <h1 className="title md:h-[40px] text-center text-[1em] md:text-[2em]">SUDOKU RULER</h1>
       <div className="w-full md:w-auto md:max-w-[800px] flex flex-col md:flex-row-reverse md:justify-center ">
-        <div className="w-full aspect-square md:w-[max(calc(100vh-160px),300px)] bg-yellow-100  flex flex-col md:content-center">
+        <div className="w-full aspect-square md:w-[max(calc(100vh-160px),300px)] flex flex-col md:content-center">
           <CandidateContext.Provider value={contextObj}>
             <Board />
           </CandidateContext.Provider>
@@ -138,7 +138,7 @@ export default function Page() {
           <section className="controls mt-[10px] md:mt-0 flex flex-col justify-start items-center ">
             <h2 className="controls-title text-center">Controls</h2>
             <div className="relative w-full flex flex-col items-center gap-[2px] overflow-auto">
-              <div className="w-full flex">
+              <div className="w-full flex pt-1">
                 <div className="flex-1"></div>
                 <FetchPuzzleButton
                   className={clsx("fetch-grid-string-btn p-2 rounded-[10px] shadow-[black_0px_0px_3px]", boardIsSet && "hidden")}
@@ -164,7 +164,7 @@ export default function Page() {
               <input
                 type="text"
                 placeholder="paste or enter 81-character grid string"
-                className={clsx("grid-string w-full border-none h-[2em] text-[.85em] my-[2px] select-text", boardIsSet && "hidden")}
+                className={clsx("grid-string w-[98%] border-none h-[2em] text-[.85em] my-[2px] select-text", boardIsSet && "hidden")}
                 id="grid-string"
                 value={puzzleStringStart}
                 onChange={e => {
