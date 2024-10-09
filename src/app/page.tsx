@@ -63,13 +63,13 @@ export default function Page() {
   return (
     <div className="primary md:w-auto md:min-w-fit md:h-max md:min-h-min flex flex-col items-center md:overflow-y-auto ">
       <h1 className="title md:h-[40px] text-center text-[1em] md:text-[2em]">SUDOKU RULER</h1>
-      <div className="w-full md:w-auto md:max-w-[800px] flex flex-col md:flex-row-reverse md:justify-center ">
-        <div className="w-full aspect-square md:w-[max(calc(100vh-160px),300px)] flex flex-col md:content-center">
+      <div className="w-full md:w-full md:max-w-[max(800px,80vw)] md:px-5 flex flex-col md:flex-row-reverse md:justify-center ">
+        <div className="w-full md:w-[max(calc(100vh-155px),300px)] flex flex-col md:content-center">
           <CandidateContext.Provider value={contextObj}>
             <Board />
           </CandidateContext.Provider>
-          <section className="numberpad flex md:h-[115px] flex-col">
-            <div className="flex justify-around items-center py-[10px]">
+          <section className="numberpad flex md:h-[115px] flex-col items-center">
+            <div className="w-full flex justify-around items-center py-[10px]">
               {numbers.map(num => (
                 <PadNumber
                   key={num}
@@ -81,10 +81,10 @@ export default function Page() {
                 />
               ))}
             </div>
-            <div className="pad-mode-container w-full flex py-[5px] mx-auto justify-center items-center overflow-hidden">
+            <div className="pad-mode-container w-full flex py-[5px] mx-auto justify-center items-center gap-[5px]">
               <button
                 className={clsx(
-                  "solution-mode-btn h-[90%] w-[100px] border-none flex rounded-[10px] p-[5px] text-center text-[clamp(12px,6vw,16px)] justify-center items-center bg-transparent",
+                  "solution-mode-btn h-[90%] w-min border-none flex rounded-[10px] p-[5px] text-center text-[clamp(12px,6vw,16px)] justify-center items-center bg-transparent",
                   !candidateMode && "font-bold pointer-events-none"
                 )}
                 onClick={() => toggleCandidateMode(false)}
@@ -93,7 +93,7 @@ export default function Page() {
               </button>
               <div
                 className={clsx(
-                  "mode-switch-outer h-[50px] aspect-[2] min-w-[50px] rounded-[25px] relative my-auto mx-[5px] duration-300 cursor-pointer",
+                  "mode-switch-outer h-[50px] aspect-[2] min-w-[50px] rounded-[25px] relative my-auto duration-300 cursor-pointer",
                   candidateMode ? "bg-[#d14141]" : "bg-[rgb(43,143,43)]"
                 )}
                 onClick={() => toggleCandidateMode()}
@@ -107,7 +107,7 @@ export default function Page() {
               </div>
               <button
                 className={clsx(
-                  "candidate-mode-btn h-[90%] w-[100px] border-none flex rounded-[10px] p-[5px] text-center text-[clamp(12px,6vw,16px)] justify-center items-center bg-transparent",
+                  "candidate-mode-btn h-[90%] w-min border-none flex rounded-[10px] p-[5px] text-center text-[clamp(12px,6vw,16px)] justify-center items-center bg-transparent",
                   candidateMode && "font-bold pointer-events-none"
                 )}
                 onClick={() => toggleCandidateMode(true)}
@@ -117,8 +117,8 @@ export default function Page() {
             </div>
           </section>
         </div>
-        <div className="w-full md:w-[auto] md:min-w-fit md:content-center md:overflow-auto md:mr-1 flex flex-col justify-between">
-          <section className="rules mt-[10px] md:mt-0 text-center ">
+        <div className="w-full md:w-auto md:flex-grow md:min-w-fit md:max-w-[40%] md:overflow-auto md:mr-1 flex flex-col justify-between">
+          <section className="rules mt-[10px] md:mt-0 text-center">
             <h2>Rules</h2>
             <ol className="mx-[10px] flex flex-col list-none overflow-auto">
               {rulesArr.map((rule, index) => (
