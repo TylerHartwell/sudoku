@@ -44,13 +44,11 @@ const Candidate = ({ gridSquareIndex, candidateIndex, entryShownValue }: Candida
     }
   }
 
-  //md:text-[clamp(8px,2vh,26px)]
-  //text-[clamp(8px,3vw,30px)]
   return (
     <div className="relative size-full">
       <div
         className={clsx(
-          "candidate absolute text-[3vw] md:text-[clamp(8px,2vh,30px)] flex justify-center items-center size-full no-hover-device:pointer-events-none",
+          "candidate absolute text-[3vw] md:text-[clamp(10px,min(2vh,2vw),30px)] flex justify-center items-center size-full no-hover-device:pointer-events-none",
           ((!showCandidates && !candidateMode) || entryShownValue) && "invisible",
           candidateN === highlightN && (showCandidates || candidateMode) && !isEliminated && "bg-[rgb(248,248,120)] font-bold",
           isToggleable && "border-[1px] border-dashed border-[#0000ff31] hover-fine-device:hover:font-bold hover-fine-device:hover:bg-[#ff5353]",

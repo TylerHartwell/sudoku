@@ -2,7 +2,7 @@ import Square from "./Square"
 
 const Box = ({ boxIndex }: { boxIndex: number }) => {
   return (
-    <div className="box aspect-square grid place-items-center grid-cols-[1fr_1fr_1fr] grid-rows-[1fr_1fr_1fr] border-[1px] border-black size-full">
+    <div className="box aspect-square  grid place-items-center grid-cols-[1fr_1fr_1fr] grid-rows-[1fr_1fr_1fr] border-[1px] border-black size-full">
       {Array.from({ length: 9 }).map((_, index) => (
         <Square key={index} boxIndex={boxIndex} boxSquareIndex={index} />
       ))}

@@ -61,14 +61,14 @@ export default function Page() {
   }
 
   return (
-    <div className="b1 primary md:h-full  p-[2px] flex flex-col items-center">
-      <h1 className="title text-center text-[1em] md:text-[2em]">SUDOKU RULER</h1>
-      <div className="b2 w-full  flex flex-col md:flex-row-reverse md:justify-center">
-        <div className="b3 w-full  flex flex-col">
+    <div className="primary md:w-auto md:min-w-fit md:h-max md:min-h-min flex flex-col items-center md:overflow-y-auto ">
+      <h1 className="title md:h-[40px] text-center text-[1em] md:text-[2em]">SUDOKU RULER</h1>
+      <div className="w-full md:w-auto md:max-w-[800px] flex flex-col md:flex-row-reverse md:justify-center ">
+        <div className="w-full aspect-square md:w-[max(calc(100vh-160px),300px)] bg-yellow-100  flex flex-col md:content-center">
           <CandidateContext.Provider value={contextObj}>
             <Board />
           </CandidateContext.Provider>
-          <section className="numberpad flex flex-col">
+          <section className="numberpad flex md:h-[115px] flex-col">
             <div className="flex justify-around items-center py-[10px]">
               {numbers.map(num => (
                 <PadNumber
@@ -117,8 +117,8 @@ export default function Page() {
             </div>
           </section>
         </div>
-        <div className="b3 w-full  md:w-[500px] flex flex-col justify-between">
-          <section className="  rules mt-[10px] md:mt-0 text-center ">
+        <div className="w-full md:w-[auto] md:min-w-fit md:content-center md:overflow-auto md:mr-1 flex flex-col justify-between">
+          <section className="rules mt-[10px] md:mt-0 text-center ">
             <h2>Rules</h2>
             <ol className="mx-[10px] flex flex-col list-none overflow-auto">
               {rulesArr.map((rule, index) => (
