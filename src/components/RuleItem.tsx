@@ -1,4 +1,5 @@
 import { RuleOutcome } from "@/rules/rulesInterface"
+import clsx from "clsx"
 interface RuleItemProps {
   ruleN: number
   ruleName: string
@@ -11,19 +12,27 @@ interface RuleItemProps {
 
 const RuleItem = ({ ruleN, ruleName, isChecked, handleCheckboxChange, ruleOutcome, tryRuleAtIndex, allDefault }: RuleItemProps) => {
   return (
-    <li className="rule-item">
-      <button className={`try-next-btn ${ruleOutcome}`} onClick={tryRuleAtIndex} disabled={!allDefault}>
+    <li className="flex justify-between items-center h-[30px] border-none">
+      <button
+        className={clsx(
+          "try-next-btn border-none rounded-[10px] m-[2px] px-[5px] py-[2px] shadow-[black_0px_0px_4px] whitespace-nowrap w-[70px] transition-colors ease-out duration-300",
+          ruleOutcome === "success" && "bg-[green]",
+          ruleOutcome === "fail" && "bg-[red]"
+        )}
+        onClick={tryRuleAtIndex}
+        disabled={!allDefault}
+      >
         Attempt
       </button>
-      <span className="rule-name">{ruleName}</span>
-      <label htmlFor={"checkbox" + ruleN} className="checkbox-label">
-        Auto Attempt:
+      <span className="mx-[10px] whitespace-nowrap text-[clamp(12px,4vw,16px)]">{ruleName}</span>
+      <label htmlFor={"checkbox" + ruleN} className="border-none ml-auto whitespace-nowrap text-[clamp(12px,4vw,16px)]">
+        Auto:
       </label>
       <input
         type="checkbox"
         name={"checkbox" + ruleN}
         id={"checkbox" + ruleN}
-        className="checkbox"
+        className="ml-[5px]"
         checked={isChecked}
         onChange={handleCheckboxChange}
       />

@@ -1,3 +1,4 @@
+import clsx from "clsx"
 import { useMemo } from "react"
 
 interface PadNumberProps {
@@ -32,7 +33,15 @@ const PadNumber = ({ number, highlightN, handleHighlightNChange, lastClickedHigh
   }
 
   return (
-    <div className={`pad-number pad${number} ${highlight}`} onMouseEnter={handleMouseEnter} onClick={handleClick} onMouseLeave={handleMouseLeave}>
+    <div
+      className={clsx(
+        `pad-number pad${number} w-full h-full text-center place-content-center text-[5vw] md:text-[30px] select-none hover-fine-device:hover:cursor-pointer hover-fine-device:hover:font-bold`,
+        number === highlightN && "font-bold"
+      )}
+      onMouseEnter={handleMouseEnter}
+      onClick={handleClick}
+      onMouseLeave={handleMouseLeave}
+    >
       {number}
     </div>
   )
