@@ -4,7 +4,7 @@ This app is designed to help you practice Sudoku strategies, recognize patterns,
 
 https://sudoku.tylerhartwell.com/
 
-![project screenshot](https://github.com/TylerHartwell/portfolio/blob/main/public/images/sudoku_project.png?raw=true)
+[![project screenshot](https://github.com/TylerHartwell/portfolio/blob/main/public/images/sudoku_project.png?raw=true)](https://sudoku.tylerhartwell.com/)
 
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
