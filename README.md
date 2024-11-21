@@ -1,3 +1,11 @@
+# [SUDOKU RULER](https://sudoku.tylerhartwell.com/)
+
+This app is designed to help you practice Sudoku strategies, recognize patterns, and enjoy the solving process by automatically progressing the puzzle when specific rules are selected. It offers an intuitive interface for scanning and interacting with puzzles, avoiding the busy work of filling in possible candidates, and allows you to skip the tedium of solving the more trivial parts of sudoku and focus on the more engaging and advanced methods.
+
+https://sudoku.tylerhartwell.com/
+
+[![project screenshot](https://github.com/TylerHartwell/portfolio/blob/main/public/images/sudoku_project.png?raw=true)](https://sudoku.tylerhartwell.com/)
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
