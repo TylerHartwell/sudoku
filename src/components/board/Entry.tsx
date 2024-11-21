@@ -49,14 +49,29 @@ const Entry = ({ gridSquareIndex, shownValue }: EntryProps) => {
   const handleCharacterEntry = (character: string) => {
     setIsWrong(false)
     const replacementChar = character < "1" || character > "9" ? "" : character
-    if (puzzleStringCurrent[gridSquareIndex] == replacementChar) return
+
+    if (replacementChar == "" && puzzleStringCurrent[gridSquareIndex] == "0") {
+      entryRef.current?.blur()
+      return
+    }
+
+    if (replacementChar == "" || puzzleStringCurrent[gridSquareIndex] == replacementChar) {
+      setLocalShownValue("")
+      handleEntry(gridSquareIndex, "")
+      entryRef.current?.blur()
+      return
+    }
+
     setLocalShownValue(replacementChar)
+
     if (checkIsWrong(replacementChar)) {
       setIsWrong(true)
       return
     }
+
     handleEntry(gridSquareIndex, replacementChar)
     entryRef.current?.blur()
+
     handleQueueAutoSolve(true)
   }
 
