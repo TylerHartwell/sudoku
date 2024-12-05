@@ -10,10 +10,6 @@ interface PadNumberProps {
 }
 
 const PadNumber = ({ number, highlightN, handleHighlightNChange, lastClickedHighlightN, changeLastClickedHighlightN }: PadNumberProps) => {
-  const highlight = useMemo(() => {
-    return number === highlightN ? "highlight" : ""
-  }, [highlightN, number])
-
   const handleMouseEnter = () => {
     handleHighlightNChange(number)
   }

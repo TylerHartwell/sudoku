@@ -3,7 +3,6 @@
 import { useRef, useState, useContext, useEffect } from "react"
 import CandidateContext from "@/contexts/CandidateContext"
 import getPeerGridSquareIndices from "@/utils/getPeerGridSquareIndices"
-import classNames from "classnames"
 import clsx from "clsx"
 
 interface EntryProps {

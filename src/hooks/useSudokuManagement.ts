@@ -93,6 +93,10 @@ function useSudokuManagement() {
     [getPeerSquares, manualElimCandidates]
   )
 
+  const handleQueueAutoSolve = useCallback((beQueued: boolean) => {
+    setQueueAutoSolve(beQueued)
+  }, [])
+
   const tryRuleAtIndex = useCallback(
     async (ruleIndex: number, isAuto: boolean = false) => {
       const outcomeTime = isAuto ? 50 : 500
@@ -133,7 +137,7 @@ function useSudokuManagement() {
 
       return ruleOutcome === "success"
     },
-    [allSquares, handleEntry]
+    [allSquares, handleEntry, handleQueueAutoSolve]
   )
 
   const tryAutoSolves = useCallback(async () => {
@@ -159,14 +163,14 @@ function useSudokuManagement() {
         handleQueueAutoSolve(true)
       }
     }
-  }, [checkedRules, currentAutoRuleIndex, tryRuleAtIndex])
+  }, [checkedRules, currentAutoRuleIndex, handleQueueAutoSolve, tryRuleAtIndex])
 
   useEffect(() => {
     if (queueAutoSolve && boardIsSet && !boardIsSolved) {
       handleQueueAutoSolve(false)
       tryAutoSolves()
     }
-  }, [boardIsSet, boardIsSolved, queueAutoSolve, tryAutoSolves])
+  }, [boardIsSet, boardIsSolved, handleQueueAutoSolve, queueAutoSolve, tryAutoSolves])
 
   useEffect(() => {
     if (boardIsSet && checkBoardSolution(puzzleStringCurrent)) {
@@ -196,10 +200,6 @@ function useSudokuManagement() {
     if (isNewCheck && boardIsSet) {
       handleQueueAutoSolve(true)
     }
-  }
-
-  const handleQueueAutoSolve = (beQueued: boolean) => {
-    setQueueAutoSolve(beQueued)
   }
 
   const clearManualElimCandidates = () => {
