@@ -1,9 +1,10 @@
 "use client"
 
-import { useRef, useState, useContext, useEffect } from "react"
+import { useRef, useState, useContext } from "react"
 import CandidateContext from "@/contexts/CandidateContext"
 import getPeerGridSquareIndices from "@/utils/getPeerGridSquareIndices"
 import clsx from "clsx"
+import isValidChar from "@/utils/isValidChar"
 
 interface EntryProps {
   gridSquareIndex: number
@@ -11,68 +12,32 @@ interface EntryProps {
 }
 
 const Entry = ({ gridSquareIndex, shownValue }: EntryProps) => {
-  const shownValueRef = useRef(shownValue)
   const [localShownValue, setLocalShownValue] = useState(shownValue)
-  const [isLocked, setIsLocked] = useState(false)
-  const [isWrong, setIsWrong] = useState(false)
   const {
+    puzzleStringStart,
     puzzleStringCurrent,
     candidateMode,
     boardIsSet,
     highlightN,
-    handleQueueAutoSolve,
     handleEntry,
     toggleManualElimCandidate,
-    manualElimCandidates
+    manualElimCandidates,
+    isAlreadyInUnit
+  }: {
+    puzzleStringStart: string
+    puzzleStringCurrent: string
+    candidateMode: boolean
+    boardIsSet: boolean
+    highlightN: number
+    handleEntry: (i: number, s: string) => void
+    toggleManualElimCandidate: (gridSquareIndex: number, candidateIndex: number, shouldManualElim?: boolean) => void
+    manualElimCandidates: string[]
+    isAlreadyInUnit: (gridSquareIndex: number, character: string, puzzleString: string) => boolean
   } = useContext(CandidateContext)
   const entryRef = useRef<HTMLDivElement>(null)
 
-  useEffect(() => {
-    shownValueRef.current = shownValue
-    setLocalShownValue(shownValue)
-  }, [shownValue])
-
-  useEffect(() => {
-    if (boardIsSet) {
-      if (shownValueRef.current) setIsLocked(true)
-    } else {
-      setIsLocked(false)
-    }
-  }, [boardIsSet])
-
-  const checkIsWrong = (character: string) => {
-    const isAlreadyInUnit = getPeerGridSquareIndices(gridSquareIndex).some(i => puzzleStringCurrent[i] === character)
-    return character != "" && isAlreadyInUnit
-  }
-
-  const handleCharacterEntry = (character: string) => {
-    setIsWrong(false)
-    const replacementChar = character < "1" || character > "9" ? "" : character
-
-    if (replacementChar == "" && puzzleStringCurrent[gridSquareIndex] == "0") {
-      entryRef.current?.blur()
-      return
-    }
-
-    if (replacementChar == "" || puzzleStringCurrent[gridSquareIndex] == replacementChar) {
-      setLocalShownValue("")
-      handleEntry(gridSquareIndex, "")
-      entryRef.current?.blur()
-      return
-    }
-
-    setLocalShownValue(replacementChar)
-
-    if (checkIsWrong(replacementChar)) {
-      setIsWrong(true)
-      return
-    }
-
-    handleEntry(gridSquareIndex, replacementChar)
-    entryRef.current?.blur()
-
-    handleQueueAutoSolve(true)
-  }
+  const isLocked = boardIsSet && puzzleStringStart.length == 81 && puzzleStringStart[gridSquareIndex] == shownValue
+  const isWrong = isAlreadyInUnit(gridSquareIndex, localShownValue, puzzleStringCurrent)
 
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     e.preventDefault()
@@ -100,7 +65,8 @@ const Entry = ({ gridSquareIndex, shownValue }: EntryProps) => {
         entryRef.current?.focus()
       } else {
         if (highlightN != 0 && !isWrong) {
-          handleCharacterEntry(highlightN.toString())
+          console.log(gridSquareIndex, highlightN.toString())
+          handleEntry(gridSquareIndex, highlightN.toString())
         } else (document.activeElement as HTMLElement)?.blur()
       }
     } else (document.activeElement as HTMLElement)?.blur()
@@ -108,12 +74,16 @@ const Entry = ({ gridSquareIndex, shownValue }: EntryProps) => {
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (!isLocked) {
-      handleCharacterEntry(e.key)
+      setLocalShownValue(isValidChar(e.key) && e.key != localShownValue ? e.key : "")
+      if (e.key != localShownValue) {
+        handleEntry(gridSquareIndex, e.key)
+      }
     }
   }
+
   const handleBlur = () => {
     if (isWrong) {
-      handleCharacterEntry("0")
+      setLocalShownValue("")
     }
   }
 
@@ -135,7 +105,7 @@ const Entry = ({ gridSquareIndex, shownValue }: EntryProps) => {
       onKeyDown={handleKeyDown}
       onBlur={handleBlur}
     >
-      {localShownValue}
+      {isWrong ? localShownValue : shownValue}
     </div>
   )
 }

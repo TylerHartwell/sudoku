@@ -4,6 +4,7 @@ import rulesArr from "@/rules/rulesArr"
 import truncateAndPad from "@/utils/truncateAndPad"
 import getPeerGridSquareIndices from "@/utils/getPeerGridSquareIndices"
 import replaceNonDigitsWithZero from "@/utils/replaceNonDigitsWithZero"
+import isValidChar from "@/utils/isValidChar"
 
 function useSudokuManagement() {
   const [ruleOutcomes, setRuleOutcomes] = useState<RuleOutcome[]>(rulesArr.map(_ => "default"))
@@ -65,23 +66,52 @@ function useSudokuManagement() {
     [allSquares]
   )
 
+  const handleQueueAutoSolve = useCallback((beQueued: boolean) => {
+    setQueueAutoSolve(beQueued)
+  }, [])
+
+  const isAlreadyInUnit = useCallback((gridSquareIndex: number, character: string, puzzleString: string) => {
+    if (character == "0") return false
+    return getPeerGridSquareIndices(gridSquareIndex).some(i => {
+      if (i < 0 || i >= puzzleString.length) {
+        console.error(`Index ${i} is out of bounds for puzzleStringCurrent with length ${puzzleString.length}`)
+        return false
+      }
+      return puzzleString[i] == character && i != gridSquareIndex
+    })
+  }, [])
+
   const handleEntry = useCallback(
-    (gridSquareIndex: number, newEntry: string) => {
-      const newEntryValue = newEntry ? newEntry : "0"
+    (gridSquareIndex: number, entryChar: string) => {
+      const replacementChar = isValidChar(entryChar) ? entryChar : "0"
+
+      if (isAlreadyInUnit(gridSquareIndex, replacementChar, puzzleStringCurrent) || puzzleStringCurrent[gridSquareIndex] == replacementChar) {
+        setPuzzleStringCurrent(prev => {
+          return prev.slice(0, gridSquareIndex) + "0" + prev.slice(gridSquareIndex + 1)
+        })
+        return
+      }
+
       setPuzzleStringCurrent(prev => {
-        return prev.slice(0, gridSquareIndex) + newEntryValue + prev.slice(gridSquareIndex + 1)
+        return prev.slice(0, gridSquareIndex) + replacementChar + prev.slice(gridSquareIndex + 1)
       })
-      if (newEntry) {
-        const candidateIndex = Number(newEntryValue) - 1
+
+      if (replacementChar != "0") {
+        const candidateIndex = Number(replacementChar) - 1
+
         getPeerSquares(gridSquareIndex).forEach(square => {
           const candidateKey = `${square.gridSquareIndex}-${candidateIndex}`
+
+          //remove candidates matching the entryChar in peer squares of the gridSquareIndex from the manual elim candidate array
           if (manualElimCandidates.includes(candidateKey)) {
             toggleManualElimCandidate(square.gridSquareIndex, candidateIndex, false)
           }
 
+          //remove all candidates that are in the gridSquareIndex from the manual elim candidate array
           if (square.gridSquareIndex == gridSquareIndex) {
-            square.candidates.forEach((possible, i) => {
+            square.candidates.forEach((_possible, i) => {
               const candidateKey = `${gridSquareIndex}-${i}`
+
               if (manualElimCandidates.includes(candidateKey)) {
                 toggleManualElimCandidate(gridSquareIndex, i, false)
               }
@@ -89,14 +119,14 @@ function useSudokuManagement() {
           }
         })
       }
+      if (document.activeElement instanceof HTMLElement) {
+        document.activeElement.blur()
+      }
+
+      handleQueueAutoSolve(true)
     },
-    [getPeerSquares, manualElimCandidates]
+    [getPeerSquares, handleQueueAutoSolve, isAlreadyInUnit, manualElimCandidates, puzzleStringCurrent]
   )
-
-  const handleQueueAutoSolve = useCallback((beQueued: boolean) => {
-    setQueueAutoSolve(beQueued)
-  }, [])
-
   const tryRuleAtIndex = useCallback(
     async (ruleIndex: number, isAuto: boolean = false) => {
       const outcomeTime = isAuto ? 50 : 500
@@ -297,12 +327,9 @@ function useSudokuManagement() {
 
   const handlePuzzleStartChange = (newValue: string) => {
     setPuzzleStringStart(newValue)
-    if (newValue) {
-      const puzzleString = replaceNonDigitsWithZero(newValue)
-      setPuzzleStringCurrent(truncateAndPad(puzzleString, 81, "0"))
-    } else {
-      setPuzzleStringCurrent("0".repeat(81))
-    }
+    const puzzleString = replaceNonDigitsWithZero(newValue)
+
+    setPuzzleStringCurrent(truncateAndPad(puzzleString, 81, "0"))
   }
 
   const handleRuleOutcome = (ruleIndex: number, newOutcome: RuleOutcome) => {
@@ -359,7 +386,8 @@ function useSudokuManagement() {
     getPeerSquares,
     boardIsSolved,
     difficulty,
-    handleDifficulty
+    handleDifficulty,
+    isAlreadyInUnit
   }
 }
 
