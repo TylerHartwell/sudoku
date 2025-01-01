@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { RuleOutcome, Square } from "@/rules/rulesInterface"
 import rulesArr from "@/rules/rulesArr"
 import truncateAndPad from "@/utils/truncateAndPad"
@@ -23,8 +23,17 @@ function useSudokuManagement() {
   const [goodCandidates, setGoodCandidates] = useState<string[]>([])
   const [badCandidates, setBadCandidates] = useState<string[]>([])
   const [difficulty, setDifficulty] = useState<"easy" | "medium" | "hard" | "diabolical">("easy")
+  const [lastFocusedEntryIndex, setLastFocusedEntryIndex] = useState<number | null>(null)
+  const padNumberClicked = useRef(false)
 
   const numbers = useMemo(() => Array.from({ length: 9 }, (_, i) => i + 1), [])
+
+  const handleLastFocusedEntryIndex = useCallback((entryIndex: number | null) => {
+    if (entryIndex == null || (Number.isInteger(entryIndex) && entryIndex >= 0 && entryIndex < 81)) {
+      setLastFocusedEntryIndex(entryIndex)
+      return
+    }
+  }, [])
 
   const getCandidates = useCallback(
     (gridSquareIndex: number) => {
@@ -85,7 +94,16 @@ function useSudokuManagement() {
     (gridSquareIndex: number, entryChar: string) => {
       const replacementChar = isValidChar(entryChar) ? entryChar : "0"
 
-      if (isAlreadyInUnit(gridSquareIndex, replacementChar, puzzleStringCurrent) || puzzleStringCurrent[gridSquareIndex] == replacementChar) {
+      if (replacementChar == "0" && puzzleStringCurrent[gridSquareIndex] == "0") return
+
+      if (replacementChar != "0" && puzzleStringCurrent[gridSquareIndex] == replacementChar) {
+        setPuzzleStringCurrent(prev => {
+          return prev.slice(0, gridSquareIndex) + "0" + prev.slice(gridSquareIndex + 1)
+        })
+        return
+      }
+
+      if (isAlreadyInUnit(gridSquareIndex, replacementChar, puzzleStringCurrent)) {
         setPuzzleStringCurrent(prev => {
           return prev.slice(0, gridSquareIndex) + "0" + prev.slice(gridSquareIndex + 1)
         })
@@ -387,7 +405,10 @@ function useSudokuManagement() {
     boardIsSolved,
     difficulty,
     handleDifficulty,
-    isAlreadyInUnit
+    isAlreadyInUnit,
+    lastFocusedEntryIndex,
+    handleLastFocusedEntryIndex,
+    padNumberClicked
   }
 }
 

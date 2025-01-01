@@ -41,7 +41,10 @@ export default function Page() {
     boardIsSolved,
     difficulty,
     handleDifficulty,
-    isAlreadyInUnit
+    isAlreadyInUnit,
+    lastFocusedEntryIndex,
+    handleLastFocusedEntryIndex,
+    padNumberClicked
   } = useSudokuManagement()
 
   const contextObj = {
@@ -59,7 +62,10 @@ export default function Page() {
     goodCandidates,
     badCandidates,
     boardIsSolved,
-    isAlreadyInUnit
+    isAlreadyInUnit,
+    lastFocusedEntryIndex,
+    handleLastFocusedEntryIndex,
+    padNumberClicked
   }
 
   return (

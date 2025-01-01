@@ -22,7 +22,9 @@ const Entry = ({ gridSquareIndex, shownValue }: EntryProps) => {
     handleEntry,
     toggleManualElimCandidate,
     manualElimCandidates,
-    isAlreadyInUnit
+    isAlreadyInUnit,
+    handleLastFocusedEntryIndex,
+    padNumberClicked
   }: {
     puzzleStringStart: string
     puzzleStringCurrent: string
@@ -33,6 +35,8 @@ const Entry = ({ gridSquareIndex, shownValue }: EntryProps) => {
     toggleManualElimCandidate: (gridSquareIndex: number, candidateIndex: number, shouldManualElim?: boolean) => void
     manualElimCandidates: string[]
     isAlreadyInUnit: (gridSquareIndex: number, character: string, puzzleString: string) => boolean
+    handleLastFocusedEntryIndex: (entryIndex: number | null) => void
+    padNumberClicked: React.MutableRefObject<boolean>
   } = useContext(CandidateContext)
   const entryRef = useRef<HTMLDivElement>(null)
 
@@ -73,15 +77,33 @@ const Entry = ({ gridSquareIndex, shownValue }: EntryProps) => {
   }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    console.log(e.key == "")
     if (!isLocked) {
-      setLocalShownValue(isValidChar(e.key) && e.key != localShownValue ? e.key : "")
-      if (e.key != localShownValue) {
+      if (isValidChar(e.key) && e.key != localShownValue && puzzleStringCurrent[gridSquareIndex] != e.key) {
+        setLocalShownValue(e.key)
         handleEntry(gridSquareIndex, e.key)
+      } else {
+        setLocalShownValue("")
+        handleEntry(gridSquareIndex, "0")
       }
     }
   }
 
+  const handleFocus = () => {
+    console.log("entry focus start")
+    handleLastFocusedEntryIndex(gridSquareIndex)
+  }
+
   const handleBlur = () => {
+    console.log("entry blur start")
+
+    if (!padNumberClicked.current) {
+      console.log("!padNumberClicked.current")
+      handleLastFocusedEntryIndex(null)
+    }
+
+    padNumberClicked.current = false
+
     if (isWrong) {
       setLocalShownValue("")
     }
@@ -104,6 +126,7 @@ const Entry = ({ gridSquareIndex, shownValue }: EntryProps) => {
       onPointerDown={handlePointerDown}
       onKeyDown={handleKeyDown}
       onBlur={handleBlur}
+      onFocus={handleFocus}
     >
       {isWrong ? localShownValue : shownValue}
     </div>

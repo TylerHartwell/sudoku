@@ -1,5 +1,6 @@
+import CandidateContext from "@/contexts/CandidateContext"
 import clsx from "clsx"
-import { useMemo } from "react"
+import { useContext, useMemo } from "react"
 
 interface PadNumberProps {
   number: number
@@ -10,6 +11,18 @@ interface PadNumberProps {
 }
 
 const PadNumber = ({ number, highlightN, handleHighlightNChange, lastClickedHighlightN, changeLastClickedHighlightN }: PadNumberProps) => {
+  const {
+    lastFocusedEntryIndex,
+    handleLastFocusedEntryIndex,
+    padNumberClicked,
+    handleEntry
+  }: {
+    lastFocusedEntryIndex: number | null
+    handleLastFocusedEntryIndex: (entryIndex: number | null) => void
+    padNumberClicked: React.MutableRefObject<boolean>
+    handleEntry: (i: number, s: string) => void
+  } = useContext(CandidateContext)
+
   const handleMouseEnter = () => {
     handleHighlightNChange(number)
   }
@@ -27,6 +40,14 @@ const PadNumber = ({ number, highlightN, handleHighlightNChange, lastClickedHigh
     changeLastClickedHighlightN(number)
     handleHighlightNChange(number)
   }
+  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    padNumberClicked.current = true
+    if (lastFocusedEntryIndex != null) {
+      console.log("BAM")
+      handleEntry(lastFocusedEntryIndex, highlightN.toString())
+      handleLastFocusedEntryIndex(null)
+    }
+  }
 
   return (
     <div
@@ -37,6 +58,7 @@ const PadNumber = ({ number, highlightN, handleHighlightNChange, lastClickedHigh
       onMouseEnter={handleMouseEnter}
       onClick={handleClick}
       onMouseLeave={handleMouseLeave}
+      onPointerDown={handlePointerDown}
     >
       {number}
     </div>
