@@ -31,7 +31,13 @@ const PadNumber = ({ number, highlightN, handleHighlightNChange, lastClickedHigh
     handleHighlightNChange(lastClickedHighlightN)
   }
 
-  const handleClick = () => {
+  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    padNumberClicked.current = true
+    if (lastFocusedEntryIndex != null) {
+      handleEntry(lastFocusedEntryIndex, number.toString())
+      handleLastFocusedEntryIndex(null)
+    }
+
     if (number === lastClickedHighlightN) {
       changeLastClickedHighlightN(0)
       handleHighlightNChange(0)
@@ -39,14 +45,6 @@ const PadNumber = ({ number, highlightN, handleHighlightNChange, lastClickedHigh
     }
     changeLastClickedHighlightN(number)
     handleHighlightNChange(number)
-  }
-  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
-    padNumberClicked.current = true
-    if (lastFocusedEntryIndex != null) {
-      console.log("BAM")
-      handleEntry(lastFocusedEntryIndex, highlightN.toString())
-      handleLastFocusedEntryIndex(null)
-    }
   }
 
   return (
@@ -56,7 +54,6 @@ const PadNumber = ({ number, highlightN, handleHighlightNChange, lastClickedHigh
         number === highlightN && "font-bold"
       )}
       onMouseEnter={handleMouseEnter}
-      onClick={handleClick}
       onMouseLeave={handleMouseLeave}
       onPointerDown={handlePointerDown}
     >

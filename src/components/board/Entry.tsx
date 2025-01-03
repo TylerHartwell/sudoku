@@ -69,7 +69,6 @@ const Entry = ({ gridSquareIndex, shownValue }: EntryProps) => {
         entryRef.current?.focus()
       } else {
         if (highlightN != 0 && !isWrong) {
-          console.log(gridSquareIndex, highlightN.toString())
           handleEntry(gridSquareIndex, highlightN.toString())
         } else (document.activeElement as HTMLElement)?.blur()
       }
@@ -77,7 +76,6 @@ const Entry = ({ gridSquareIndex, shownValue }: EntryProps) => {
   }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
-    console.log(e.key == "")
     if (!isLocked) {
       if (isValidChar(e.key) && e.key != localShownValue && puzzleStringCurrent[gridSquareIndex] != e.key) {
         setLocalShownValue(e.key)
@@ -90,15 +88,11 @@ const Entry = ({ gridSquareIndex, shownValue }: EntryProps) => {
   }
 
   const handleFocus = () => {
-    console.log("entry focus start")
     handleLastFocusedEntryIndex(gridSquareIndex)
   }
 
   const handleBlur = () => {
-    console.log("entry blur start")
-
     if (!padNumberClicked.current) {
-      console.log("!padNumberClicked.current")
       handleLastFocusedEntryIndex(null)
     }
 
