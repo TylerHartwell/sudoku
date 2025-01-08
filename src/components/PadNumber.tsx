@@ -15,12 +15,16 @@ const PadNumber = ({ number, highlightN, handleHighlightNChange, lastClickedHigh
     lastFocusedEntryIndex,
     handleLastFocusedEntryIndex,
     padNumberClicked,
-    handleEntry
+    handleEntry,
+    candidateMode,
+    toggleManualElimCandidate
   }: {
     lastFocusedEntryIndex: number | null
     handleLastFocusedEntryIndex: (entryIndex: number | null) => void
     padNumberClicked: React.MutableRefObject<boolean>
     handleEntry: (i: number, s: string) => void
+    candidateMode: boolean
+    toggleManualElimCandidate: (gridSquareIndex: number, candidateIndex: number, shouldManualElim?: boolean) => void
   } = useContext(CandidateContext)
 
   const handleMouseEnter = () => {
@@ -33,16 +37,29 @@ const PadNumber = ({ number, highlightN, handleHighlightNChange, lastClickedHigh
 
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     padNumberClicked.current = true
+
+    console.log("begin")
     if (lastFocusedEntryIndex != null) {
-      handleEntry(lastFocusedEntryIndex, number.toString())
+      console.log("cond")
+      if (!candidateMode) {
+        handleEntry(lastFocusedEntryIndex, number.toString())
+        changeLastClickedHighlightN(number)
+        handleHighlightNChange(number)
+      } else {
+        toggleManualElimCandidate(lastFocusedEntryIndex, number - 1)
+      }
       handleLastFocusedEntryIndex(null)
+      return
     }
 
     if (number === lastClickedHighlightN) {
+      console.log("mid")
       changeLastClickedHighlightN(0)
       handleHighlightNChange(0)
       return
     }
+
+    console.log("end")
     changeLastClickedHighlightN(number)
     handleHighlightNChange(number)
   }

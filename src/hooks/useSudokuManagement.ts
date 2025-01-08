@@ -90,6 +90,38 @@ function useSudokuManagement() {
     })
   }, [])
 
+  const toggleManualElimCandidate = useCallback(
+    (gridSquareIndex: number, candidateIndex: number, shouldManualElim?: boolean) => {
+      const candidateKey = `${gridSquareIndex}-${candidateIndex}`
+      const candidateN = candidateIndex + 1
+      const isAlreadyInUnit = getPeerGridSquareIndices(gridSquareIndex).some(i => puzzleStringCurrent[i] === candidateN.toString())
+      const entryShownValue = puzzleStringCurrent[gridSquareIndex] == "0" ? "" : puzzleStringCurrent[gridSquareIndex]
+
+      if (!isAlreadyInUnit && !entryShownValue) {
+        setManualElimCandidates(prev => {
+          if (shouldManualElim === undefined) {
+            if (!prev.includes(candidateKey)) {
+              return [...prev, candidateKey]
+            } else {
+              return prev.filter(key => key !== candidateKey)
+            }
+          }
+
+          if (shouldManualElim) {
+            if (!prev.includes(candidateKey)) {
+              return [...prev, candidateKey]
+            } else {
+              return prev
+            }
+          }
+
+          return prev.filter(key => key !== candidateKey)
+        })
+      }
+    },
+    [puzzleStringCurrent]
+  )
+
   const handleEntry = useCallback(
     (gridSquareIndex: number, entryChar: string) => {
       const replacementChar = isValidChar(entryChar) ? entryChar : "0"
@@ -143,7 +175,7 @@ function useSudokuManagement() {
 
       handleQueueAutoSolve(true)
     },
-    [getPeerSquares, handleQueueAutoSolve, isAlreadyInUnit, manualElimCandidates, puzzleStringCurrent]
+    [getPeerSquares, handleQueueAutoSolve, isAlreadyInUnit, manualElimCandidates, puzzleStringCurrent, toggleManualElimCandidate]
   )
   const tryRuleAtIndex = useCallback(
     async (ruleIndex: number, isAuto: boolean = false) => {
@@ -185,7 +217,7 @@ function useSudokuManagement() {
 
       return ruleOutcome === "success"
     },
-    [allSquares, handleEntry, handleQueueAutoSolve]
+    [allSquares, handleEntry, handleQueueAutoSolve, toggleManualElimCandidate]
   )
 
   const tryAutoSolves = useCallback(async () => {
@@ -252,29 +284,6 @@ function useSudokuManagement() {
 
   const clearManualElimCandidates = () => {
     setManualElimCandidates([])
-  }
-
-  const toggleManualElimCandidate = (gridSquareIndex: number, candidateIndex: number, shouldManualElim?: boolean) => {
-    const candidateKey = `${gridSquareIndex}-${candidateIndex}`
-    setManualElimCandidates(prev => {
-      if (shouldManualElim === undefined) {
-        if (!prev.includes(candidateKey)) {
-          return [...prev, candidateKey]
-        } else {
-          return prev.filter(key => key !== candidateKey)
-        }
-      }
-
-      if (shouldManualElim) {
-        if (!prev.includes(candidateKey)) {
-          return [...prev, candidateKey]
-        } else {
-          return prev
-        }
-      }
-
-      return prev.filter(key => key !== candidateKey)
-    })
   }
 
   const toggleGoodCandidates = (gridSquareIndex: number, candidateIndex: number, shouldMark?: boolean) => {

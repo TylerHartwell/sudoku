@@ -30,16 +30,10 @@ const Candidate = ({ gridSquareIndex, candidateIndex, entryShownValue }: Candida
   const isEliminated = entryShownValue || isAlreadyInUnit || manualElimCandidates.includes(candidateKey)
   const isToggleable = !isEliminated || manualElimCandidates.includes(candidateKey)
 
-  const toggleEliminated = () => {
-    if (manualElimCandidates.includes(candidateKey) || !isEliminated) {
-      toggleManualElimCandidate(gridSquareIndex, candidateIndex)
-    }
-  }
-
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     e.preventDefault()
     if (e.pointerType === "mouse" && isToggleable) {
-      toggleEliminated()
+      toggleManualElimCandidate(gridSquareIndex, candidateIndex)
     }
   }
 
