@@ -6,9 +6,11 @@ import getPeerGridSquareIndices from "@/utils/getPeerGridSquareIndices"
 import replaceNonDigitsWithZero from "@/utils/replaceNonDigitsWithZero"
 import isValidChar from "@/utils/isValidChar"
 
+const symbolSetSize = 9
+
 function useSudokuManagement() {
   const [ruleOutcomes, setRuleOutcomes] = useState<RuleOutcome[]>(rulesArr.map(_ => "default"))
-  const [puzzleStringCurrent, setPuzzleStringCurrent] = useState(() => "0".repeat(81))
+  const [puzzleStringCurrent, setPuzzleStringCurrent] = useState(() => "0".repeat(Math.pow(symbolSetSize, 2)))
   const [puzzleStringStart, setPuzzleStringStart] = useState("")
   const [boardIsSet, setBoardIsSet] = useState(false)
   const [boardIsSolved, setBoardIsSolved] = useState(false)
@@ -26,7 +28,7 @@ function useSudokuManagement() {
   const [lastFocusedEntryIndex, setLastFocusedEntryIndex] = useState<number | null>(null)
   const padNumberClicked = useRef(false)
 
-  const numbers = useMemo(() => Array.from({ length: 9 }, (_, i) => i + 1), [])
+  const symbolSetNumbers = useMemo(() => Array.from({ length: symbolSetSize }, (_, i) => i + 1), [])
 
   const handleLastFocusedEntryIndex = useCallback((entryIndex: number | null) => {
     if (entryIndex == null || (Number.isInteger(entryIndex) && entryIndex >= 0 && entryIndex < 81)) {
@@ -94,10 +96,10 @@ function useSudokuManagement() {
     (gridSquareIndex: number, candidateIndex: number, shouldManualElim?: boolean) => {
       const candidateKey = `${gridSquareIndex}-${candidateIndex}`
       const candidateN = candidateIndex + 1
-      const isAlreadyInUnit = getPeerGridSquareIndices(gridSquareIndex).some(i => puzzleStringCurrent[i] === candidateN.toString())
+      const isCandidateInPeerEntry = isAlreadyInUnit(gridSquareIndex, candidateN.toString(), puzzleStringCurrent)
       const entryShownValue = puzzleStringCurrent[gridSquareIndex] == "0" ? "" : puzzleStringCurrent[gridSquareIndex]
 
-      if (!isAlreadyInUnit && !entryShownValue) {
+      if (!isCandidateInPeerEntry && !entryShownValue) {
         setManualElimCandidates(prev => {
           if (shouldManualElim === undefined) {
             if (!prev.includes(candidateKey)) {
@@ -119,7 +121,7 @@ function useSudokuManagement() {
         })
       }
     },
-    [puzzleStringCurrent]
+    [isAlreadyInUnit, puzzleStringCurrent]
   )
 
   const handleEntry = useCallback(
@@ -177,6 +179,7 @@ function useSudokuManagement() {
     },
     [getPeerSquares, handleQueueAutoSolve, isAlreadyInUnit, manualElimCandidates, puzzleStringCurrent, toggleManualElimCandidate]
   )
+
   const tryRuleAtIndex = useCallback(
     async (ruleIndex: number, isAuto: boolean = false) => {
       const outcomeTime = isAuto ? 50 : 500
@@ -405,7 +408,7 @@ function useSudokuManagement() {
     handleQueueAutoSolve,
     checkedRules,
     handleCheckboxChange,
-    numbers,
+    symbolSetNumbers,
     tryRuleAtIndex,
     resetBoardData,
     goodCandidates,

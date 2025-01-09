@@ -60,7 +60,10 @@ const Entry = ({ gridSquareIndex, shownValue }: EntryProps) => {
             const isEliminated = shownValue || isAlreadyInUnit || manualElimCandidates.includes(candidateKey)
             const isToggleable = !isEliminated || manualElimCandidates.includes(candidateKey)
 
-            if (isToggleable) toggleManualElimCandidate(gridSquareIndex, candidateIndex)
+            if (isToggleable) {
+              toggleManualElimCandidate(gridSquareIndex, candidateIndex)
+              ;(document.activeElement as HTMLElement)?.blur()
+            }
           } else (document.activeElement as HTMLElement)?.blur()
         }
         return

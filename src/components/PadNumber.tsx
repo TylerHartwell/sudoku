@@ -47,6 +47,7 @@ const PadNumber = ({ number, highlightN, handleHighlightNChange, lastClickedHigh
         handleHighlightNChange(number)
       } else {
         toggleManualElimCandidate(lastFocusedEntryIndex, number - 1)
+        changeLastClickedHighlightN(number)
       }
       handleLastFocusedEntryIndex(null)
       return

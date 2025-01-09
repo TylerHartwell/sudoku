@@ -32,7 +32,7 @@ export default function Page() {
     handleQueueAutoSolve,
     checkedRules,
     handleCheckboxChange,
-    numbers,
+    symbolSetNumbers,
     tryRuleAtIndex,
     resetBoardData,
     goodCandidates,
@@ -77,7 +77,7 @@ export default function Page() {
             <Board />
             <section className="numberpad flex md:h-[115px] flex-col items-center">
               <div className="w-full flex justify-around items-center py-[10px]">
-                {numbers.map(num => (
+                {symbolSetNumbers.map(num => (
                   <PadNumber
                     key={num}
                     number={num}
