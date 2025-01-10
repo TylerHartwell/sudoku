@@ -1,4 +1,5 @@
 import CandidateContext from "@/contexts/CandidateContext"
+import { symbols } from "@/hooks/useSudokuManagement"
 import clsx from "clsx"
 import { useContext, useMemo } from "react"
 
@@ -75,7 +76,7 @@ const PadNumber = ({ number, highlightN, handleHighlightNChange, lastClickedHigh
       onMouseLeave={handleMouseLeave}
       onPointerDown={handlePointerDown}
     >
-      {number}
+      {symbols[number - 1]}
     </div>
   )
 }

@@ -4,6 +4,7 @@ import { useContext } from "react"
 import CandidateContext from "@/contexts/CandidateContext"
 import getPeerGridSquareIndices from "@/utils/getPeerGridSquareIndices"
 import clsx from "clsx"
+import { symbols } from "@/hooks/useSudokuManagement"
 
 interface CandidateProps {
   gridSquareIndex: number
@@ -51,7 +52,7 @@ const Candidate = ({ gridSquareIndex, candidateIndex, entryShownValue }: Candida
         )}
         onPointerDown={handlePointerDown}
       >
-        {!isEliminated ? candidateN.toString() : ""}
+        {!isEliminated ? symbols[candidateN - 1] : ""}
       </div>
     </div>
   )

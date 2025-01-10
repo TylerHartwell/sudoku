@@ -5,12 +5,19 @@ import truncateAndPad from "@/utils/truncateAndPad"
 import getPeerGridSquareIndices from "@/utils/getPeerGridSquareIndices"
 import replaceNonDigitsWithZero from "@/utils/replaceNonDigitsWithZero"
 import isValidChar from "@/utils/isValidChar"
+import getValidSymbols from "@/utils/getValidSymbols"
 
-const symbolSetSize = 9
+const inputSymbols = ["I", "T", "E", "A", "S", "X", "V", "B", "N"]
+
+const symbols = getValidSymbols(inputSymbols)
+
+const numbers = Array.from({ length: symbols.length }, (_, i) => i + 1)
+
+console.log("when does this run")
 
 function useSudokuManagement() {
   const [ruleOutcomes, setRuleOutcomes] = useState<RuleOutcome[]>(rulesArr.map(_ => "default"))
-  const [puzzleStringCurrent, setPuzzleStringCurrent] = useState(() => "0".repeat(Math.pow(symbolSetSize, 2)))
+  const [puzzleStringCurrent, setPuzzleStringCurrent] = useState(() => "0".repeat(Math.pow(symbols.length, 2)))
   const [puzzleStringStart, setPuzzleStringStart] = useState("")
   const [boardIsSet, setBoardIsSet] = useState(false)
   const [boardIsSolved, setBoardIsSolved] = useState(false)
@@ -27,8 +34,6 @@ function useSudokuManagement() {
   const [difficulty, setDifficulty] = useState<"easy" | "medium" | "hard" | "diabolical">("easy")
   const [lastFocusedEntryIndex, setLastFocusedEntryIndex] = useState<number | null>(null)
   const padNumberClicked = useRef(false)
-
-  const symbolSetNumbers = useMemo(() => Array.from({ length: symbolSetSize }, (_, i) => i + 1), [])
 
   const handleLastFocusedEntryIndex = useCallback((entryIndex: number | null) => {
     if (entryIndex == null || (Number.isInteger(entryIndex) && entryIndex >= 0 && entryIndex < 81)) {
@@ -408,7 +413,6 @@ function useSudokuManagement() {
     handleQueueAutoSolve,
     checkedRules,
     handleCheckboxChange,
-    symbolSetNumbers,
     tryRuleAtIndex,
     resetBoardData,
     goodCandidates,
@@ -425,3 +429,4 @@ function useSudokuManagement() {
 }
 
 export default useSudokuManagement
+export { symbols, numbers }

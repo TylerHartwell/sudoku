@@ -7,7 +7,7 @@ import CandidateContext from "@/contexts/CandidateContext"
 import PadNumber from "@/components/PadNumber"
 import RuleItem from "@/components/RuleItem"
 import rulesArr from "@/rules/rulesArr"
-import useSudokuManagement from "@/hooks/useSudokuManagement"
+import useSudokuManagement, { numbers } from "@/hooks/useSudokuManagement"
 import clsx from "clsx"
 
 export default function Page() {
@@ -32,7 +32,6 @@ export default function Page() {
     handleQueueAutoSolve,
     checkedRules,
     handleCheckboxChange,
-    symbolSetNumbers,
     tryRuleAtIndex,
     resetBoardData,
     goodCandidates,
@@ -77,7 +76,7 @@ export default function Page() {
             <Board />
             <section className="numberpad flex md:h-[115px] flex-col items-center">
               <div className="w-full flex justify-around items-center py-[10px]">
-                {symbolSetNumbers.map(num => (
+                {numbers.map(num => (
                   <PadNumber
                     key={num}
                     number={num}

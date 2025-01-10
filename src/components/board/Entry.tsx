@@ -5,6 +5,7 @@ import CandidateContext from "@/contexts/CandidateContext"
 import getPeerGridSquareIndices from "@/utils/getPeerGridSquareIndices"
 import clsx from "clsx"
 import isValidChar from "@/utils/isValidChar"
+import { symbols } from "@/hooks/useSudokuManagement"
 
 interface EntryProps {
   gridSquareIndex: number
@@ -106,6 +107,9 @@ const Entry = ({ gridSquareIndex, shownValue }: EntryProps) => {
     }
   }
 
+  const innerValue = isWrong ? localShownValue : shownValue
+  const innerContent = innerValue == "" ? "" : symbols[Number(innerValue) - 1]
+
   return (
     <div
       ref={entryRef}
@@ -125,7 +129,7 @@ const Entry = ({ gridSquareIndex, shownValue }: EntryProps) => {
       onBlur={handleBlur}
       onFocus={handleFocus}
     >
-      {isWrong ? localShownValue : shownValue}
+      {innerContent}
     </div>
   )
 }
