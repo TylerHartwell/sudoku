@@ -36,7 +36,7 @@ function useSudokuManagement() {
   const padNumberClicked = useRef(false)
 
   const handleLastFocusedEntryIndex = useCallback((entryIndex: number | null) => {
-    if (entryIndex == null || (Number.isInteger(entryIndex) && entryIndex >= 0 && entryIndex < 81)) {
+    if (entryIndex == null || (Number.isInteger(entryIndex) && entryIndex >= 0 && entryIndex < Math.pow(symbols.length, 2))) {
       setLastFocusedEntryIndex(entryIndex)
       return
     }
@@ -44,7 +44,7 @@ function useSudokuManagement() {
 
   const getCandidates = useCallback(
     (gridSquareIndex: number) => {
-      const candidateArr = Array.from({ length: 9 }, (_, candidateIndex) => {
+      const candidateArr = Array.from({ length: symbols.length }, (_, candidateIndex) => {
         const candidateN = candidateIndex + 1
         const candidateKey = `${gridSquareIndex}-${candidateIndex}`
 
@@ -65,7 +65,7 @@ function useSudokuManagement() {
 
   const allSquares: Square[] = useMemo(
     () =>
-      Array.from({ length: 81 }, (_, gridSquareIndex) => {
+      Array.from({ length: Math.pow(symbols.length, 2) }, (_, gridSquareIndex) => {
         return {
           entryValue: puzzleStringCurrent[gridSquareIndex],
           candidates: getCandidates(gridSquareIndex),
@@ -341,7 +341,7 @@ function useSudokuManagement() {
   }
 
   const changeLastClickedHighlightN = (newHighlightN: number) => {
-    setLastClickedHighlightN(newHighlightN >= 0 && newHighlightN <= 9 ? newHighlightN : 0)
+    setLastClickedHighlightN(newHighlightN >= 0 && newHighlightN <= symbols.length ? newHighlightN : 0)
   }
 
   const toggleCandidateMode = (beCandidateMode?: boolean) => {
@@ -352,7 +352,7 @@ function useSudokuManagement() {
   }
 
   const handleHighlightNChange = (newHighlightN: number) => {
-    setHighlightN(newHighlightN >= 0 && newHighlightN <= 9 ? newHighlightN : 0)
+    setHighlightN(newHighlightN >= 0 && newHighlightN <= symbols.length ? newHighlightN : 0)
   }
 
   const handleBoardSet = (isSet: boolean) => {
@@ -364,7 +364,7 @@ function useSudokuManagement() {
     setPuzzleStringStart(newValue)
     const puzzleString = replaceNonDigitsWithZero(newValue)
 
-    setPuzzleStringCurrent(truncateAndPad(puzzleString, 81, "0"))
+    setPuzzleStringCurrent(truncateAndPad(puzzleString, Math.pow(symbols.length, 2), "0"))
   }
 
   const handleRuleOutcome = (ruleIndex: number, newOutcome: RuleOutcome) => {

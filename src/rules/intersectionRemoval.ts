@@ -1,6 +1,7 @@
 import getRowColBox from "@/utils/getRowColBox"
 import { Candidate, Rule, Square, UnitType } from "./rulesInterface"
 import getAllSquaresByUnit from "@/utils/getAllSquaresByUnit"
+import { symbols } from "@/hooks/useSudokuManagement"
 
 //if all the candidates of a number in a unit are also all in a second unit, any other candidates matching that number in the second unit can be eliminated
 
@@ -12,7 +13,7 @@ const intersectionRemoval: Rule = {
 
     for (const [unitIndex, unit] of allSquaresByUnit.entries()) {
       const currentUnitType = unitTypes[unitIndex % 3]
-      for (let candidateIndex = 0; candidateIndex < 9; candidateIndex++) {
+      for (let candidateIndex = 0; candidateIndex < symbols.length; candidateIndex++) {
         const candidateObjArr: Candidate[] = []
         let isIntersector = false
 

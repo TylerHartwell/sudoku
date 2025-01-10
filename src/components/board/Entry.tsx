@@ -41,7 +41,7 @@ const Entry = ({ gridSquareIndex, shownValue }: EntryProps) => {
   } = useContext(CandidateContext)
   const entryRef = useRef<HTMLDivElement>(null)
 
-  const isLocked = boardIsSet && puzzleStringStart.length == 81 && puzzleStringStart[gridSquareIndex] == shownValue
+  const isLocked = boardIsSet && puzzleStringStart.length == Math.pow(symbols.length, 2) && puzzleStringStart[gridSquareIndex] == shownValue
   const isWrong = isAlreadyInUnit(gridSquareIndex, localShownValue, puzzleStringCurrent)
 
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
