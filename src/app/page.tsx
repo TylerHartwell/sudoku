@@ -7,7 +7,7 @@ import CandidateContext from "@/contexts/CandidateContext"
 import PadNumber from "@/components/PadNumber"
 import RuleItem from "@/components/RuleItem"
 import rulesArr from "@/rules/rulesArr"
-import useSudokuManagement, { numbers } from "@/hooks/useSudokuManagement"
+import useSudokuManagement, { numbers, symbols } from "@/hooks/useSudokuManagement"
 import clsx from "clsx"
 
 export default function Page() {
@@ -170,7 +170,7 @@ export default function Page() {
               </div>
               <input
                 type="text"
-                placeholder="paste or enter 81-character grid string"
+                placeholder={`paste or enter ${Math.pow(symbols.length, 2)}-character grid string`}
                 className={clsx("grid-string w-[98%] border-none h-[2em] text-[.85em] my-[2px] select-text", boardIsSet && "hidden")}
                 id="grid-string"
                 value={puzzleStringStart}

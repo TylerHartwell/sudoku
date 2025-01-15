@@ -39,9 +39,7 @@ const PadNumber = ({ number, highlightN, handleHighlightNChange, lastClickedHigh
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     padNumberClicked.current = true
 
-    console.log("begin")
     if (lastFocusedEntryIndex != null) {
-      console.log("cond")
       if (!candidateMode) {
         handleEntry(lastFocusedEntryIndex, number.toString())
         changeLastClickedHighlightN(number)
@@ -55,13 +53,11 @@ const PadNumber = ({ number, highlightN, handleHighlightNChange, lastClickedHigh
     }
 
     if (number === lastClickedHighlightN) {
-      console.log("mid")
       changeLastClickedHighlightN(0)
       handleHighlightNChange(0)
       return
     }
 
-    console.log("end")
     changeLastClickedHighlightN(number)
     handleHighlightNChange(number)
   }

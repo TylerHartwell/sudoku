@@ -1,6 +1,7 @@
 import getRowColBox from "@/utils/getRowColBox"
 import { Candidate, Rule, Square } from "./rulesInterface"
 import getAllSquaresByUnit from "@/utils/getAllSquaresByUnit"
+import { symbols } from "@/hooks/useSudokuManagement"
 
 const nakedTriple: Rule = {
   ruleName: "Naked Triple",
@@ -84,7 +85,7 @@ const nakedTriple: Rule = {
                   getRowColBox(secondGroupGridSquareIndex).boxIndex == getRowColBox(thirdGroupGridSquareIndex).boxIndex
                 ) {
                   //eliminate others from box if present
-                  const unit = allSquaresByUnit[getRowColBox(firstGroupGridSquareIndex).boxIndex * 3 + 2]
+                  const unit = allSquaresByUnit[getRowColBox(firstGroupGridSquareIndex).boxIndex * Math.sqrt(symbols.length) + 2]
                   processUnit(unit)
                 }
 

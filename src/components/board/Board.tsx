@@ -2,7 +2,7 @@ import { useContext } from "react"
 import Box from "./Box"
 import CandidateContext from "@/contexts/CandidateContext"
 import clsx from "clsx"
-import { symbols } from "@/hooks/useSudokuManagement"
+import { gridTemplateFRString, symbols } from "@/hooks/useSudokuManagement"
 
 const Board = () => {
   const { boardIsSolved } = useContext(CandidateContext)
@@ -10,7 +10,7 @@ const Board = () => {
   return (
     <section
       className={clsx(
-        "board select-none grid grid-cols-[1fr_1fr_1fr] grid-rows-[1fr_1fr_1fr] border-black border-[1px] ",
+        `board select-none grid grid-cols-[${gridTemplateFRString}] grid-rows-[${gridTemplateFRString}] border-black border-[1px]`,
         boardIsSolved && "border-[5px] border-yellow-300"
       )}
     >

@@ -7,13 +7,16 @@ import replaceNonDigitsWithZero from "@/utils/replaceNonDigitsWithZero"
 import isValidChar from "@/utils/isValidChar"
 import getValidSymbols from "@/utils/getValidSymbols"
 
-const inputSymbols = ["I", "T", "E", "A", "S", "X", "V", "B", "N"]
+// const inputSymbols = ["1", "2", "3", "4"]
+const inputSymbols = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
+// const inputSymbols = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F", "G"]
 
 const symbols = getValidSymbols(inputSymbols)
 
-const numbers = Array.from({ length: symbols.length }, (_, i) => i + 1)
+const symbolsSqrt = Math.sqrt(symbols.length)
+const gridTemplateFRString = Array(symbolsSqrt).fill("1fr").join("_")
 
-console.log("when does this run")
+const numbers = Array.from({ length: symbols.length }, (_, i) => i + 1)
 
 function useSudokuManagement() {
   const [ruleOutcomes, setRuleOutcomes] = useState<RuleOutcome[]>(rulesArr.map(_ => "default"))
@@ -429,4 +432,4 @@ function useSudokuManagement() {
 }
 
 export default useSudokuManagement
-export { symbols, numbers }
+export { symbols, symbolsSqrt, gridTemplateFRString, numbers }
