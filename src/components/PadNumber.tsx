@@ -18,7 +18,8 @@ const PadNumber = ({ number, highlightN, handleHighlightNChange, lastClickedHigh
     padNumberClicked,
     handleEntry,
     candidateMode,
-    toggleManualElimCandidate
+    toggleManualElimCandidate,
+    charCounts
   }: {
     lastFocusedEntryIndex: number | null
     handleLastFocusedEntryIndex: (entryIndex: number | null) => void
@@ -26,6 +27,7 @@ const PadNumber = ({ number, highlightN, handleHighlightNChange, lastClickedHigh
     handleEntry: (i: number, s: string) => void
     candidateMode: boolean
     toggleManualElimCandidate: (gridSquareIndex: number, candidateIndex: number, shouldManualElim?: boolean) => void
+    charCounts: { [key: string]: number }
   } = useContext(CandidateContext)
 
   const handleMouseEnter = () => {
@@ -66,7 +68,8 @@ const PadNumber = ({ number, highlightN, handleHighlightNChange, lastClickedHigh
     <div
       className={clsx(
         `pad-number pad${number} w-full h-full text-center place-content-center text-[5vw] md:text-[30px] select-none hover-fine-device:hover:cursor-pointer hover-fine-device:hover:font-bold`,
-        number === highlightN && "font-bold"
+        number === highlightN && "font-bold",
+        charCounts != undefined && charCounts[symbols[number - 1]] === symbols.length && "opacity-30"
       )}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}

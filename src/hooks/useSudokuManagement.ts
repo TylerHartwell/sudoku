@@ -6,6 +6,7 @@ import getPeerGridSquareIndices from "@/utils/getPeerGridSquareIndices"
 import replaceNonDigitsWithZero from "@/utils/replaceNonDigitsWithZero"
 import isValidChar from "@/utils/isValidChar"
 import getValidSymbols from "@/utils/getValidSymbols"
+import countCharactersInString from "@/utils/getCountOfCharactersInStringFromArray"
 
 // const inputSymbols = ["1", "2", "3", "4"]
 const inputSymbols = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
@@ -14,7 +15,6 @@ const inputSymbols = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
 const symbols = getValidSymbols(inputSymbols)
 
 const symbolsSqrt = Math.sqrt(symbols.length)
-const gridTemplateFRString = Array(symbolsSqrt).fill("1fr").join("_")
 
 const numbers = Array.from({ length: symbols.length }, (_, i) => i + 1)
 
@@ -37,6 +37,8 @@ function useSudokuManagement() {
   const [difficulty, setDifficulty] = useState<"easy" | "medium" | "hard" | "diabolical">("easy")
   const [lastFocusedEntryIndex, setLastFocusedEntryIndex] = useState<number | null>(null)
   const padNumberClicked = useRef(false)
+
+  const charCounts = useMemo(() => countCharactersInString(puzzleStringCurrent, symbols), [puzzleStringCurrent])
 
   const handleLastFocusedEntryIndex = useCallback((entryIndex: number | null) => {
     if (entryIndex == null || (Number.isInteger(entryIndex) && entryIndex >= 0 && entryIndex < Math.pow(symbols.length, 2))) {
@@ -136,6 +138,8 @@ function useSudokuManagement() {
     (gridSquareIndex: number, entryChar: string) => {
       const replacementChar = isValidChar(entryChar) ? entryChar : "0"
 
+      handleLastFocusedEntryIndex(null)
+
       if (replacementChar == "0" && puzzleStringCurrent[gridSquareIndex] == "0") return
 
       if (replacementChar != "0" && puzzleStringCurrent[gridSquareIndex] == replacementChar) {
@@ -185,7 +189,15 @@ function useSudokuManagement() {
 
       handleQueueAutoSolve(true)
     },
-    [getPeerSquares, handleQueueAutoSolve, isAlreadyInUnit, manualElimCandidates, puzzleStringCurrent, toggleManualElimCandidate]
+    [
+      getPeerSquares,
+      handleLastFocusedEntryIndex,
+      handleQueueAutoSolve,
+      isAlreadyInUnit,
+      manualElimCandidates,
+      puzzleStringCurrent,
+      toggleManualElimCandidate
+    ]
   )
 
   const tryRuleAtIndex = useCallback(
@@ -427,9 +439,10 @@ function useSudokuManagement() {
     isAlreadyInUnit,
     lastFocusedEntryIndex,
     handleLastFocusedEntryIndex,
-    padNumberClicked
+    padNumberClicked,
+    charCounts
   }
 }
 
 export default useSudokuManagement
-export { symbols, symbolsSqrt, gridTemplateFRString, numbers }
+export { symbols, symbolsSqrt, numbers }

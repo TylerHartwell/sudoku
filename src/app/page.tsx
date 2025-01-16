@@ -43,7 +43,8 @@ export default function Page() {
     isAlreadyInUnit,
     lastFocusedEntryIndex,
     handleLastFocusedEntryIndex,
-    padNumberClicked
+    padNumberClicked,
+    charCounts
   } = useSudokuManagement()
 
   const contextObj = {
@@ -64,7 +65,8 @@ export default function Page() {
     isAlreadyInUnit,
     lastFocusedEntryIndex,
     handleLastFocusedEntryIndex,
-    padNumberClicked
+    padNumberClicked,
+    charCounts
   }
 
   return (

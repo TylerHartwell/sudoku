@@ -1,4 +1,4 @@
-function getValidSymbols(symbols: any[]) {
+function getValidSymbols(symbols: string[]) {
   if (!Array.isArray(symbols)) {
     throw new Error("Input must be an array.")
   }
