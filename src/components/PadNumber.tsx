@@ -4,14 +4,20 @@ import clsx from "clsx"
 import { useContext, useMemo } from "react"
 
 interface PadNumberProps {
-  number: number
-  highlightN: number
-  handleHighlightNChange: (n: number) => void
-  lastClickedHighlightN: number
-  changeLastClickedHighlightN: (n: number) => void
+  index: number
+  highlightIndex: number | null
+  handleHighlightIndexChange: (n: number | null) => void
+  lastClickedHighlightIndex: number | null
+  changeLastClickedHighlightIndex: (n: number | null) => void
 }
 
-const PadNumber = ({ number, highlightN, handleHighlightNChange, lastClickedHighlightN, changeLastClickedHighlightN }: PadNumberProps) => {
+const PadNumber = ({
+  index,
+  highlightIndex,
+  handleHighlightIndexChange,
+  lastClickedHighlightIndex,
+  changeLastClickedHighlightIndex
+}: PadNumberProps) => {
   const {
     lastFocusedEntryIndex,
     handleLastFocusedEntryIndex,
@@ -31,11 +37,11 @@ const PadNumber = ({ number, highlightN, handleHighlightNChange, lastClickedHigh
   } = useContext(CandidateContext)
 
   const handleMouseEnter = () => {
-    handleHighlightNChange(number)
+    handleHighlightIndexChange(index)
   }
 
   const handleMouseLeave = () => {
-    handleHighlightNChange(lastClickedHighlightN)
+    handleHighlightIndexChange(lastClickedHighlightIndex)
   }
 
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
@@ -43,39 +49,39 @@ const PadNumber = ({ number, highlightN, handleHighlightNChange, lastClickedHigh
 
     if (lastFocusedEntryIndex != null) {
       if (!candidateMode) {
-        handleEntry(lastFocusedEntryIndex, number.toString())
-        changeLastClickedHighlightN(number)
-        handleHighlightNChange(number)
+        handleEntry(lastFocusedEntryIndex, symbols[index])
+        changeLastClickedHighlightIndex(index)
+        handleHighlightIndexChange(index)
       } else {
-        toggleManualElimCandidate(lastFocusedEntryIndex, number - 1)
-        changeLastClickedHighlightN(number)
+        toggleManualElimCandidate(lastFocusedEntryIndex, index)
+        changeLastClickedHighlightIndex(index)
       }
       handleLastFocusedEntryIndex(null)
       return
     }
 
-    if (number === lastClickedHighlightN) {
-      changeLastClickedHighlightN(0)
-      handleHighlightNChange(0)
+    if (index === lastClickedHighlightIndex) {
+      changeLastClickedHighlightIndex(null)
+      handleHighlightIndexChange(null)
       return
     }
 
-    changeLastClickedHighlightN(number)
-    handleHighlightNChange(number)
+    changeLastClickedHighlightIndex(index)
+    handleHighlightIndexChange(index)
   }
 
   return (
     <div
       className={clsx(
-        `pad-number pad${number} w-full h-full text-center place-content-center text-[5vw] md:text-[30px] select-none hover-fine-device:hover:cursor-pointer hover-fine-device:hover:font-bold`,
-        number === highlightN && "font-bold",
-        charCounts != undefined && charCounts[symbols[number - 1]] === symbols.length && "opacity-30"
+        `pad-number pad${index} w-full h-full text-center place-content-center text-[5vw] md:text-[30px] select-none hover-fine-device:hover:cursor-pointer hover-fine-device:hover:font-bold`,
+        highlightIndex != null && index === highlightIndex && "font-bold",
+        charCounts != undefined && charCounts[symbols[index]] === symbols.length && "opacity-30"
       )}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onPointerDown={handlePointerDown}
     >
-      {symbols[number - 1]}
+      {symbols[index]}
     </div>
   )
 }

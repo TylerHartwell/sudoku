@@ -16,26 +16,58 @@ const symbols = getValidSymbols(inputSymbols)
 
 const symbolsSqrt = Math.sqrt(symbols.length)
 
-const numbers = Array.from({ length: symbols.length }, (_, i) => i + 1)
+const initialStates = {
+  // Puzzle-related states
+  puzzleStringCurrent: "0".repeat(Math.pow(symbols.length, 2)),
+  puzzleStringStart: "",
+  boardIsSet: false,
+  boardIsSolved: false,
+
+  // Rule-related states
+  ruleOutcomes: rulesArr.map(_ => "default") as RuleOutcome[],
+  checkedRuleIndices: [] as number[],
+  currentAutoRuleIndex: 0,
+  queueAutoSolve: false,
+
+  // Candidate-related states
+  showCandidates: false,
+  candidateMode: false,
+  manualElimCandidates: [] as string[],
+  goodCandidates: [] as string[],
+  badCandidates: [] as string[],
+
+  // UI/Interaction states
+  highlightIndex: null,
+  lastClickedHighlightIndex: null,
+  lastFocusedEntryIndex: null,
+
+  // Settings
+  difficulty: "easy" as "easy" | "medium" | "hard" | "diabolical"
+}
 
 function useSudokuManagement() {
-  const [ruleOutcomes, setRuleOutcomes] = useState<RuleOutcome[]>(rulesArr.map(_ => "default"))
-  const [puzzleStringCurrent, setPuzzleStringCurrent] = useState(() => "0".repeat(Math.pow(symbols.length, 2)))
-  const [puzzleStringStart, setPuzzleStringStart] = useState("")
-  const [boardIsSet, setBoardIsSet] = useState(false)
-  const [boardIsSolved, setBoardIsSolved] = useState(false)
-  const [highlightN, setHighlightN] = useState<number>(0)
-  const [showCandidates, setShowCandidates] = useState(false)
-  const [candidateMode, setCandidateMode] = useState(false)
-  const [lastClickedHighlightN, setLastClickedHighlightN] = useState(0)
-  const [manualElimCandidates, setManualElimCandidates] = useState<string[]>([])
-  const [checkedRules, setCheckedRules] = useState<number[]>([])
-  const [currentAutoRuleIndex, setCurrentAutoRuleIndex] = useState<number>(0)
-  const [queueAutoSolve, setQueueAutoSolve] = useState<boolean>(false)
-  const [goodCandidates, setGoodCandidates] = useState<string[]>([])
-  const [badCandidates, setBadCandidates] = useState<string[]>([])
-  const [difficulty, setDifficulty] = useState<"easy" | "medium" | "hard" | "diabolical">("easy")
-  const [lastFocusedEntryIndex, setLastFocusedEntryIndex] = useState<number | null>(null)
+  const [puzzleStringCurrent, setPuzzleStringCurrent] = useState<string>(initialStates.puzzleStringCurrent)
+  const [puzzleStringStart, setPuzzleStringStart] = useState<string>(initialStates.puzzleStringStart)
+  const [boardIsSet, setBoardIsSet] = useState<boolean>(initialStates.boardIsSet)
+  const [boardIsSolved, setBoardIsSolved] = useState<boolean>(initialStates.boardIsSolved)
+
+  const [ruleOutcomes, setRuleOutcomes] = useState<RuleOutcome[]>(initialStates.ruleOutcomes)
+  const [checkedRuleIndices, setCheckedRuleIndices] = useState<number[]>(initialStates.checkedRuleIndices)
+  const [currentAutoRuleIndex, setCurrentAutoRuleIndex] = useState<number>(initialStates.currentAutoRuleIndex)
+  const [queueAutoSolve, setQueueAutoSolve] = useState<boolean>(initialStates.queueAutoSolve)
+
+  const [showCandidates, setShowCandidates] = useState<boolean>(initialStates.showCandidates)
+  const [candidateMode, setCandidateMode] = useState<boolean>(initialStates.candidateMode)
+  const [manualElimCandidates, setManualElimCandidates] = useState<string[]>(initialStates.manualElimCandidates)
+  const [goodCandidates, setGoodCandidates] = useState<string[]>(initialStates.goodCandidates)
+  const [badCandidates, setBadCandidates] = useState<string[]>(initialStates.badCandidates)
+
+  const [highlightIndex, setHighlightIndex] = useState<number | null>(initialStates.highlightIndex)
+  const [lastClickedHighlightIndex, setLastClickedHighlightIndex] = useState<number | null>(initialStates.lastClickedHighlightIndex)
+  const [lastFocusedEntryIndex, setLastFocusedEntryIndex] = useState<number | null>(initialStates.lastFocusedEntryIndex)
+
+  const [difficulty, setDifficulty] = useState<"easy" | "medium" | "hard" | "diabolical">(initialStates.difficulty)
+
   const padNumberClicked = useRef(false)
 
   const charCounts = useMemo(() => countCharactersInString(puzzleStringCurrent, symbols), [puzzleStringCurrent])
@@ -244,13 +276,13 @@ function useSudokuManagement() {
   )
 
   const tryAutoSolves = useCallback(async () => {
-    if (currentAutoRuleIndex >= checkedRules.length) {
+    if (currentAutoRuleIndex >= checkedRuleIndices.length) {
       resetCurrentAutoRuleIndex()
       handleQueueAutoSolve(false)
       return
     }
 
-    const ruleIndex = checkedRules[currentAutoRuleIndex]
+    const ruleIndex = checkedRuleIndices[currentAutoRuleIndex]
 
     const isSuccess = await tryRuleAtIndex(ruleIndex, true)
 
@@ -258,7 +290,7 @@ function useSudokuManagement() {
       resetCurrentAutoRuleIndex()
       handleQueueAutoSolve(true)
     } else {
-      if (currentAutoRuleIndex >= checkedRules.length - 1) {
+      if (currentAutoRuleIndex >= checkedRuleIndices.length - 1) {
         resetCurrentAutoRuleIndex()
         handleQueueAutoSolve(false)
       } else {
@@ -266,7 +298,7 @@ function useSudokuManagement() {
         handleQueueAutoSolve(true)
       }
     }
-  }, [checkedRules, currentAutoRuleIndex, handleQueueAutoSolve, tryRuleAtIndex])
+  }, [checkedRuleIndices, currentAutoRuleIndex, handleQueueAutoSolve, tryRuleAtIndex])
 
   useEffect(() => {
     if (queueAutoSolve && boardIsSet && !boardIsSolved) {
@@ -293,9 +325,9 @@ function useSudokuManagement() {
   }
 
   const handleCheckboxChange = (ruleIndex: number) => {
-    const isNewCheck = !checkedRules.includes(ruleIndex)
+    const isNewCheck = !checkedRuleIndices.includes(ruleIndex)
 
-    setCheckedRules(prev => {
+    setCheckedRuleIndices(prev => {
       const updatedRules = isNewCheck ? [...prev, ruleIndex] : prev.filter(n => n !== ruleIndex)
       return updatedRules.sort((a, b) => a - b)
     })
@@ -355,8 +387,8 @@ function useSudokuManagement() {
     })
   }
 
-  const changeLastClickedHighlightN = (newHighlightN: number) => {
-    setLastClickedHighlightN(newHighlightN >= 0 && newHighlightN <= symbols.length ? newHighlightN : 0)
+  const changeLastClickedHighlightIndex = (newHighlightIndex: number | null) => {
+    setLastClickedHighlightIndex(newHighlightIndex == null || newHighlightIndex < 0 || newHighlightIndex >= symbols.length ? null : newHighlightIndex)
   }
 
   const toggleCandidateMode = (beCandidateMode?: boolean) => {
@@ -366,12 +398,31 @@ function useSudokuManagement() {
     setShowCandidates(prev => (shouldShow === undefined ? !prev : shouldShow))
   }
 
-  const handleHighlightNChange = (newHighlightN: number) => {
-    setHighlightN(newHighlightN >= 0 && newHighlightN <= symbols.length ? newHighlightN : 0)
+  const handleHighlightIndexChange = (newHighlightIndex: number | null) => {
+    setHighlightIndex(newHighlightIndex == null || newHighlightIndex < 0 || newHighlightIndex >= symbols.length ? null : newHighlightIndex)
+  }
+
+  function checkForAnySudokuConflict() {
+    for (let i = 0; i < puzzleStringCurrent.length; i++) {
+      const character = puzzleStringCurrent[i]
+      if (character !== "0") {
+        if (isAlreadyInUnit(i, character, puzzleStringCurrent)) {
+          return true
+        }
+      }
+    }
+    return false
   }
 
   const handleBoardSet = (isSet: boolean) => {
-    if (isSet) handleQueueAutoSolve(true)
+    if (isSet) {
+      if (checkForAnySudokuConflict()) {
+        alert("There is a sudoku conflict")
+        return
+      }
+
+      handleQueueAutoSolve(true)
+    }
     setBoardIsSet(isSet)
   }
 
@@ -395,16 +446,29 @@ function useSudokuManagement() {
   }
 
   function resetBoardData() {
-    setBoardIsSolved(false)
-    handleBoardSet(false)
-    toggleCandidateMode(false)
-    toggleShowCandidates(false)
-    setCheckedRules([])
-    handleHighlightNChange(0)
-    handlePuzzleStartChange("")
-    changeLastClickedHighlightN(0)
-    clearManualElimCandidates()
-    handleQueueAutoSolve(false)
+    setPuzzleStringCurrent(initialStates.puzzleStringCurrent)
+    setPuzzleStringStart(initialStates.puzzleStringStart)
+    setBoardIsSet(initialStates.boardIsSet)
+    setBoardIsSolved(initialStates.boardIsSolved)
+
+    setRuleOutcomes(initialStates.ruleOutcomes)
+    setCheckedRuleIndices(initialStates.checkedRuleIndices)
+    setCurrentAutoRuleIndex(initialStates.currentAutoRuleIndex)
+    setQueueAutoSolve(initialStates.queueAutoSolve)
+
+    setShowCandidates(initialStates.showCandidates)
+    setCandidateMode(initialStates.candidateMode)
+    setManualElimCandidates(initialStates.manualElimCandidates)
+    setGoodCandidates(initialStates.goodCandidates)
+    setBadCandidates(initialStates.badCandidates)
+
+    setHighlightIndex(initialStates.highlightIndex)
+    setLastClickedHighlightIndex(initialStates.lastClickedHighlightIndex)
+    setLastFocusedEntryIndex(initialStates.lastFocusedEntryIndex)
+
+    setDifficulty(initialStates.difficulty)
+
+    padNumberClicked.current = false
   }
 
   return {
@@ -415,18 +479,18 @@ function useSudokuManagement() {
     handlePuzzleStartChange,
     boardIsSet,
     handleBoardSet,
-    highlightN,
-    handleHighlightNChange,
+    highlightIndex,
+    handleHighlightIndexChange,
     showCandidates,
     toggleShowCandidates,
     candidateMode,
     toggleCandidateMode,
-    lastClickedHighlightN,
-    changeLastClickedHighlightN,
+    lastClickedHighlightIndex,
+    changeLastClickedHighlightIndex,
     manualElimCandidates,
     toggleManualElimCandidate,
     handleQueueAutoSolve,
-    checkedRules,
+    checkedRuleIndices,
     handleCheckboxChange,
     tryRuleAtIndex,
     resetBoardData,
@@ -445,4 +509,4 @@ function useSudokuManagement() {
 }
 
 export default useSudokuManagement
-export { symbols, symbolsSqrt, numbers }
+export { symbols, symbolsSqrt }

@@ -19,7 +19,7 @@ const Entry = ({ gridSquareIndex, shownValue }: EntryProps) => {
     puzzleStringCurrent,
     candidateMode,
     boardIsSet,
-    highlightN,
+    highlightIndex,
     handleEntry,
     toggleManualElimCandidate,
     manualElimCandidates,
@@ -31,7 +31,7 @@ const Entry = ({ gridSquareIndex, shownValue }: EntryProps) => {
     puzzleStringCurrent: string
     candidateMode: boolean
     boardIsSet: boolean
-    highlightN: number
+    highlightIndex: number | null
     handleEntry: (i: number, s: string) => void
     toggleManualElimCandidate: (gridSquareIndex: number, candidateIndex: number, shouldManualElim?: boolean) => void
     manualElimCandidates: string[]
@@ -52,11 +52,10 @@ const Entry = ({ gridSquareIndex, shownValue }: EntryProps) => {
         if (entryRef.current !== document.activeElement) {
           entryRef.current?.focus()
         } else {
-          if (highlightN != 0) {
-            const candidateIndex = highlightN - 1
+          if (highlightIndex != null) {
+            const candidateIndex = highlightIndex
             const candidateKey = `${gridSquareIndex}-${candidateIndex}`
-            const candidateN = highlightN
-            const isAlreadyInUnit = getPeerGridSquareIndices(gridSquareIndex).some(i => puzzleStringCurrent[i] === candidateN.toString())
+            const isAlreadyInUnit = getPeerGridSquareIndices(gridSquareIndex).some(i => puzzleStringCurrent[i] === symbols[highlightIndex])
 
             const isEliminated = shownValue || isAlreadyInUnit || manualElimCandidates.includes(candidateKey)
             const isToggleable = !isEliminated || manualElimCandidates.includes(candidateKey)
@@ -72,18 +71,19 @@ const Entry = ({ gridSquareIndex, shownValue }: EntryProps) => {
       if (entryRef.current !== document.activeElement) {
         entryRef.current?.focus()
       } else {
-        if (highlightN != 0 && !isWrong) {
-          handleEntry(gridSquareIndex, highlightN.toString())
+        if (highlightIndex != null && !isWrong) {
+          handleEntry(gridSquareIndex, symbols[highlightIndex])
         } else (document.activeElement as HTMLElement)?.blur()
       }
     } else (document.activeElement as HTMLElement)?.blur()
   }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    alert(e.key)
     if (!isLocked) {
-      if (isValidChar(e.key) && e.key != localShownValue && puzzleStringCurrent[gridSquareIndex] != e.key) {
-        setLocalShownValue(e.key)
-        handleEntry(gridSquareIndex, e.key)
+      if (isValidChar(e.key) && e.key.toUpperCase() != localShownValue && puzzleStringCurrent[gridSquareIndex] != e.key.toUpperCase()) {
+        setLocalShownValue(e.key.toUpperCase())
+        handleEntry(gridSquareIndex, e.key.toUpperCase())
       } else {
         setLocalShownValue("")
         handleEntry(gridSquareIndex, "0")
@@ -108,7 +108,7 @@ const Entry = ({ gridSquareIndex, shownValue }: EntryProps) => {
   }
 
   const innerValue = isWrong ? localShownValue : shownValue
-  const innerContent = innerValue == "" ? "" : symbols[Number(innerValue) - 1]
+  const innerContent = innerValue == "" ? "" : innerValue
 
   return (
     <div
@@ -121,7 +121,7 @@ const Entry = ({ gridSquareIndex, shownValue }: EntryProps) => {
         !candidateMode && "hover-fine-device:focus:border-[3px] hover-fine-device:focus:border-green-600 ",
         isLocked && "bg-[rgba(142,153,167,0.349)]",
         isWrong && "bg-red-500",
-        shownValue === highlightN.toString() && "font-bold"
+        highlightIndex != null && shownValue === symbols[highlightIndex] && "font-bold"
       )}
       tabIndex={isLocked ? -1 : gridSquareIndex + 1}
       onPointerDown={handlePointerDown}

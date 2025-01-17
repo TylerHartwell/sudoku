@@ -7,7 +7,7 @@ import CandidateContext from "@/contexts/CandidateContext"
 import PadNumber from "@/components/PadNumber"
 import RuleItem from "@/components/RuleItem"
 import rulesArr from "@/rules/rulesArr"
-import useSudokuManagement, { numbers, symbols } from "@/hooks/useSudokuManagement"
+import useSudokuManagement, { symbols } from "@/hooks/useSudokuManagement"
 import clsx from "clsx"
 
 export default function Page() {
@@ -19,18 +19,18 @@ export default function Page() {
     handlePuzzleStartChange,
     boardIsSet,
     handleBoardSet,
-    highlightN,
-    handleHighlightNChange,
+    highlightIndex,
+    handleHighlightIndexChange,
     showCandidates,
     toggleShowCandidates,
     candidateMode,
     toggleCandidateMode,
-    lastClickedHighlightN,
-    changeLastClickedHighlightN,
+    lastClickedHighlightIndex,
+    changeLastClickedHighlightIndex,
     manualElimCandidates,
     toggleManualElimCandidate,
     handleQueueAutoSolve,
-    checkedRules,
+    checkedRuleIndices,
     handleCheckboxChange,
     tryRuleAtIndex,
     resetBoardData,
@@ -49,7 +49,7 @@ export default function Page() {
 
   const contextObj = {
     getPeerSquares,
-    highlightN,
+    highlightIndex,
     showCandidates,
     candidateMode,
     puzzleStringStart,
@@ -78,14 +78,14 @@ export default function Page() {
             <Board />
             <section className="numberpad flex md:h-[115px] flex-col items-center">
               <div className="w-full flex justify-around items-center py-[10px]">
-                {numbers.map(num => (
+                {symbols.map((symbol, index) => (
                   <PadNumber
-                    key={num}
-                    number={num}
-                    highlightN={highlightN}
-                    handleHighlightNChange={handleHighlightNChange}
-                    lastClickedHighlightN={lastClickedHighlightN}
-                    changeLastClickedHighlightN={changeLastClickedHighlightN}
+                    key={index}
+                    index={index}
+                    highlightIndex={highlightIndex}
+                    handleHighlightIndexChange={handleHighlightIndexChange}
+                    lastClickedHighlightIndex={lastClickedHighlightIndex}
+                    changeLastClickedHighlightIndex={changeLastClickedHighlightIndex}
                   />
                 ))}
               </div>
@@ -135,7 +135,7 @@ export default function Page() {
                   key={index}
                   ruleN={index + 1}
                   ruleName={rule.ruleName}
-                  isChecked={checkedRules.includes(index)}
+                  isChecked={checkedRuleIndices.includes(index)}
                   handleCheckboxChange={() => handleCheckboxChange(index)}
                   ruleOutcome={ruleOutcomes[index]}
                   tryRuleAtIndex={() => tryRuleAtIndex(index)}
@@ -159,6 +159,7 @@ export default function Page() {
                 <div className="flex-1 grow-0"></div>
                 <div className="flex-1 flex justify-start items-center">
                   <select
+                    name={"difficulty"}
                     className={clsx("difficulty m-1 py-0.5 h-min", boardIsSet && "hidden")}
                     value={difficulty}
                     onChange={e => handleDifficulty(e.target.value as "easy" | "medium" | "hard" | "diabolical")}

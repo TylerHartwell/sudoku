@@ -15,7 +15,7 @@ interface CandidateProps {
 const Candidate = ({ gridSquareIndex, candidateIndex, entryShownValue }: CandidateProps) => {
   const {
     puzzleStringCurrent,
-    highlightN,
+    highlightIndex,
     showCandidates,
     candidateMode,
     toggleManualElimCandidate,
@@ -25,8 +25,7 @@ const Candidate = ({ gridSquareIndex, candidateIndex, entryShownValue }: Candida
   } = useContext(CandidateContext)
 
   const candidateKey = `${gridSquareIndex}-${candidateIndex}`
-  const candidateN = candidateIndex + 1
-  const isAlreadyInUnit = getPeerGridSquareIndices(gridSquareIndex).some(i => puzzleStringCurrent[i] === candidateN.toString())
+  const isAlreadyInUnit = getPeerGridSquareIndices(gridSquareIndex).some(i => puzzleStringCurrent[i] === symbols[candidateIndex])
 
   const isEliminated = entryShownValue || isAlreadyInUnit || manualElimCandidates.includes(candidateKey)
   const isToggleable = !isEliminated || manualElimCandidates.includes(candidateKey)
@@ -44,7 +43,7 @@ const Candidate = ({ gridSquareIndex, candidateIndex, entryShownValue }: Candida
         className={clsx(
           "candidate absolute text-[3vw] md:text-[clamp(12px,min(2vh,2vw),30px)] flex justify-center items-center size-full pointer-events-none",
           ((!showCandidates && !candidateMode) || entryShownValue) && "invisible",
-          candidateN === highlightN && (showCandidates || candidateMode) && !isEliminated && "bg-[rgb(248,248,120)] font-bold",
+          candidateIndex === highlightIndex && (showCandidates || candidateMode) && !isEliminated && "bg-[rgb(248,248,120)] font-bold",
           isToggleable && "border-[1px] border-dashed border-[#0000ff31] hover-fine-device:hover:font-bold hover-fine-device:hover:bg-[#ff5353]",
           candidateMode && "hover-fine-device:pointer-events-auto",
           goodCandidates.includes(candidateKey) && !isEliminated && "bg-[rgb(45,241,77)] font-bold",
@@ -52,7 +51,7 @@ const Candidate = ({ gridSquareIndex, candidateIndex, entryShownValue }: Candida
         )}
         onPointerDown={handlePointerDown}
       >
-        {!isEliminated ? symbols[candidateN - 1] : ""}
+        {!isEliminated ? symbols[candidateIndex] : ""}
       </div>
     </div>
   )
