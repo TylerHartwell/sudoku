@@ -21,7 +21,18 @@ const Candidate = ({ gridSquareIndex, candidateIndex, entryShownValue }: Candida
     toggleManualElimCandidate,
     manualElimCandidates,
     goodCandidates,
-    badCandidates
+    badCandidates,
+    handleQueueAutoSolve
+  }: {
+    puzzleStringCurrent: string
+    highlightIndex: number | null
+    showCandidates: boolean
+    candidateMode: boolean
+    toggleManualElimCandidate: (gridSquareIndex: number, candidateIndex: number, shouldManualElim?: boolean) => void
+    manualElimCandidates: string[]
+    goodCandidates: string[]
+    badCandidates: string[]
+    handleQueueAutoSolve: (beQueued: boolean) => void
   } = useContext(CandidateContext)
 
   const candidateKey = `${gridSquareIndex}-${candidateIndex}`
@@ -34,6 +45,7 @@ const Candidate = ({ gridSquareIndex, candidateIndex, entryShownValue }: Candida
     e.preventDefault()
     if (e.pointerType === "mouse" && isToggleable) {
       toggleManualElimCandidate(gridSquareIndex, candidateIndex)
+      handleQueueAutoSolve(true)
     }
   }
 

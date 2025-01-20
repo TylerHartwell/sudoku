@@ -82,12 +82,11 @@ function useSudokuManagement() {
   const getCandidates = useCallback(
     (gridSquareIndex: number) => {
       const candidateArr = Array.from({ length: symbols.length }, (_, candidateIndex) => {
-        const candidateN = candidateIndex + 1
         const candidateKey = `${gridSquareIndex}-${candidateIndex}`
 
         const isSquareOccupied = puzzleStringCurrent[gridSquareIndex] != "0"
 
-        const isAlreadyInUnit = getPeerGridSquareIndices(gridSquareIndex).some(i => puzzleStringCurrent[i] === candidateN.toString())
+        const isAlreadyInUnit = getPeerGridSquareIndices(gridSquareIndex).some(i => puzzleStringCurrent[i] === symbols[candidateIndex])
 
         if (isSquareOccupied || isAlreadyInUnit || manualElimCandidates.includes(candidateKey)) {
           return false
@@ -137,8 +136,7 @@ function useSudokuManagement() {
   const toggleManualElimCandidate = useCallback(
     (gridSquareIndex: number, candidateIndex: number, shouldManualElim?: boolean) => {
       const candidateKey = `${gridSquareIndex}-${candidateIndex}`
-      const candidateN = candidateIndex + 1
-      const isCandidateInPeerEntry = isAlreadyInUnit(gridSquareIndex, candidateN.toString(), puzzleStringCurrent)
+      const isCandidateInPeerEntry = isAlreadyInUnit(gridSquareIndex, symbols[candidateIndex], puzzleStringCurrent)
       const entryShownValue = puzzleStringCurrent[gridSquareIndex] == "0" ? "" : puzzleStringCurrent[gridSquareIndex]
 
       if (!isCandidateInPeerEntry && !entryShownValue) {
@@ -337,10 +335,6 @@ function useSudokuManagement() {
     }
   }
 
-  const clearManualElimCandidates = () => {
-    setManualElimCandidates([])
-  }
-
   const toggleGoodCandidates = (gridSquareIndex: number, candidateIndex: number, shouldMark?: boolean) => {
     const candidateKey = `${gridSquareIndex}-${candidateIndex}`
     setGoodCandidates(prev => {
@@ -465,8 +459,6 @@ function useSudokuManagement() {
     setHighlightIndex(initialStates.highlightIndex)
     setLastClickedHighlightIndex(initialStates.lastClickedHighlightIndex)
     setLastFocusedEntryIndex(initialStates.lastFocusedEntryIndex)
-
-    setDifficulty(initialStates.difficulty)
 
     padNumberClicked.current = false
   }

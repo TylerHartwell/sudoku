@@ -25,7 +25,8 @@ const Entry = ({ gridSquareIndex, shownValue }: EntryProps) => {
     manualElimCandidates,
     isAlreadyInUnit,
     handleLastFocusedEntryIndex,
-    padNumberClicked
+    padNumberClicked,
+    handleQueueAutoSolve
   }: {
     puzzleStringStart: string
     puzzleStringCurrent: string
@@ -38,6 +39,7 @@ const Entry = ({ gridSquareIndex, shownValue }: EntryProps) => {
     isAlreadyInUnit: (gridSquareIndex: number, character: string, puzzleString: string) => boolean
     handleLastFocusedEntryIndex: (entryIndex: number | null) => void
     padNumberClicked: React.MutableRefObject<boolean>
+    handleQueueAutoSolve: (beQueued: boolean) => void
   } = useContext(CandidateContext)
   const entryRef = useRef<HTMLDivElement>(null)
 
@@ -63,6 +65,7 @@ const Entry = ({ gridSquareIndex, shownValue }: EntryProps) => {
             if (isToggleable) {
               toggleManualElimCandidate(gridSquareIndex, candidateIndex)
               ;(document.activeElement as HTMLElement)?.blur()
+              handleQueueAutoSolve(true)
             }
           } else (document.activeElement as HTMLElement)?.blur()
         }
@@ -79,7 +82,6 @@ const Entry = ({ gridSquareIndex, shownValue }: EntryProps) => {
   }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
-    alert(e.key)
     if (!isLocked) {
       if (isValidChar(e.key) && e.key.toUpperCase() != localShownValue && puzzleStringCurrent[gridSquareIndex] != e.key.toUpperCase()) {
         setLocalShownValue(e.key.toUpperCase())
