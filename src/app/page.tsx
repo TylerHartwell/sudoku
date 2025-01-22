@@ -44,7 +44,8 @@ export default function Page() {
     lastFocusedEntryIndex,
     handleLastFocusedEntryIndex,
     padNumberClicked,
-    charCounts
+    charCounts,
+    restartPuzzle
   } = useSudokuManagement()
 
   const contextObj = {
@@ -173,7 +174,7 @@ export default function Page() {
               </div>
               <input
                 type="text"
-                placeholder={`paste or enter ${Math.pow(symbols.length, 2)}-character grid string`}
+                placeholder={`paste or enter ${Math.pow(symbols.length, 2)}-character puzzle string`}
                 className={clsx("grid-string w-[98%] border-none h-[2em] text-[.85em] my-[2px] select-text", boardIsSet && "hidden")}
                 id="grid-string"
                 value={puzzleStringStart}
@@ -193,13 +194,16 @@ export default function Page() {
 
                 <div className="flex-1"></div>
                 <button
-                  className={clsx(
-                    "set-puzzle-btn w-min text-[clamp(12px,4vw,16px)] rounded-[10px] shadow-[black_0px_0px_3px] active:bg-yellow-200",
-                    boardIsSet && "hidden"
-                  )}
-                  onClick={() => handleBoardSet(true)}
+                  className={clsx("set-puzzle-btn w-min text-[clamp(12px,4vw,16px)] rounded-[10px] shadow-[black_0px_0px_3px] active:bg-yellow-200")}
+                  onClick={() => {
+                    if (boardIsSet) {
+                      restartPuzzle()
+                    } else {
+                      handleBoardSet(true)
+                    }
+                  }}
                 >
-                  Set Puzzle
+                  {boardIsSet ? "Restart" : "Set Puzzle"}
                 </button>
                 <div className="flex-1"></div>
                 <div className="flex-1 flex justify-end">

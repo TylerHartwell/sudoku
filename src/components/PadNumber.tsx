@@ -26,7 +26,8 @@ const PadNumber = ({
     candidateMode,
     toggleManualElimCandidate,
     charCounts,
-    handleQueueAutoSolve
+    handleQueueAutoSolve,
+    puzzleStringCurrent
   }: {
     lastFocusedEntryIndex: number | null
     handleLastFocusedEntryIndex: (entryIndex: number | null) => void
@@ -36,6 +37,7 @@ const PadNumber = ({
     toggleManualElimCandidate: (gridSquareIndex: number, candidateIndex: number, shouldManualElim?: boolean) => void
     charCounts: { [key: string]: number }
     handleQueueAutoSolve: (beQueued: boolean) => void
+    puzzleStringCurrent: string
   } = useContext(CandidateContext)
 
   const handleMouseEnter = () => {
@@ -51,6 +53,11 @@ const PadNumber = ({
 
     if (lastFocusedEntryIndex != null) {
       if (!candidateMode) {
+        if (symbols[index] == puzzleStringCurrent[lastFocusedEntryIndex]) {
+          handleEntry(lastFocusedEntryIndex, "0")
+        } else {
+          handleEntry(lastFocusedEntryIndex, symbols[index])
+        }
         handleEntry(lastFocusedEntryIndex, symbols[index])
         changeLastClickedHighlightIndex(index)
         handleHighlightIndexChange(index)

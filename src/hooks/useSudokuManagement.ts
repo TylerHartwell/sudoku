@@ -123,7 +123,7 @@ function useSudokuManagement() {
   }, [])
 
   const isAlreadyInUnit = useCallback((gridSquareIndex: number, character: string, puzzleString: string) => {
-    if (character == "0") return false
+    if (character == "0" || character == "") return false
     return getPeerGridSquareIndices(gridSquareIndex).some(i => {
       if (i < 0 || i >= puzzleString.length) {
         console.error(`Index ${i} is out of bounds for puzzleStringCurrent with length ${puzzleString.length}`)
@@ -164,64 +164,63 @@ function useSudokuManagement() {
     [isAlreadyInUnit, puzzleStringCurrent]
   )
 
+  const replacePuzzleStringCurrentAtWith = (gridSquareIndex: number, replacement: string) => {
+    setPuzzleStringCurrent(prev => {
+      return prev.slice(0, gridSquareIndex) + replacement + prev.slice(gridSquareIndex + 1)
+    })
+  }
+
   const handleEntry = useCallback(
     (gridSquareIndex: number, entryChar: string) => {
       const replacementChar = isValidChar(entryChar) ? entryChar : "0"
+      console.log(gridSquareIndex, entryChar)
 
-      handleLastFocusedEntryIndex(null)
+      // handleLastFocusedEntryIndex(null)
 
-      if (replacementChar == "0" && puzzleStringCurrent[gridSquareIndex] == "0") return
-
-      if (replacementChar != "0" && puzzleStringCurrent[gridSquareIndex] == replacementChar) {
-        setPuzzleStringCurrent(prev => {
-          return prev.slice(0, gridSquareIndex) + "0" + prev.slice(gridSquareIndex + 1)
-        })
+      if (replacementChar == "0") {
+        if (puzzleStringCurrent[gridSquareIndex] == "0") return
+        replacePuzzleStringCurrentAtWith(gridSquareIndex, replacementChar)
+        if (document.activeElement instanceof HTMLElement) {
+          // document.activeElement.blur()
+        }
         return
       }
 
-      if (isAlreadyInUnit(gridSquareIndex, replacementChar, puzzleStringCurrent)) {
-        setPuzzleStringCurrent(prev => {
-          return prev.slice(0, gridSquareIndex) + "0" + prev.slice(gridSquareIndex + 1)
-        })
-        return
-      }
+      replacePuzzleStringCurrentAtWith(gridSquareIndex, replacementChar)
 
-      setPuzzleStringCurrent(prev => {
-        return prev.slice(0, gridSquareIndex) + replacementChar + prev.slice(gridSquareIndex + 1)
-      })
+      const candidateIndex = symbols.indexOf(replacementChar)
 
-      if (replacementChar != "0") {
-        const candidateIndex = Number(replacementChar) - 1
+      getPeerSquares(gridSquareIndex).forEach(square => {
+        const candidateKey = `${square.gridSquareIndex}-${candidateIndex}`
 
-        getPeerSquares(gridSquareIndex).forEach(square => {
-          const candidateKey = `${square.gridSquareIndex}-${candidateIndex}`
+        //remove all candidates that are in the gridSquareIndex from the manual elim candidate array
+        if (square.gridSquareIndex == gridSquareIndex) {
+          square.candidates.forEach((_possible, i) => {
+            const candidateKey = `${gridSquareIndex}-${i}`
 
-          //remove candidates matching the entryChar in peer squares of the gridSquareIndex from the manual elim candidate array
+            if (manualElimCandidates.includes(candidateKey)) {
+              toggleManualElimCandidate(gridSquareIndex, i, false)
+            }
+          })
+        } else {
+          //remove candidates matching the replacementChar in peer squares of the gridSquareIndex from the manual elim candidate array
           if (manualElimCandidates.includes(candidateKey)) {
             toggleManualElimCandidate(square.gridSquareIndex, candidateIndex, false)
           }
+        }
+      })
 
-          //remove all candidates that are in the gridSquareIndex from the manual elim candidate array
-          if (square.gridSquareIndex == gridSquareIndex) {
-            square.candidates.forEach((_possible, i) => {
-              const candidateKey = `${gridSquareIndex}-${i}`
+      // if (isAlreadyInUnit(gridSquareIndex, replacementChar, puzzleStringCurrent)) {}
 
-              if (manualElimCandidates.includes(candidateKey)) {
-                toggleManualElimCandidate(gridSquareIndex, i, false)
-              }
-            })
-          }
-        })
-      }
-      if (document.activeElement instanceof HTMLElement) {
-        document.activeElement.blur()
+      if (document.activeElement instanceof HTMLElement && !isAlreadyInUnit(gridSquareIndex, replacementChar, puzzleStringCurrent)) {
+        // document.activeElement.blur()
       }
 
       handleQueueAutoSolve(true)
     },
     [
       getPeerSquares,
-      handleLastFocusedEntryIndex,
+      // handleLastFocusedEntryIndex,
       handleQueueAutoSolve,
       isAlreadyInUnit,
       manualElimCandidates,
@@ -420,11 +419,15 @@ function useSudokuManagement() {
     setBoardIsSet(isSet)
   }
 
+  const formatStringToPuzzleString = (value: string) => {
+    const zeroReplaced = replaceNonDigitsWithZero(value)
+    return truncateAndPad(zeroReplaced, Math.pow(symbols.length, 2), "0")
+  }
+
   const handlePuzzleStartChange = (newValue: string) => {
     setPuzzleStringStart(newValue)
-    const puzzleString = replaceNonDigitsWithZero(newValue)
 
-    setPuzzleStringCurrent(truncateAndPad(puzzleString, Math.pow(symbols.length, 2), "0"))
+    setPuzzleStringCurrent(formatStringToPuzzleString(newValue))
   }
 
   const handleRuleOutcome = (ruleIndex: number, newOutcome: RuleOutcome) => {
@@ -437,6 +440,25 @@ function useSudokuManagement() {
 
   const handleDifficulty = (diff: "easy" | "medium" | "hard" | "diabolical") => {
     setDifficulty(diff)
+  }
+
+  const restartPuzzle = () => {
+    setPuzzleStringCurrent(formatStringToPuzzleString(puzzleStringStart))
+    setBoardIsSolved(initialStates.boardIsSolved)
+
+    setRuleOutcomes(initialStates.ruleOutcomes)
+    setCurrentAutoRuleIndex(initialStates.currentAutoRuleIndex)
+    setQueueAutoSolve(initialStates.queueAutoSolve)
+
+    setManualElimCandidates(initialStates.manualElimCandidates)
+    setGoodCandidates(initialStates.goodCandidates)
+    setBadCandidates(initialStates.badCandidates)
+
+    setHighlightIndex(initialStates.highlightIndex)
+    setLastClickedHighlightIndex(initialStates.lastClickedHighlightIndex)
+    setLastFocusedEntryIndex(initialStates.lastFocusedEntryIndex)
+
+    padNumberClicked.current = false
   }
 
   function resetBoardData() {
@@ -496,7 +518,8 @@ function useSudokuManagement() {
     lastFocusedEntryIndex,
     handleLastFocusedEntryIndex,
     padNumberClicked,
-    charCounts
+    charCounts,
+    restartPuzzle
   }
 }
 

@@ -27,7 +27,7 @@ const Square = ({ boxIndex, boxSquareIndex }: { boxIndex: number; boxSquareIndex
       )}
     >
       <Entry gridSquareIndex={gridSquareIndex} shownValue={shownValue} />
-      {Array.from({ length: symbols.length }).map((_, index) => (
+      {symbols.map((_, index) => (
         <Candidate key={index} gridSquareIndex={gridSquareIndex} candidateIndex={index} entryShownValue={shownValue} />
       ))}
     </div>

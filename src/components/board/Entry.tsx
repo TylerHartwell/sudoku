@@ -1,8 +1,7 @@
 "use client"
 
-import { useRef, useState, useContext } from "react"
+import { useRef, useContext } from "react"
 import CandidateContext from "@/contexts/CandidateContext"
-import getPeerGridSquareIndices from "@/utils/getPeerGridSquareIndices"
 import clsx from "clsx"
 import isValidChar from "@/utils/isValidChar"
 import { symbols } from "@/hooks/useSudokuManagement"
@@ -13,7 +12,6 @@ interface EntryProps {
 }
 
 const Entry = ({ gridSquareIndex, shownValue }: EntryProps) => {
-  const [localShownValue, setLocalShownValue] = useState(shownValue)
   const {
     puzzleStringStart,
     puzzleStringCurrent,
@@ -26,7 +24,8 @@ const Entry = ({ gridSquareIndex, shownValue }: EntryProps) => {
     isAlreadyInUnit,
     handleLastFocusedEntryIndex,
     padNumberClicked,
-    handleQueueAutoSolve
+    handleQueueAutoSolve,
+    lastFocusedEntryIndex
   }: {
     puzzleStringStart: string
     puzzleStringCurrent: string
@@ -40,11 +39,12 @@ const Entry = ({ gridSquareIndex, shownValue }: EntryProps) => {
     handleLastFocusedEntryIndex: (entryIndex: number | null) => void
     padNumberClicked: React.MutableRefObject<boolean>
     handleQueueAutoSolve: (beQueued: boolean) => void
+    lastFocusedEntryIndex: number | null
   } = useContext(CandidateContext)
   const entryRef = useRef<HTMLDivElement>(null)
 
   const isLocked = boardIsSet && puzzleStringStart.length == Math.pow(symbols.length, 2) && puzzleStringStart[gridSquareIndex] == shownValue
-  const isWrong = isAlreadyInUnit(gridSquareIndex, localShownValue, puzzleStringCurrent)
+  const isWrong = isAlreadyInUnit(gridSquareIndex, shownValue, puzzleStringCurrent)
 
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     e.preventDefault()
@@ -57,9 +57,11 @@ const Entry = ({ gridSquareIndex, shownValue }: EntryProps) => {
           if (highlightIndex != null) {
             const candidateIndex = highlightIndex
             const candidateKey = `${gridSquareIndex}-${candidateIndex}`
-            const isAlreadyInUnit = getPeerGridSquareIndices(gridSquareIndex).some(i => puzzleStringCurrent[i] === symbols[highlightIndex])
 
-            const isEliminated = shownValue || isAlreadyInUnit || manualElimCandidates.includes(candidateKey)
+            const isEliminated =
+              shownValue ||
+              isAlreadyInUnit(gridSquareIndex, symbols[highlightIndex], puzzleStringCurrent) ||
+              manualElimCandidates.includes(candidateKey)
             const isToggleable = !isEliminated || manualElimCandidates.includes(candidateKey)
 
             if (isToggleable) {
@@ -74,8 +76,12 @@ const Entry = ({ gridSquareIndex, shownValue }: EntryProps) => {
       if (entryRef.current !== document.activeElement) {
         entryRef.current?.focus()
       } else {
-        if (highlightIndex != null && !isWrong) {
-          handleEntry(gridSquareIndex, symbols[highlightIndex])
+        if (highlightIndex != null) {
+          if (highlightIndex == symbols.indexOf(shownValue)) {
+            handleEntry(gridSquareIndex, "0")
+          } else {
+            handleEntry(gridSquareIndex, symbols[highlightIndex])
+          }
         } else (document.activeElement as HTMLElement)?.blur()
       }
     } else (document.activeElement as HTMLElement)?.blur()
@@ -83,11 +89,9 @@ const Entry = ({ gridSquareIndex, shownValue }: EntryProps) => {
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (!isLocked) {
-      if (isValidChar(e.key) && e.key.toUpperCase() != localShownValue && puzzleStringCurrent[gridSquareIndex] != e.key.toUpperCase()) {
-        setLocalShownValue(e.key.toUpperCase())
+      if (isValidChar(e.key) && e.key.toUpperCase() != shownValue) {
         handleEntry(gridSquareIndex, e.key.toUpperCase())
       } else {
-        setLocalShownValue("")
         handleEntry(gridSquareIndex, "0")
       }
     }
@@ -104,13 +108,10 @@ const Entry = ({ gridSquareIndex, shownValue }: EntryProps) => {
 
     padNumberClicked.current = false
 
-    if (isWrong) {
-      setLocalShownValue("")
+    if (isWrong && gridSquareIndex == lastFocusedEntryIndex) {
+      handleEntry(gridSquareIndex, "0")
     }
   }
-
-  const innerValue = isWrong ? localShownValue : shownValue
-  const innerContent = innerValue == "" ? "" : innerValue
 
   return (
     <div
@@ -131,7 +132,7 @@ const Entry = ({ gridSquareIndex, shownValue }: EntryProps) => {
       onBlur={handleBlur}
       onFocus={handleFocus}
     >
-      {innerContent}
+      {shownValue}
     </div>
   )
 }
