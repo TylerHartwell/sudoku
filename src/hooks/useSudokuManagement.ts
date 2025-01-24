@@ -170,10 +170,22 @@ function useSudokuManagement() {
     })
   }
 
+  const checkForAnySudokuConflict = useCallback(() => {
+    for (let i = 0; i < puzzleStringCurrent.length; i++) {
+      const character = puzzleStringCurrent[i]
+      if (character !== "0") {
+        if (isAlreadyInUnit(i, character, puzzleStringCurrent)) {
+          return true
+        }
+      }
+    }
+    return false
+  }, [isAlreadyInUnit, puzzleStringCurrent])
+
   const handleEntry = useCallback(
     (gridSquareIndex: number, entryChar: string) => {
       const replacementChar = isValidChar(entryChar) ? entryChar : "0"
-      console.log(gridSquareIndex, entryChar)
+      // console.log(gridSquareIndex, entryChar)
 
       // handleLastFocusedEntryIndex(null)
 
@@ -215,18 +227,8 @@ function useSudokuManagement() {
       if (document.activeElement instanceof HTMLElement && !isAlreadyInUnit(gridSquareIndex, replacementChar, puzzleStringCurrent)) {
         // document.activeElement.blur()
       }
-
-      handleQueueAutoSolve(true)
     },
-    [
-      getPeerSquares,
-      // handleLastFocusedEntryIndex,
-      handleQueueAutoSolve,
-      isAlreadyInUnit,
-      manualElimCandidates,
-      puzzleStringCurrent,
-      toggleManualElimCandidate
-    ]
+    [getPeerSquares, isAlreadyInUnit, manualElimCandidates, puzzleStringCurrent, toggleManualElimCandidate]
   )
 
   const tryRuleAtIndex = useCallback(
@@ -298,11 +300,11 @@ function useSudokuManagement() {
   }, [checkedRuleIndices, currentAutoRuleIndex, handleQueueAutoSolve, tryRuleAtIndex])
 
   useEffect(() => {
-    if (queueAutoSolve && boardIsSet && !boardIsSolved) {
+    if (queueAutoSolve && boardIsSet && !boardIsSolved && !checkForAnySudokuConflict()) {
       handleQueueAutoSolve(false)
       tryAutoSolves()
     }
-  }, [boardIsSet, boardIsSolved, handleQueueAutoSolve, queueAutoSolve, tryAutoSolves])
+  }, [boardIsSet, boardIsSolved, checkForAnySudokuConflict, handleQueueAutoSolve, queueAutoSolve, tryAutoSolves])
 
   useEffect(() => {
     if (boardIsSet && checkBoardSolution(puzzleStringCurrent)) {
@@ -393,18 +395,6 @@ function useSudokuManagement() {
 
   const handleHighlightIndexChange = (newHighlightIndex: number | null) => {
     setHighlightIndex(newHighlightIndex == null || newHighlightIndex < 0 || newHighlightIndex >= symbols.length ? null : newHighlightIndex)
-  }
-
-  function checkForAnySudokuConflict() {
-    for (let i = 0; i < puzzleStringCurrent.length; i++) {
-      const character = puzzleStringCurrent[i]
-      if (character !== "0") {
-        if (isAlreadyInUnit(i, character, puzzleStringCurrent)) {
-          return true
-        }
-      }
-    }
-    return false
   }
 
   const handleBoardSet = (isSet: boolean) => {

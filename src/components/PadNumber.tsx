@@ -49,6 +49,7 @@ const PadNumber = ({
   }
 
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    e.preventDefault()
     padNumberClicked.current = true
 
     if (lastFocusedEntryIndex != null) {
@@ -57,16 +58,21 @@ const PadNumber = ({
           handleEntry(lastFocusedEntryIndex, "0")
         } else {
           handleEntry(lastFocusedEntryIndex, symbols[index])
+          const element = document.querySelector<HTMLElement>(`.entry[data-grid-square-index="${lastFocusedEntryIndex}"]`)
+          if (element) {
+            // console.log(element)
+            // element.focus()
+          }
         }
-        handleEntry(lastFocusedEntryIndex, symbols[index])
         changeLastClickedHighlightIndex(index)
         handleHighlightIndexChange(index)
+        ;(document.activeElement as HTMLElement)?.blur()
       } else {
         toggleManualElimCandidate(lastFocusedEntryIndex, index)
         changeLastClickedHighlightIndex(index)
         handleQueueAutoSolve(true)
       }
-      handleLastFocusedEntryIndex(null)
+      // handleLastFocusedEntryIndex(null)
       return
     }
 

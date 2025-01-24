@@ -82,7 +82,8 @@ const Entry = ({ gridSquareIndex, shownValue }: EntryProps) => {
           } else {
             handleEntry(gridSquareIndex, symbols[highlightIndex])
           }
-        } else (document.activeElement as HTMLElement)?.blur()
+        }
+        ;(document.activeElement as HTMLElement)?.blur()
       }
     } else (document.activeElement as HTMLElement)?.blur()
   }
@@ -94,6 +95,7 @@ const Entry = ({ gridSquareIndex, shownValue }: EntryProps) => {
       } else {
         handleEntry(gridSquareIndex, "0")
       }
+      // ;(document.activeElement as HTMLElement)?.blur()
     }
   }
 
@@ -102,13 +104,12 @@ const Entry = ({ gridSquareIndex, shownValue }: EntryProps) => {
   }
 
   const handleBlur = () => {
-    if (!padNumberClicked.current) {
-      handleLastFocusedEntryIndex(null)
-    }
-
-    padNumberClicked.current = false
-
-    if (isWrong && gridSquareIndex == lastFocusedEntryIndex) {
+    // if (!padNumberClicked.current) {
+    //   handleLastFocusedEntryIndex(null)
+    // }
+    // padNumberClicked.current = false
+    // if (isWrong && gridSquareIndex == lastFocusedEntryIndex) {
+    if (isWrong) {
       handleEntry(gridSquareIndex, "0")
     }
   }
@@ -126,6 +127,7 @@ const Entry = ({ gridSquareIndex, shownValue }: EntryProps) => {
         isWrong && "bg-red-500",
         highlightIndex != null && shownValue === symbols[highlightIndex] && "font-bold"
       )}
+      data-grid-square-index={gridSquareIndex}
       tabIndex={isLocked ? -1 : gridSquareIndex + 1}
       onPointerDown={handlePointerDown}
       onKeyDown={handleKeyDown}
