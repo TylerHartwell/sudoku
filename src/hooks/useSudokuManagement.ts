@@ -72,6 +72,21 @@ function useSudokuManagement() {
 
   const charCounts = useMemo(() => countCharactersInString(puzzleStringCurrent, symbols), [puzzleStringCurrent])
 
+  useEffect(() => {
+    const handlePointerDown = (e: PointerEvent) => {
+      const target = e.target as HTMLElement
+      if (!target.matches(".entry") && !target.matches(".pad-number")) {
+        padNumberClicked.current = false
+      }
+    }
+
+    document.addEventListener("pointerdown", handlePointerDown)
+
+    return () => {
+      document.removeEventListener("pointerdown", handlePointerDown)
+    }
+  }, [])
+
   const handleLastFocusedEntryIndex = useCallback((entryIndex: number | null) => {
     if (entryIndex == null || (Number.isInteger(entryIndex) && entryIndex >= 0 && entryIndex < Math.pow(symbols.length, 2))) {
       setLastFocusedEntryIndex(entryIndex)
@@ -185,21 +200,15 @@ function useSudokuManagement() {
   const handleEntry = useCallback(
     (gridSquareIndex: number, entryChar: string) => {
       const replacementChar = isValidChar(entryChar) ? entryChar : "0"
-      // console.log(gridSquareIndex, entryChar)
-
-      // handleLastFocusedEntryIndex(null)
 
       if (replacementChar == "0") {
         if (puzzleStringCurrent[gridSquareIndex] == "0") return
         replacePuzzleStringCurrentAtWith(gridSquareIndex, replacementChar)
-        if (document.activeElement instanceof HTMLElement) {
-          // document.activeElement.blur()
-        }
+
         return
       }
 
       replacePuzzleStringCurrentAtWith(gridSquareIndex, replacementChar)
-
       const candidateIndex = symbols.indexOf(replacementChar)
 
       getPeerSquares(gridSquareIndex).forEach(square => {
@@ -221,14 +230,8 @@ function useSudokuManagement() {
           }
         }
       })
-
-      // if (isAlreadyInUnit(gridSquareIndex, replacementChar, puzzleStringCurrent)) {}
-
-      if (document.activeElement instanceof HTMLElement && !isAlreadyInUnit(gridSquareIndex, replacementChar, puzzleStringCurrent)) {
-        // document.activeElement.blur()
-      }
     },
-    [getPeerSquares, isAlreadyInUnit, manualElimCandidates, puzzleStringCurrent, toggleManualElimCandidate]
+    [getPeerSquares, manualElimCandidates, puzzleStringCurrent, toggleManualElimCandidate]
   )
 
   const tryRuleAtIndex = useCallback(

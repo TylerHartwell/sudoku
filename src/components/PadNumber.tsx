@@ -27,7 +27,8 @@ const PadNumber = ({
     toggleManualElimCandidate,
     charCounts,
     handleQueueAutoSolve,
-    puzzleStringCurrent
+    puzzleStringCurrent,
+    isAlreadyInUnit
   }: {
     lastFocusedEntryIndex: number | null
     handleLastFocusedEntryIndex: (entryIndex: number | null) => void
@@ -38,6 +39,7 @@ const PadNumber = ({
     charCounts: { [key: string]: number }
     handleQueueAutoSolve: (beQueued: boolean) => void
     puzzleStringCurrent: string
+    isAlreadyInUnit: (gridSquareIndex: number, character: string, puzzleString: string) => boolean
   } = useContext(CandidateContext)
 
   const handleMouseEnter = () => {
@@ -58,21 +60,22 @@ const PadNumber = ({
           handleEntry(lastFocusedEntryIndex, "0")
         } else {
           handleEntry(lastFocusedEntryIndex, symbols[index])
+          const isWrong = isAlreadyInUnit(lastFocusedEntryIndex, symbols[index], puzzleStringCurrent)
           const element = document.querySelector<HTMLElement>(`.entry[data-grid-square-index="${lastFocusedEntryIndex}"]`)
-          if (element) {
-            // console.log(element)
-            // element.focus()
+
+          if (!isWrong) {
+            handleLastFocusedEntryIndex(null)
+            ;(document.activeElement as HTMLElement)?.blur()
           }
         }
         changeLastClickedHighlightIndex(index)
         handleHighlightIndexChange(index)
-        ;(document.activeElement as HTMLElement)?.blur()
       } else {
         toggleManualElimCandidate(lastFocusedEntryIndex, index)
         changeLastClickedHighlightIndex(index)
         handleQueueAutoSolve(true)
       }
-      // handleLastFocusedEntryIndex(null)
+
       return
     }
 
@@ -91,7 +94,8 @@ const PadNumber = ({
       className={clsx(
         `pad-number pad${index} w-full h-full text-center place-content-center text-[5vw] md:text-[30px] select-none hover-fine-device:hover:cursor-pointer hover-fine-device:hover:font-bold`,
         highlightIndex != null && index === highlightIndex && "font-bold",
-        charCounts != undefined && charCounts[symbols[index]] === symbols.length && "opacity-30"
+        charCounts != undefined && charCounts[symbols[index]] === symbols.length && "opacity-30",
+        lastFocusedEntryIndex === null && "opacity-50"
       )}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}

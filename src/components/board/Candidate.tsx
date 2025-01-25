@@ -61,6 +61,8 @@ const Candidate = ({ gridSquareIndex, candidateIndex, entryShownValue }: Candida
           goodCandidates.includes(candidateKey) && !isEliminated && "bg-[rgb(45,241,77)] font-bold",
           badCandidates.includes(candidateKey) && !isEliminated && "bg-[red] font-bold"
         )}
+        data-grid-square-index={gridSquareIndex}
+        data-candidate-index={candidateIndex}
         onPointerDown={handlePointerDown}
       >
         {!isEliminated ? symbols[candidateIndex] : ""}

@@ -81,9 +81,11 @@ const Entry = ({ gridSquareIndex, shownValue }: EntryProps) => {
             handleEntry(gridSquareIndex, "0")
           } else {
             handleEntry(gridSquareIndex, symbols[highlightIndex])
+            if (!isAlreadyInUnit(gridSquareIndex, symbols[highlightIndex], puzzleStringCurrent)) {
+              ;(document.activeElement as HTMLElement)?.blur()
+            }
           }
         }
-        ;(document.activeElement as HTMLElement)?.blur()
       }
     } else (document.activeElement as HTMLElement)?.blur()
   }
@@ -91,11 +93,13 @@ const Entry = ({ gridSquareIndex, shownValue }: EntryProps) => {
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (!isLocked) {
       if (isValidChar(e.key) && e.key.toUpperCase() != shownValue) {
+        if (!isAlreadyInUnit(gridSquareIndex, e.key.toUpperCase(), puzzleStringCurrent)) {
+          ;(document.activeElement as HTMLElement)?.blur()
+        }
         handleEntry(gridSquareIndex, e.key.toUpperCase())
       } else {
         handleEntry(gridSquareIndex, "0")
       }
-      // ;(document.activeElement as HTMLElement)?.blur()
     }
   }
 
@@ -104,14 +108,19 @@ const Entry = ({ gridSquareIndex, shownValue }: EntryProps) => {
   }
 
   const handleBlur = () => {
-    // if (!padNumberClicked.current) {
-    //   handleLastFocusedEntryIndex(null)
-    // }
-    // padNumberClicked.current = false
-    // if (isWrong && gridSquareIndex == lastFocusedEntryIndex) {
-    if (isWrong) {
-      handleEntry(gridSquareIndex, "0")
+    if (!padNumberClicked.current) {
+      if (isAlreadyInUnit(gridSquareIndex, shownValue, puzzleStringCurrent) && gridSquareIndex == lastFocusedEntryIndex) {
+        handleEntry(gridSquareIndex, "0")
+      }
+      ///
+      console.log("A", padNumberClicked.current)
+      handleLastFocusedEntryIndex(null)
+    } else {
+      ;(document.activeElement as HTMLElement)?.blur()
+      console.log("B", padNumberClicked.current)
+      handleLastFocusedEntryIndex(null)
     }
+    padNumberClicked.current = false
   }
 
   return (
@@ -128,6 +137,7 @@ const Entry = ({ gridSquareIndex, shownValue }: EntryProps) => {
         highlightIndex != null && shownValue === symbols[highlightIndex] && "font-bold"
       )}
       data-grid-square-index={gridSquareIndex}
+      data-shown-value={shownValue}
       tabIndex={isLocked ? -1 : gridSquareIndex + 1}
       onPointerDown={handlePointerDown}
       onKeyDown={handleKeyDown}
