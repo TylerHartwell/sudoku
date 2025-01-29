@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef, useContext } from "react"
+import { useRef, useContext, forwardRef, MutableRefObject } from "react"
 import CandidateContext from "@/contexts/CandidateContext"
 import clsx from "clsx"
 import isValidChar from "@/utils/isValidChar"
@@ -11,7 +11,24 @@ interface EntryProps {
   shownValue: string
 }
 
-const Entry = ({ gridSquareIndex, shownValue }: EntryProps) => {
+interface CandidateContextValue {
+  puzzleStringStart: string
+  puzzleStringCurrent: string
+  candidateMode: boolean
+  boardIsSet: boolean
+  highlightIndex: number | null
+  handleEntry: (i: number, s: string) => void
+  toggleManualElimCandidate: (gridSquareIndex: number, candidateIndex: number, shouldManualElim?: boolean) => void
+  manualElimCandidates: string[]
+  isAlreadyInUnit: (gridSquareIndex: number, character: string, puzzleString: string) => boolean
+  handleLastFocusedEntryIndex: (entryIndex: number | null) => void
+  padNumberClicked: MutableRefObject<boolean>
+  handleQueueAutoSolve: (beQueued: boolean) => void
+  lastFocusedEntryIndex: number | null
+  sortedEntries: (Element | null)[]
+}
+
+const Entry = forwardRef<HTMLDivElement, EntryProps>(({ gridSquareIndex, shownValue }: EntryProps, ref) => {
   const {
     puzzleStringStart,
     puzzleStringCurrent,
@@ -25,29 +42,23 @@ const Entry = ({ gridSquareIndex, shownValue }: EntryProps) => {
     handleLastFocusedEntryIndex,
     padNumberClicked,
     handleQueueAutoSolve,
-    lastFocusedEntryIndex
-  }: {
-    puzzleStringStart: string
-    puzzleStringCurrent: string
-    candidateMode: boolean
-    boardIsSet: boolean
-    highlightIndex: number | null
-    handleEntry: (i: number, s: string) => void
-    toggleManualElimCandidate: (gridSquareIndex: number, candidateIndex: number, shouldManualElim?: boolean) => void
-    manualElimCandidates: string[]
-    isAlreadyInUnit: (gridSquareIndex: number, character: string, puzzleString: string) => boolean
-    handleLastFocusedEntryIndex: (entryIndex: number | null) => void
-    padNumberClicked: React.MutableRefObject<boolean>
-    handleQueueAutoSolve: (beQueued: boolean) => void
-    lastFocusedEntryIndex: number | null
-  } = useContext(CandidateContext)
+    lastFocusedEntryIndex,
+    sortedEntries
+  } = useContext<CandidateContextValue>(CandidateContext)
   const entryRef = useRef<HTMLDivElement>(null)
+
+  if (ref) {
+    if (typeof ref === "function") {
+      ref(entryRef.current)
+    }
+  }
 
   const isLocked = boardIsSet && puzzleStringStart.length == Math.pow(symbols.length, 2) && puzzleStringStart[gridSquareIndex] == shownValue
   const isWrong = isAlreadyInUnit(gridSquareIndex, shownValue, puzzleStringCurrent)
 
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     e.preventDefault()
+    console.log(entryRef)
 
     if (!isLocked) {
       if (candidateMode && e.pointerType === "touch") {
@@ -73,7 +84,7 @@ const Entry = ({ gridSquareIndex, shownValue }: EntryProps) => {
         }
         return
       }
-      if (entryRef.current !== document.activeElement) {
+      if (ref !== document.activeElement) {
         entryRef.current?.focus()
       } else {
         if (highlightIndex != null) {
@@ -82,7 +93,11 @@ const Entry = ({ gridSquareIndex, shownValue }: EntryProps) => {
           } else {
             handleEntry(gridSquareIndex, symbols[highlightIndex])
             if (!isAlreadyInUnit(gridSquareIndex, symbols[highlightIndex], puzzleStringCurrent)) {
-              ;(document.activeElement as HTMLElement)?.blur()
+              if (document.activeElement) {
+                ;(document.activeElement as HTMLElement)?.blur()
+              }
+
+              handleQueueAutoSolve(true)
             }
           }
         }
@@ -91,13 +106,36 @@ const Entry = ({ gridSquareIndex, shownValue }: EntryProps) => {
   }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === "Tab") {
+      const entries = sortedEntries as HTMLElement[]
+      const currentIndex = entries.findIndex(el => el === document.activeElement)
+
+      if (currentIndex !== -1) {
+        e.preventDefault()
+        const nextIndex = e.shiftKey ? currentIndex - 1 : currentIndex + 1
+
+        if (nextIndex >= 0 && nextIndex < entries.length) {
+          entries[nextIndex].focus()
+        } else {
+          e.currentTarget.blur()
+        }
+      }
+
+      return
+    }
+
+    if (e.key.length > 1 && e.key !== " ") {
+      return
+    }
+
     if (!isLocked) {
       if (isValidChar(e.key) && e.key.toUpperCase() != shownValue) {
         if (!isAlreadyInUnit(gridSquareIndex, e.key.toUpperCase(), puzzleStringCurrent)) {
           ;(document.activeElement as HTMLElement)?.blur()
+          handleQueueAutoSolve(true)
         }
         handleEntry(gridSquareIndex, e.key.toUpperCase())
-      } else {
+      } else if (e.key === " " || e.key === "0") {
         handleEntry(gridSquareIndex, "0")
       }
     }
@@ -138,7 +176,7 @@ const Entry = ({ gridSquareIndex, shownValue }: EntryProps) => {
       )}
       data-grid-square-index={gridSquareIndex}
       data-shown-value={shownValue}
-      tabIndex={isLocked ? -1 : gridSquareIndex + 1}
+      tabIndex={isLocked ? -1 : 0}
       onPointerDown={handlePointerDown}
       onKeyDown={handleKeyDown}
       onBlur={handleBlur}
@@ -147,6 +185,8 @@ const Entry = ({ gridSquareIndex, shownValue }: EntryProps) => {
       {shownValue}
     </div>
   )
-}
+})
+
+Entry.displayName = "Entry"
 
 export default Entry

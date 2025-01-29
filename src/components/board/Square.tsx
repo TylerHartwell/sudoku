@@ -5,7 +5,15 @@ import CandidateContext from "@/contexts/CandidateContext"
 import { symbols, symbolsSqrt } from "@/hooks/useSudokuManagement"
 import clsx from "clsx"
 
-const Square = ({ boxIndex, boxSquareIndex }: { boxIndex: number; boxSquareIndex: number }) => {
+const Square = ({
+  boxIndex,
+  boxSquareIndex,
+  entryRefs
+}: {
+  boxIndex: number
+  boxSquareIndex: number
+  entryRefs: React.MutableRefObject<(HTMLDivElement | null)[]>
+}) => {
   const { puzzleStringCurrent } = useContext(CandidateContext)
 
   const gridSquareIndex = useMemo(() => {
@@ -26,7 +34,13 @@ const Square = ({ boxIndex, boxSquareIndex }: { boxIndex: number; boxSquareIndex
         symbolsSqrt == 4 && "grid-cols-[repeat(4,1fr)] grid-rows-[repeat(4,1fr)]"
       )}
     >
-      <Entry gridSquareIndex={gridSquareIndex} shownValue={shownValue} />
+      <Entry
+        gridSquareIndex={gridSquareIndex}
+        shownValue={shownValue}
+        ref={el => {
+          entryRefs.current[gridSquareIndex] = el
+        }}
+      />
       {symbols.map((_, index) => (
         <Candidate key={index} gridSquareIndex={gridSquareIndex} candidateIndex={index} entryShownValue={shownValue} />
       ))}

@@ -1,5 +1,6 @@
 import CandidateContext from "@/contexts/CandidateContext"
 import { symbols } from "@/hooks/useSudokuManagement"
+import getPeerGridSquareIndices from "@/utils/getPeerGridSquareIndices"
 import clsx from "clsx"
 import { useContext, useMemo } from "react"
 
@@ -28,7 +29,8 @@ const PadNumber = ({
     charCounts,
     handleQueueAutoSolve,
     puzzleStringCurrent,
-    isAlreadyInUnit
+    isAlreadyInUnit,
+    manualElimCandidates
   }: {
     lastFocusedEntryIndex: number | null
     handleLastFocusedEntryIndex: (entryIndex: number | null) => void
@@ -40,6 +42,7 @@ const PadNumber = ({
     handleQueueAutoSolve: (beQueued: boolean) => void
     puzzleStringCurrent: string
     isAlreadyInUnit: (gridSquareIndex: number, character: string, puzzleString: string) => boolean
+    manualElimCandidates: string[]
   } = useContext(CandidateContext)
 
   const handleMouseEnter = () => {
@@ -61,19 +64,29 @@ const PadNumber = ({
         } else {
           handleEntry(lastFocusedEntryIndex, symbols[index])
           const isWrong = isAlreadyInUnit(lastFocusedEntryIndex, symbols[index], puzzleStringCurrent)
-          const element = document.querySelector<HTMLElement>(`.entry[data-grid-square-index="${lastFocusedEntryIndex}"]`)
 
           if (!isWrong) {
             handleLastFocusedEntryIndex(null)
             ;(document.activeElement as HTMLElement)?.blur()
+            handleQueueAutoSolve(true)
           }
         }
         changeLastClickedHighlightIndex(index)
         handleHighlightIndexChange(index)
       } else {
-        toggleManualElimCandidate(lastFocusedEntryIndex, index)
+        const candidateKey = `${lastFocusedEntryIndex}-${index}`
+        const isAlreadyInUnit = getPeerGridSquareIndices(lastFocusedEntryIndex).some(i => puzzleStringCurrent[i] === symbols[index])
+
+        const isEliminated = puzzleStringCurrent[lastFocusedEntryIndex] !== "0" || isAlreadyInUnit || manualElimCandidates.includes(candidateKey)
+        const isToggleable = !isEliminated || manualElimCandidates.includes(candidateKey)
+        if (isToggleable) {
+          toggleManualElimCandidate(lastFocusedEntryIndex, index)
+          handleQueueAutoSolve(true)
+        } else {
+          ;(document.activeElement as HTMLElement)?.blur()
+        }
+
         changeLastClickedHighlightIndex(index)
-        handleQueueAutoSolve(true)
       }
 
       return
@@ -95,7 +108,8 @@ const PadNumber = ({
         `pad-number pad${index} w-full h-full text-center place-content-center text-[5vw] md:text-[30px] select-none hover-fine-device:hover:cursor-pointer hover-fine-device:hover:font-bold`,
         highlightIndex != null && index === highlightIndex && "font-bold",
         charCounts != undefined && charCounts[symbols[index]] === symbols.length && "opacity-30",
-        lastFocusedEntryIndex === null && "opacity-50"
+        lastFocusedEntryIndex !== null && !candidateMode && "shadow-green-700 drop-shadow-[1px_1px_0.5px_rgba(43,143,43,0.4)]",
+        lastFocusedEntryIndex !== null && candidateMode && "shadow-red-700 drop-shadow-[1px_1px_0.5px_rgba(255,43,43,0.4)]"
       )}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}

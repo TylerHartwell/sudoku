@@ -71,6 +71,22 @@ function useSudokuManagement() {
   const padNumberClicked = useRef(false)
 
   const charCounts = useMemo(() => countCharactersInString(puzzleStringCurrent, symbols), [puzzleStringCurrent])
+  const entryRefs = useRef<(HTMLDivElement | null)[]>(new Array(symbols.length ** 2).fill(null))
+  const [sortedEntries, setSortedEntries] = useState<(Element | null)[]>([])
+
+  useEffect(() => {
+    const entryDivs = Array.from(document.querySelectorAll(".entry"))
+
+    const filteredDivs = entryDivs.filter(div => (div as HTMLElement).tabIndex !== -1)
+
+    const sortedDivs = filteredDivs.sort((a, b) => {
+      const indexA = parseInt(a.getAttribute("data-grid-square-index") || "0", 10)
+      const indexB = parseInt(b.getAttribute("data-grid-square-index") || "0", 10)
+      return indexA - indexB
+    })
+
+    setSortedEntries(sortedDivs)
+  }, [boardIsSet])
 
   useEffect(() => {
     const handlePointerDown = (e: PointerEvent) => {
@@ -512,7 +528,9 @@ function useSudokuManagement() {
     handleLastFocusedEntryIndex,
     padNumberClicked,
     charCounts,
-    restartPuzzle
+    restartPuzzle,
+    entryRefs,
+    sortedEntries
   }
 }
 

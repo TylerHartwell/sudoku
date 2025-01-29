@@ -1,11 +1,11 @@
-import { useContext } from "react"
+import { useContext, useRef } from "react"
 import Box from "./Box"
 import CandidateContext from "@/contexts/CandidateContext"
 import clsx from "clsx"
 import { symbolsSqrt, symbols } from "@/hooks/useSudokuManagement"
 
 const Board = () => {
-  const { boardIsSolved } = useContext(CandidateContext)
+  const { boardIsSolved, entryRefs } = useContext(CandidateContext)
 
   return (
     <section
@@ -18,7 +18,7 @@ const Board = () => {
       )}
     >
       {Array.from({ length: symbols.length }).map((_, index) => (
-        <Box key={index} boxIndex={index} />
+        <Box key={index} boxIndex={index} entryRefs={entryRefs} />
       ))}
     </section>
   )

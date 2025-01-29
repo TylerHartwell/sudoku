@@ -45,7 +45,9 @@ export default function Page() {
     handleLastFocusedEntryIndex,
     padNumberClicked,
     charCounts,
-    restartPuzzle
+    restartPuzzle,
+    entryRefs,
+    sortedEntries
   } = useSudokuManagement()
 
   const contextObj = {
@@ -67,7 +69,9 @@ export default function Page() {
     lastFocusedEntryIndex,
     handleLastFocusedEntryIndex,
     padNumberClicked,
-    charCounts
+    charCounts,
+    entryRefs,
+    sortedEntries
   }
 
   return (
