@@ -58,8 +58,6 @@ const Entry = forwardRef<HTMLDivElement, EntryProps>(({ gridSquareIndex, shownVa
 
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     e.preventDefault()
-    console.log(entryRef)
-
     if (!isLocked) {
       if (candidateMode && e.pointerType === "touch") {
         if (entryRef.current !== document.activeElement) {
@@ -80,14 +78,16 @@ const Entry = forwardRef<HTMLDivElement, EntryProps>(({ gridSquareIndex, shownVa
               ;(document.activeElement as HTMLElement)?.blur()
               handleQueueAutoSolve(true)
             }
-          } else (document.activeElement as HTMLElement)?.blur()
+          } else {
+            ;(document.activeElement as HTMLElement)?.blur()
+          }
         }
         return
       }
-      if (ref !== document.activeElement) {
+      if (entryRef.current !== document.activeElement) {
         entryRef.current?.focus()
       } else {
-        if (highlightIndex != null) {
+        if (highlightIndex !== null) {
           if (highlightIndex == symbols.indexOf(shownValue)) {
             handleEntry(gridSquareIndex, "0")
           } else {
@@ -102,7 +102,9 @@ const Entry = forwardRef<HTMLDivElement, EntryProps>(({ gridSquareIndex, shownVa
           }
         }
       }
-    } else (document.activeElement as HTMLElement)?.blur()
+    } else {
+      ;(document.activeElement as HTMLElement)?.blur()
+    }
   }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
@@ -150,12 +152,9 @@ const Entry = forwardRef<HTMLDivElement, EntryProps>(({ gridSquareIndex, shownVa
       if (isAlreadyInUnit(gridSquareIndex, shownValue, puzzleStringCurrent) && gridSquareIndex == lastFocusedEntryIndex) {
         handleEntry(gridSquareIndex, "0")
       }
-      ///
-      console.log("A", padNumberClicked.current)
       handleLastFocusedEntryIndex(null)
     } else {
       ;(document.activeElement as HTMLElement)?.blur()
-      console.log("B", padNumberClicked.current)
       handleLastFocusedEntryIndex(null)
     }
     padNumberClicked.current = false

@@ -75,7 +75,7 @@ export default function Page() {
   }
 
   return (
-    <div className="primary md:w-auto md:min-w-fit md:h-max md:min-h-min flex flex-col items-center md:overflow-y-auto ">
+    <main className="primary md:w-auto md:min-w-fit md:h-max md:min-h-min flex flex-col items-center md:overflow-y-auto ">
       <h1 className="title md:h-[40px] text-center text-[1em] md:text-[2em]">SUDOKU RULER</h1>
       <div className="w-full md:w-full md:max-w-[max(800px,80vw)] md:px-5 flex flex-col md:flex-row-reverse md:justify-center ">
         <div className="w-full md:w-[max(calc(100vh-155px),300px)] flex flex-col md:content-center">
@@ -224,6 +224,6 @@ export default function Page() {
           </section>
         </div>
       </div>
-    </div>
+    </main>
   )
 }
