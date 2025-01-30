@@ -1,39 +1,123 @@
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { RuleOutcome, Square } from "@/rules/rulesInterface"
 import rulesArr from "@/rules/rulesArr"
 import truncateAndPad from "@/utils/truncateAndPad"
 import getPeerGridSquareIndices from "@/utils/getPeerGridSquareIndices"
 import replaceNonDigitsWithZero from "@/utils/replaceNonDigitsWithZero"
+import isValidChar from "@/utils/isValidChar"
+import getValidSymbols from "@/utils/getValidSymbols"
+import countCharactersInString from "@/utils/getCountOfCharactersInStringFromArray"
+
+// const inputSymbols = ["1", "2", "3", "4"]
+const inputSymbols = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
+// const inputSymbols = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F", "G"]
+
+const symbols = getValidSymbols(inputSymbols)
+
+const symbolsSqrt = Math.sqrt(symbols.length)
+
+const initialStates = {
+  // Puzzle-related states
+  puzzleStringCurrent: "0".repeat(Math.pow(symbols.length, 2)),
+  puzzleStringStart: "",
+  boardIsSet: false,
+  boardIsSolved: false,
+
+  // Rule-related states
+  ruleOutcomes: rulesArr.map(_ => "default") as RuleOutcome[],
+  checkedRuleIndices: [] as number[],
+  currentAutoRuleIndex: 0,
+  queueAutoSolve: false,
+
+  // Candidate-related states
+  showCandidates: false,
+  candidateMode: false,
+  manualElimCandidates: [] as string[],
+  goodCandidates: [] as string[],
+  badCandidates: [] as string[],
+
+  // UI/Interaction states
+  highlightIndex: null,
+  lastClickedHighlightIndex: null,
+  lastFocusedEntryIndex: null,
+
+  // Settings
+  difficulty: "easy" as "easy" | "medium" | "hard" | "diabolical"
+}
 
 function useSudokuManagement() {
-  const [ruleOutcomes, setRuleOutcomes] = useState<RuleOutcome[]>(rulesArr.map(_ => "default"))
-  const [puzzleStringCurrent, setPuzzleStringCurrent] = useState(() => "0".repeat(81))
-  const [puzzleStringStart, setPuzzleStringStart] = useState("")
-  const [boardIsSet, setBoardIsSet] = useState(false)
-  const [boardIsSolved, setBoardIsSolved] = useState(false)
-  const [highlightN, setHighlightN] = useState<number>(0)
-  const [showCandidates, setShowCandidates] = useState(false)
-  const [candidateMode, setCandidateMode] = useState(false)
-  const [lastClickedHighlightN, setLastClickedHighlightN] = useState(0)
-  const [manualElimCandidates, setManualElimCandidates] = useState<string[]>([])
-  const [checkedRules, setCheckedRules] = useState<number[]>([])
-  const [currentAutoRuleIndex, setCurrentAutoRuleIndex] = useState<number>(0)
-  const [queueAutoSolve, setQueueAutoSolve] = useState<boolean>(false)
-  const [goodCandidates, setGoodCandidates] = useState<string[]>([])
-  const [badCandidates, setBadCandidates] = useState<string[]>([])
-  const [difficulty, setDifficulty] = useState<"easy" | "medium" | "hard" | "diabolical">("easy")
+  const [puzzleStringCurrent, setPuzzleStringCurrent] = useState<string>(initialStates.puzzleStringCurrent)
+  const [puzzleStringStart, setPuzzleStringStart] = useState<string>(initialStates.puzzleStringStart)
+  const [boardIsSet, setBoardIsSet] = useState<boolean>(initialStates.boardIsSet)
+  const [boardIsSolved, setBoardIsSolved] = useState<boolean>(initialStates.boardIsSolved)
 
-  const numbers = useMemo(() => Array.from({ length: 9 }, (_, i) => i + 1), [])
+  const [ruleOutcomes, setRuleOutcomes] = useState<RuleOutcome[]>(initialStates.ruleOutcomes)
+  const [checkedRuleIndices, setCheckedRuleIndices] = useState<number[]>(initialStates.checkedRuleIndices)
+  const [currentAutoRuleIndex, setCurrentAutoRuleIndex] = useState<number>(initialStates.currentAutoRuleIndex)
+  const [queueAutoSolve, setQueueAutoSolve] = useState<boolean>(initialStates.queueAutoSolve)
+
+  const [showCandidates, setShowCandidates] = useState<boolean>(initialStates.showCandidates)
+  const [candidateMode, setCandidateMode] = useState<boolean>(initialStates.candidateMode)
+  const [manualElimCandidates, setManualElimCandidates] = useState<string[]>(initialStates.manualElimCandidates)
+  const [goodCandidates, setGoodCandidates] = useState<string[]>(initialStates.goodCandidates)
+  const [badCandidates, setBadCandidates] = useState<string[]>(initialStates.badCandidates)
+
+  const [highlightIndex, setHighlightIndex] = useState<number | null>(initialStates.highlightIndex)
+  const [lastClickedHighlightIndex, setLastClickedHighlightIndex] = useState<number | null>(initialStates.lastClickedHighlightIndex)
+  const [lastFocusedEntryIndex, setLastFocusedEntryIndex] = useState<number | null>(initialStates.lastFocusedEntryIndex)
+
+  const [difficulty, setDifficulty] = useState<"easy" | "medium" | "hard" | "diabolical">(initialStates.difficulty)
+
+  const padNumberClicked = useRef(false)
+
+  const charCounts = useMemo(() => countCharactersInString(puzzleStringCurrent, symbols), [puzzleStringCurrent])
+  const entryRefs = useRef<(HTMLDivElement | null)[]>(new Array(symbols.length ** 2).fill(null))
+  const [sortedEntries, setSortedEntries] = useState<(Element | null)[]>([])
+
+  useEffect(() => {
+    const entryDivs = Array.from(document.querySelectorAll(".entry"))
+
+    const filteredDivs = entryDivs.filter(div => (div as HTMLElement).tabIndex !== -1)
+
+    const sortedDivs = filteredDivs.sort((a, b) => {
+      const indexA = parseInt(a.getAttribute("data-grid-square-index") || "0", 10)
+      const indexB = parseInt(b.getAttribute("data-grid-square-index") || "0", 10)
+      return indexA - indexB
+    })
+
+    setSortedEntries(sortedDivs)
+  }, [boardIsSet])
+
+  useEffect(() => {
+    const handlePointerDown = (e: PointerEvent) => {
+      const target = e.target as HTMLElement
+      if (!target.matches(".entry") && !target.matches(".pad-number")) {
+        padNumberClicked.current = false
+      }
+    }
+
+    document.addEventListener("pointerdown", handlePointerDown)
+
+    return () => {
+      document.removeEventListener("pointerdown", handlePointerDown)
+    }
+  }, [])
+
+  const handleLastFocusedEntryIndex = useCallback((entryIndex: number | null) => {
+    if (entryIndex == null || (Number.isInteger(entryIndex) && entryIndex >= 0 && entryIndex < Math.pow(symbols.length, 2))) {
+      setLastFocusedEntryIndex(entryIndex)
+      return
+    }
+  }, [])
 
   const getCandidates = useCallback(
     (gridSquareIndex: number) => {
-      const candidateArr = Array.from({ length: 9 }, (_, candidateIndex) => {
-        const candidateN = candidateIndex + 1
+      const candidateArr = Array.from({ length: symbols.length }, (_, candidateIndex) => {
         const candidateKey = `${gridSquareIndex}-${candidateIndex}`
 
         const isSquareOccupied = puzzleStringCurrent[gridSquareIndex] != "0"
 
-        const isAlreadyInUnit = getPeerGridSquareIndices(gridSquareIndex).some(i => puzzleStringCurrent[i] === candidateN.toString())
+        const isAlreadyInUnit = getPeerGridSquareIndices(gridSquareIndex).some(i => puzzleStringCurrent[i] === symbols[candidateIndex])
 
         if (isSquareOccupied || isAlreadyInUnit || manualElimCandidates.includes(candidateKey)) {
           return false
@@ -48,7 +132,7 @@ function useSudokuManagement() {
 
   const allSquares: Square[] = useMemo(
     () =>
-      Array.from({ length: 81 }, (_, gridSquareIndex) => {
+      Array.from({ length: Math.pow(symbols.length, 2) }, (_, gridSquareIndex) => {
         return {
           entryValue: puzzleStringCurrent[gridSquareIndex],
           candidates: getCandidates(gridSquareIndex),
@@ -65,32 +149,105 @@ function useSudokuManagement() {
     [allSquares]
   )
 
-  const handleEntry = useCallback(
-    (gridSquareIndex: number, newEntry: string) => {
-      const newEntryValue = newEntry ? newEntry : "0"
-      setPuzzleStringCurrent(prev => {
-        return prev.slice(0, gridSquareIndex) + newEntryValue + prev.slice(gridSquareIndex + 1)
-      })
-      if (newEntry) {
-        const candidateIndex = Number(newEntryValue) - 1
-        getPeerSquares(gridSquareIndex).forEach(square => {
-          const candidateKey = `${square.gridSquareIndex}-${candidateIndex}`
-          if (manualElimCandidates.includes(candidateKey)) {
-            toggleManualElimCandidate(square.gridSquareIndex, candidateIndex, false)
+  const handleQueueAutoSolve = useCallback((beQueued: boolean) => {
+    setQueueAutoSolve(beQueued)
+  }, [])
+
+  const isAlreadyInUnit = useCallback((gridSquareIndex: number, character: string, puzzleString: string) => {
+    if (character == "0" || character == "") return false
+    return getPeerGridSquareIndices(gridSquareIndex).some(i => {
+      if (i < 0 || i >= puzzleString.length) {
+        console.error(`Index ${i} is out of bounds for puzzleStringCurrent with length ${puzzleString.length}`)
+        return false
+      }
+      return puzzleString[i] == character && i != gridSquareIndex
+    })
+  }, [])
+
+  const toggleManualElimCandidate = useCallback(
+    (gridSquareIndex: number, candidateIndex: number, shouldManualElim?: boolean) => {
+      const candidateKey = `${gridSquareIndex}-${candidateIndex}`
+      const isCandidateInPeerEntry = isAlreadyInUnit(gridSquareIndex, symbols[candidateIndex], puzzleStringCurrent)
+      const entryShownValue = puzzleStringCurrent[gridSquareIndex] == "0" ? "" : puzzleStringCurrent[gridSquareIndex]
+
+      if (!isCandidateInPeerEntry && !entryShownValue) {
+        setManualElimCandidates(prev => {
+          if (shouldManualElim === undefined) {
+            if (!prev.includes(candidateKey)) {
+              return [...prev, candidateKey]
+            } else {
+              return prev.filter(key => key !== candidateKey)
+            }
           }
 
-          if (square.gridSquareIndex == gridSquareIndex) {
-            square.candidates.forEach((possible, i) => {
-              const candidateKey = `${gridSquareIndex}-${i}`
-              if (manualElimCandidates.includes(candidateKey)) {
-                toggleManualElimCandidate(gridSquareIndex, i, false)
-              }
-            })
+          if (shouldManualElim) {
+            if (!prev.includes(candidateKey)) {
+              return [...prev, candidateKey]
+            } else {
+              return prev
+            }
           }
+
+          return prev.filter(key => key !== candidateKey)
         })
       }
     },
-    [getPeerSquares, manualElimCandidates]
+    [isAlreadyInUnit, puzzleStringCurrent]
+  )
+
+  const replacePuzzleStringCurrentAtWith = (gridSquareIndex: number, replacement: string) => {
+    setPuzzleStringCurrent(prev => {
+      return prev.slice(0, gridSquareIndex) + replacement + prev.slice(gridSquareIndex + 1)
+    })
+  }
+
+  const checkForAnySudokuConflict = useCallback(() => {
+    for (let i = 0; i < puzzleStringCurrent.length; i++) {
+      const character = puzzleStringCurrent[i]
+      if (character !== "0") {
+        if (isAlreadyInUnit(i, character, puzzleStringCurrent)) {
+          return true
+        }
+      }
+    }
+    return false
+  }, [isAlreadyInUnit, puzzleStringCurrent])
+
+  const handleEntry = useCallback(
+    (gridSquareIndex: number, entryChar: string) => {
+      const replacementChar = isValidChar(entryChar) ? entryChar : "0"
+
+      if (replacementChar == "0") {
+        if (puzzleStringCurrent[gridSquareIndex] == "0") return
+        replacePuzzleStringCurrentAtWith(gridSquareIndex, replacementChar)
+
+        return
+      }
+
+      replacePuzzleStringCurrentAtWith(gridSquareIndex, replacementChar)
+      const candidateIndex = symbols.indexOf(replacementChar)
+
+      getPeerSquares(gridSquareIndex).forEach(square => {
+        const candidateKey = `${square.gridSquareIndex}-${candidateIndex}`
+
+        //remove all candidates that are in the gridSquareIndex from the manual elim candidate array
+        if (square.gridSquareIndex == gridSquareIndex) {
+          square.candidates.forEach((_possible, i) => {
+            const candidateKey = `${gridSquareIndex}-${i}`
+
+            if (manualElimCandidates.includes(candidateKey)) {
+              toggleManualElimCandidate(gridSquareIndex, i, false)
+            }
+          })
+        } else {
+          //remove candidates matching the replacementChar in peer squares of the gridSquareIndex from the manual elim candidate array
+          if (manualElimCandidates.includes(candidateKey)) {
+            toggleManualElimCandidate(square.gridSquareIndex, candidateIndex, false)
+          }
+        }
+      })
+    },
+    [getPeerSquares, manualElimCandidates, puzzleStringCurrent, toggleManualElimCandidate]
   )
 
   const tryRuleAtIndex = useCallback(
@@ -133,17 +290,17 @@ function useSudokuManagement() {
 
       return ruleOutcome === "success"
     },
-    [allSquares, handleEntry]
+    [allSquares, handleEntry, handleQueueAutoSolve, toggleManualElimCandidate]
   )
 
   const tryAutoSolves = useCallback(async () => {
-    if (currentAutoRuleIndex >= checkedRules.length) {
+    if (currentAutoRuleIndex >= checkedRuleIndices.length) {
       resetCurrentAutoRuleIndex()
       handleQueueAutoSolve(false)
       return
     }
 
-    const ruleIndex = checkedRules[currentAutoRuleIndex]
+    const ruleIndex = checkedRuleIndices[currentAutoRuleIndex]
 
     const isSuccess = await tryRuleAtIndex(ruleIndex, true)
 
@@ -151,7 +308,7 @@ function useSudokuManagement() {
       resetCurrentAutoRuleIndex()
       handleQueueAutoSolve(true)
     } else {
-      if (currentAutoRuleIndex >= checkedRules.length - 1) {
+      if (currentAutoRuleIndex >= checkedRuleIndices.length - 1) {
         resetCurrentAutoRuleIndex()
         handleQueueAutoSolve(false)
       } else {
@@ -159,14 +316,14 @@ function useSudokuManagement() {
         handleQueueAutoSolve(true)
       }
     }
-  }, [checkedRules, currentAutoRuleIndex, tryRuleAtIndex])
+  }, [checkedRuleIndices, currentAutoRuleIndex, handleQueueAutoSolve, tryRuleAtIndex])
 
   useEffect(() => {
-    if (queueAutoSolve && boardIsSet && !boardIsSolved) {
+    if (queueAutoSolve && boardIsSet && !boardIsSolved && !checkForAnySudokuConflict()) {
       handleQueueAutoSolve(false)
       tryAutoSolves()
     }
-  }, [boardIsSet, boardIsSolved, queueAutoSolve, tryAutoSolves])
+  }, [boardIsSet, boardIsSolved, checkForAnySudokuConflict, handleQueueAutoSolve, queueAutoSolve, tryAutoSolves])
 
   useEffect(() => {
     if (boardIsSet && checkBoardSolution(puzzleStringCurrent)) {
@@ -186,9 +343,9 @@ function useSudokuManagement() {
   }
 
   const handleCheckboxChange = (ruleIndex: number) => {
-    const isNewCheck = !checkedRules.includes(ruleIndex)
+    const isNewCheck = !checkedRuleIndices.includes(ruleIndex)
 
-    setCheckedRules(prev => {
+    setCheckedRuleIndices(prev => {
       const updatedRules = isNewCheck ? [...prev, ruleIndex] : prev.filter(n => n !== ruleIndex)
       return updatedRules.sort((a, b) => a - b)
     })
@@ -196,37 +353,6 @@ function useSudokuManagement() {
     if (isNewCheck && boardIsSet) {
       handleQueueAutoSolve(true)
     }
-  }
-
-  const handleQueueAutoSolve = (beQueued: boolean) => {
-    setQueueAutoSolve(beQueued)
-  }
-
-  const clearManualElimCandidates = () => {
-    setManualElimCandidates([])
-  }
-
-  const toggleManualElimCandidate = (gridSquareIndex: number, candidateIndex: number, shouldManualElim?: boolean) => {
-    const candidateKey = `${gridSquareIndex}-${candidateIndex}`
-    setManualElimCandidates(prev => {
-      if (shouldManualElim === undefined) {
-        if (!prev.includes(candidateKey)) {
-          return [...prev, candidateKey]
-        } else {
-          return prev.filter(key => key !== candidateKey)
-        }
-      }
-
-      if (shouldManualElim) {
-        if (!prev.includes(candidateKey)) {
-          return [...prev, candidateKey]
-        } else {
-          return prev
-        }
-      }
-
-      return prev.filter(key => key !== candidateKey)
-    })
   }
 
   const toggleGoodCandidates = (gridSquareIndex: number, candidateIndex: number, shouldMark?: boolean) => {
@@ -275,8 +401,8 @@ function useSudokuManagement() {
     })
   }
 
-  const changeLastClickedHighlightN = (newHighlightN: number) => {
-    setLastClickedHighlightN(newHighlightN >= 0 && newHighlightN <= 9 ? newHighlightN : 0)
+  const changeLastClickedHighlightIndex = (newHighlightIndex: number | null) => {
+    setLastClickedHighlightIndex(newHighlightIndex == null || newHighlightIndex < 0 || newHighlightIndex >= symbols.length ? null : newHighlightIndex)
   }
 
   const toggleCandidateMode = (beCandidateMode?: boolean) => {
@@ -286,23 +412,31 @@ function useSudokuManagement() {
     setShowCandidates(prev => (shouldShow === undefined ? !prev : shouldShow))
   }
 
-  const handleHighlightNChange = (newHighlightN: number) => {
-    setHighlightN(newHighlightN >= 0 && newHighlightN <= 9 ? newHighlightN : 0)
+  const handleHighlightIndexChange = (newHighlightIndex: number | null) => {
+    setHighlightIndex(newHighlightIndex == null || newHighlightIndex < 0 || newHighlightIndex >= symbols.length ? null : newHighlightIndex)
   }
 
   const handleBoardSet = (isSet: boolean) => {
-    if (isSet) handleQueueAutoSolve(true)
+    if (isSet) {
+      if (checkForAnySudokuConflict()) {
+        alert("There is a sudoku conflict")
+        return
+      }
+
+      handleQueueAutoSolve(true)
+    }
     setBoardIsSet(isSet)
+  }
+
+  const formatStringToPuzzleString = (value: string) => {
+    const zeroReplaced = replaceNonDigitsWithZero(value)
+    return truncateAndPad(zeroReplaced, Math.pow(symbols.length, 2), "0")
   }
 
   const handlePuzzleStartChange = (newValue: string) => {
     setPuzzleStringStart(newValue)
-    if (newValue) {
-      const puzzleString = replaceNonDigitsWithZero(newValue)
-      setPuzzleStringCurrent(truncateAndPad(puzzleString, 81, "0"))
-    } else {
-      setPuzzleStringCurrent("0".repeat(81))
-    }
+
+    setPuzzleStringCurrent(formatStringToPuzzleString(newValue))
   }
 
   const handleRuleOutcome = (ruleIndex: number, newOutcome: RuleOutcome) => {
@@ -317,17 +451,47 @@ function useSudokuManagement() {
     setDifficulty(diff)
   }
 
+  const restartPuzzle = () => {
+    setPuzzleStringCurrent(formatStringToPuzzleString(puzzleStringStart))
+    setBoardIsSolved(initialStates.boardIsSolved)
+
+    setRuleOutcomes(initialStates.ruleOutcomes)
+    setCurrentAutoRuleIndex(initialStates.currentAutoRuleIndex)
+    setQueueAutoSolve(initialStates.queueAutoSolve)
+
+    setManualElimCandidates(initialStates.manualElimCandidates)
+    setGoodCandidates(initialStates.goodCandidates)
+    setBadCandidates(initialStates.badCandidates)
+
+    setHighlightIndex(initialStates.highlightIndex)
+    setLastClickedHighlightIndex(initialStates.lastClickedHighlightIndex)
+    setLastFocusedEntryIndex(initialStates.lastFocusedEntryIndex)
+
+    padNumberClicked.current = false
+  }
+
   function resetBoardData() {
-    setBoardIsSolved(false)
-    handleBoardSet(false)
-    toggleCandidateMode(false)
-    toggleShowCandidates(false)
-    setCheckedRules([])
-    handleHighlightNChange(0)
-    handlePuzzleStartChange("")
-    changeLastClickedHighlightN(0)
-    clearManualElimCandidates()
-    handleQueueAutoSolve(false)
+    setPuzzleStringCurrent(initialStates.puzzleStringCurrent)
+    setPuzzleStringStart(initialStates.puzzleStringStart)
+    setBoardIsSet(initialStates.boardIsSet)
+    setBoardIsSolved(initialStates.boardIsSolved)
+
+    setRuleOutcomes(initialStates.ruleOutcomes)
+    setCheckedRuleIndices(initialStates.checkedRuleIndices)
+    setCurrentAutoRuleIndex(initialStates.currentAutoRuleIndex)
+    setQueueAutoSolve(initialStates.queueAutoSolve)
+
+    setShowCandidates(initialStates.showCandidates)
+    setCandidateMode(initialStates.candidateMode)
+    setManualElimCandidates(initialStates.manualElimCandidates)
+    setGoodCandidates(initialStates.goodCandidates)
+    setBadCandidates(initialStates.badCandidates)
+
+    setHighlightIndex(initialStates.highlightIndex)
+    setLastClickedHighlightIndex(initialStates.lastClickedHighlightIndex)
+    setLastFocusedEntryIndex(initialStates.lastFocusedEntryIndex)
+
+    padNumberClicked.current = false
   }
 
   return {
@@ -338,20 +502,19 @@ function useSudokuManagement() {
     handlePuzzleStartChange,
     boardIsSet,
     handleBoardSet,
-    highlightN,
-    handleHighlightNChange,
+    highlightIndex,
+    handleHighlightIndexChange,
     showCandidates,
     toggleShowCandidates,
     candidateMode,
     toggleCandidateMode,
-    lastClickedHighlightN,
-    changeLastClickedHighlightN,
+    lastClickedHighlightIndex,
+    changeLastClickedHighlightIndex,
     manualElimCandidates,
     toggleManualElimCandidate,
     handleQueueAutoSolve,
-    checkedRules,
+    checkedRuleIndices,
     handleCheckboxChange,
-    numbers,
     tryRuleAtIndex,
     resetBoardData,
     goodCandidates,
@@ -359,8 +522,17 @@ function useSudokuManagement() {
     getPeerSquares,
     boardIsSolved,
     difficulty,
-    handleDifficulty
+    handleDifficulty,
+    isAlreadyInUnit,
+    lastFocusedEntryIndex,
+    handleLastFocusedEntryIndex,
+    padNumberClicked,
+    charCounts,
+    restartPuzzle,
+    entryRefs,
+    sortedEntries
   }
 }
 
 export default useSudokuManagement
+export { symbols, symbolsSqrt }

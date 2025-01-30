@@ -18,7 +18,7 @@ const FetchPuzzleButton = ({
   const handleClick = async () => {
     try {
       setLoading(true)
-      console.log(difficulty)
+
       const response = await fetch(`/api/randomPuzzle?difficulty=${difficulty}`)
 
       if (!response.ok) {
@@ -26,7 +26,7 @@ const FetchPuzzleButton = ({
       }
 
       const data: { puzzle: string; difficulty: number } = await response.json()
-      console.log(data.difficulty)
+
       handlePuzzleStartChange(data.puzzle)
     } catch (error) {
       console.log("PUZZLE FETCH ERROR: ", error)

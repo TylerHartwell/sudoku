@@ -7,7 +7,7 @@ import CandidateContext from "@/contexts/CandidateContext"
 import PadNumber from "@/components/PadNumber"
 import RuleItem from "@/components/RuleItem"
 import rulesArr from "@/rules/rulesArr"
-import useSudokuManagement from "@/hooks/useSudokuManagement"
+import useSudokuManagement, { symbols } from "@/hooks/useSudokuManagement"
 import clsx from "clsx"
 
 export default function Page() {
@@ -19,20 +19,19 @@ export default function Page() {
     handlePuzzleStartChange,
     boardIsSet,
     handleBoardSet,
-    highlightN,
-    handleHighlightNChange,
+    highlightIndex,
+    handleHighlightIndexChange,
     showCandidates,
     toggleShowCandidates,
     candidateMode,
     toggleCandidateMode,
-    lastClickedHighlightN,
-    changeLastClickedHighlightN,
+    lastClickedHighlightIndex,
+    changeLastClickedHighlightIndex,
     manualElimCandidates,
     toggleManualElimCandidate,
     handleQueueAutoSolve,
-    checkedRules,
+    checkedRuleIndices,
     handleCheckboxChange,
-    numbers,
     tryRuleAtIndex,
     resetBoardData,
     goodCandidates,
@@ -40,12 +39,20 @@ export default function Page() {
     getPeerSquares,
     boardIsSolved,
     difficulty,
-    handleDifficulty
+    handleDifficulty,
+    isAlreadyInUnit,
+    lastFocusedEntryIndex,
+    handleLastFocusedEntryIndex,
+    padNumberClicked,
+    charCounts,
+    restartPuzzle,
+    entryRefs,
+    sortedEntries
   } = useSudokuManagement()
 
   const contextObj = {
     getPeerSquares,
-    highlightN,
+    highlightIndex,
     showCandidates,
     candidateMode,
     puzzleStringStart,
@@ -57,65 +64,72 @@ export default function Page() {
     handleQueueAutoSolve,
     goodCandidates,
     badCandidates,
-    boardIsSolved
+    boardIsSolved,
+    isAlreadyInUnit,
+    lastFocusedEntryIndex,
+    handleLastFocusedEntryIndex,
+    padNumberClicked,
+    charCounts,
+    entryRefs,
+    sortedEntries
   }
 
   return (
-    <div className="primary md:w-auto md:min-w-fit md:h-max md:min-h-min flex flex-col items-center md:overflow-y-auto ">
+    <main className="primary md:w-auto md:min-w-fit md:h-max md:min-h-min flex flex-col items-center md:overflow-y-auto ">
       <h1 className="title md:h-[40px] text-center text-[1em] md:text-[2em]">SUDOKU RULER</h1>
       <div className="w-full md:w-full md:max-w-[max(800px,80vw)] md:px-5 flex flex-col md:flex-row-reverse md:justify-center ">
         <div className="w-full md:w-[max(calc(100vh-155px),300px)] flex flex-col md:content-center">
           <CandidateContext.Provider value={contextObj}>
             <Board />
-          </CandidateContext.Provider>
-          <section className="numberpad flex md:h-[115px] flex-col items-center">
-            <div className="w-full flex justify-around items-center py-[10px]">
-              {numbers.map(num => (
-                <PadNumber
-                  key={num}
-                  number={num}
-                  highlightN={highlightN}
-                  handleHighlightNChange={handleHighlightNChange}
-                  lastClickedHighlightN={lastClickedHighlightN}
-                  changeLastClickedHighlightN={changeLastClickedHighlightN}
-                />
-              ))}
-            </div>
-            <div className="pad-mode-container w-full flex py-[5px] mx-auto justify-center items-center gap-[5px]">
-              <button
-                className={clsx(
-                  "solution-mode-btn h-[90%] w-min border-none flex rounded-[10px] p-[5px] text-center text-[clamp(12px,6vw,16px)] justify-center items-center bg-transparent",
-                  !candidateMode && "font-bold pointer-events-none"
-                )}
-                onClick={() => toggleCandidateMode(false)}
-              >
-                Solution Mode
-              </button>
-              <div
-                className={clsx(
-                  "mode-switch-outer h-[50px] aspect-[2] min-w-[50px] rounded-[25px] relative my-auto duration-300 cursor-pointer",
-                  candidateMode ? "bg-[#d14141]" : "bg-[rgb(43,143,43)]"
-                )}
-                onClick={() => toggleCandidateMode()}
-              >
+            <section className="numberpad flex md:h-[115px] flex-col items-center">
+              <div className="w-full flex justify-around items-center py-[10px]">
+                {symbols.map((symbol, index) => (
+                  <PadNumber
+                    key={index}
+                    index={index}
+                    highlightIndex={highlightIndex}
+                    handleHighlightIndexChange={handleHighlightIndexChange}
+                    lastClickedHighlightIndex={lastClickedHighlightIndex}
+                    changeLastClickedHighlightIndex={changeLastClickedHighlightIndex}
+                  />
+                ))}
+              </div>
+              <div className="pad-mode-container w-full flex py-[5px] mx-auto justify-center items-center gap-[5px]">
+                <button
+                  className={clsx(
+                    "solution-mode-btn h-[90%] w-min border-none flex rounded-[10px] p-[5px] text-center text-[clamp(12px,6vw,16px)] justify-center items-center bg-transparent",
+                    !candidateMode && "font-bold pointer-events-none"
+                  )}
+                  onClick={() => toggleCandidateMode(false)}
+                >
+                  Solution Mode
+                </button>
                 <div
                   className={clsx(
-                    "mode-switch-inner h-[80%] aspect-square rounded-[50%] bg-white absolute top-[50%] -translate-y-1/2 pointer-events-none duration-300",
-                    candidateMode ? "left-[calc(100%-5px)] -translate-x-full" : "left-[5px] translate-x-0"
+                    "mode-switch-outer h-[50px] aspect-[2] min-w-[50px] rounded-[25px] relative my-auto duration-300 cursor-pointer",
+                    candidateMode ? "bg-[#d14141]" : "bg-[rgb(43,143,43)]"
                   )}
-                ></div>
+                  onClick={() => toggleCandidateMode()}
+                >
+                  <div
+                    className={clsx(
+                      "mode-switch-inner h-[80%] aspect-square rounded-[50%] bg-white absolute top-[50%] -translate-y-1/2 pointer-events-none duration-300",
+                      candidateMode ? "left-[calc(100%-5px)] -translate-x-full" : "left-[5px] translate-x-0"
+                    )}
+                  ></div>
+                </div>
+                <button
+                  className={clsx(
+                    "candidate-mode-btn h-[90%] w-min border-none flex rounded-[10px] p-[5px] text-center text-[clamp(12px,6vw,16px)] justify-center items-center bg-transparent",
+                    candidateMode && "font-bold pointer-events-none"
+                  )}
+                  onClick={() => toggleCandidateMode(true)}
+                >
+                  Candidate Mode
+                </button>
               </div>
-              <button
-                className={clsx(
-                  "candidate-mode-btn h-[90%] w-min border-none flex rounded-[10px] p-[5px] text-center text-[clamp(12px,6vw,16px)] justify-center items-center bg-transparent",
-                  candidateMode && "font-bold pointer-events-none"
-                )}
-                onClick={() => toggleCandidateMode(true)}
-              >
-                Candidate Mode
-              </button>
-            </div>
-          </section>
+            </section>
+          </CandidateContext.Provider>
         </div>
         <div className="w-full md:w-auto md:flex-grow md:min-w-fit md:max-w-[40%] md:overflow-auto md:mr-1 flex flex-col justify-between">
           <section className="rules mt-[10px] md:mt-0 text-center">
@@ -126,7 +140,7 @@ export default function Page() {
                   key={index}
                   ruleN={index + 1}
                   ruleName={rule.ruleName}
-                  isChecked={checkedRules.includes(index)}
+                  isChecked={checkedRuleIndices.includes(index)}
                   handleCheckboxChange={() => handleCheckboxChange(index)}
                   ruleOutcome={ruleOutcomes[index]}
                   tryRuleAtIndex={() => tryRuleAtIndex(index)}
@@ -150,6 +164,7 @@ export default function Page() {
                 <div className="flex-1 grow-0"></div>
                 <div className="flex-1 flex justify-start items-center">
                   <select
+                    name={"difficulty"}
                     className={clsx("difficulty m-1 py-0.5 h-min", boardIsSet && "hidden")}
                     value={difficulty}
                     onChange={e => handleDifficulty(e.target.value as "easy" | "medium" | "hard" | "diabolical")}
@@ -163,7 +178,7 @@ export default function Page() {
               </div>
               <input
                 type="text"
-                placeholder="paste or enter 81-character grid string"
+                placeholder={`paste or enter ${Math.pow(symbols.length, 2)}-character puzzle string`}
                 className={clsx("grid-string w-[98%] border-none h-[2em] text-[.85em] my-[2px] select-text", boardIsSet && "hidden")}
                 id="grid-string"
                 value={puzzleStringStart}
@@ -183,13 +198,16 @@ export default function Page() {
 
                 <div className="flex-1"></div>
                 <button
-                  className={clsx(
-                    "set-puzzle-btn w-min text-[clamp(12px,4vw,16px)] rounded-[10px] shadow-[black_0px_0px_3px] active:bg-yellow-200",
-                    boardIsSet && "hidden"
-                  )}
-                  onClick={() => handleBoardSet(true)}
+                  className={clsx("set-puzzle-btn w-min text-[clamp(12px,4vw,16px)] rounded-[10px] shadow-[black_0px_0px_3px] active:bg-yellow-200")}
+                  onClick={() => {
+                    if (boardIsSet) {
+                      restartPuzzle()
+                    } else {
+                      handleBoardSet(true)
+                    }
+                  }}
                 >
-                  Set Puzzle
+                  {boardIsSet ? "Restart" : "Set Puzzle"}
                 </button>
                 <div className="flex-1"></div>
                 <div className="flex-1 flex justify-end">
@@ -206,6 +224,6 @@ export default function Page() {
           </section>
         </div>
       </div>
-    </div>
+    </main>
   )
 }

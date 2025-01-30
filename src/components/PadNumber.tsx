@@ -1,48 +1,121 @@
+import CandidateContext from "@/contexts/CandidateContext"
+import { symbols } from "@/hooks/useSudokuManagement"
+import getPeerGridSquareIndices from "@/utils/getPeerGridSquareIndices"
 import clsx from "clsx"
-import { useMemo } from "react"
+import { useContext, useMemo } from "react"
 
 interface PadNumberProps {
-  number: number
-  highlightN: number
-  handleHighlightNChange: (n: number) => void
-  lastClickedHighlightN: number
-  changeLastClickedHighlightN: (n: number) => void
+  index: number
+  highlightIndex: number | null
+  handleHighlightIndexChange: (n: number | null) => void
+  lastClickedHighlightIndex: number | null
+  changeLastClickedHighlightIndex: (n: number | null) => void
 }
 
-const PadNumber = ({ number, highlightN, handleHighlightNChange, lastClickedHighlightN, changeLastClickedHighlightN }: PadNumberProps) => {
-  const highlight = useMemo(() => {
-    return number === highlightN ? "highlight" : ""
-  }, [highlightN, number])
+const PadNumber = ({
+  index,
+  highlightIndex,
+  handleHighlightIndexChange,
+  lastClickedHighlightIndex,
+  changeLastClickedHighlightIndex
+}: PadNumberProps) => {
+  const {
+    lastFocusedEntryIndex,
+    handleLastFocusedEntryIndex,
+    padNumberClicked,
+    handleEntry,
+    candidateMode,
+    toggleManualElimCandidate,
+    charCounts,
+    handleQueueAutoSolve,
+    puzzleStringCurrent,
+    isAlreadyInUnit,
+    manualElimCandidates
+  }: {
+    lastFocusedEntryIndex: number | null
+    handleLastFocusedEntryIndex: (entryIndex: number | null) => void
+    padNumberClicked: React.MutableRefObject<boolean>
+    handleEntry: (i: number, s: string) => void
+    candidateMode: boolean
+    toggleManualElimCandidate: (gridSquareIndex: number, candidateIndex: number, shouldManualElim?: boolean) => void
+    charCounts: { [key: string]: number }
+    handleQueueAutoSolve: (beQueued: boolean) => void
+    puzzleStringCurrent: string
+    isAlreadyInUnit: (gridSquareIndex: number, character: string, puzzleString: string) => boolean
+    manualElimCandidates: string[]
+  } = useContext(CandidateContext)
 
   const handleMouseEnter = () => {
-    handleHighlightNChange(number)
+    handleHighlightIndexChange(index)
   }
 
   const handleMouseLeave = () => {
-    handleHighlightNChange(lastClickedHighlightN)
+    handleHighlightIndexChange(lastClickedHighlightIndex)
   }
 
-  const handleClick = () => {
-    if (number === lastClickedHighlightN) {
-      changeLastClickedHighlightN(0)
-      handleHighlightNChange(0)
+  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    e.preventDefault()
+    padNumberClicked.current = true
+
+    if (lastFocusedEntryIndex != null) {
+      if (!candidateMode) {
+        if (symbols[index] == puzzleStringCurrent[lastFocusedEntryIndex]) {
+          handleEntry(lastFocusedEntryIndex, "0")
+        } else {
+          handleEntry(lastFocusedEntryIndex, symbols[index])
+          const isWrong = isAlreadyInUnit(lastFocusedEntryIndex, symbols[index], puzzleStringCurrent)
+
+          if (!isWrong) {
+            handleLastFocusedEntryIndex(null)
+            ;(document.activeElement as HTMLElement)?.blur()
+            handleQueueAutoSolve(true)
+          }
+        }
+        changeLastClickedHighlightIndex(index)
+        handleHighlightIndexChange(index)
+      } else {
+        const candidateKey = `${lastFocusedEntryIndex}-${index}`
+        const isAlreadyInUnit = getPeerGridSquareIndices(lastFocusedEntryIndex).some(i => puzzleStringCurrent[i] === symbols[index])
+
+        const isEliminated = puzzleStringCurrent[lastFocusedEntryIndex] !== "0" || isAlreadyInUnit || manualElimCandidates.includes(candidateKey)
+        const isToggleable = !isEliminated || manualElimCandidates.includes(candidateKey)
+        if (isToggleable) {
+          toggleManualElimCandidate(lastFocusedEntryIndex, index)
+          handleQueueAutoSolve(true)
+        } else {
+          ;(document.activeElement as HTMLElement)?.blur()
+        }
+
+        changeLastClickedHighlightIndex(index)
+      }
+
       return
     }
-    changeLastClickedHighlightN(number)
-    handleHighlightNChange(number)
+
+    if (index === lastClickedHighlightIndex) {
+      changeLastClickedHighlightIndex(null)
+      handleHighlightIndexChange(null)
+      return
+    }
+
+    changeLastClickedHighlightIndex(index)
+    handleHighlightIndexChange(index)
   }
 
   return (
     <div
       className={clsx(
-        `pad-number pad${number} w-full h-full text-center place-content-center text-[5vw] md:text-[30px] select-none hover-fine-device:hover:cursor-pointer hover-fine-device:hover:font-bold`,
-        number === highlightN && "font-bold"
+        `pad-number pad${index} w-full h-full text-center place-content-center text-[5vw] md:text-[30px] select-none hover-fine-device:hover:cursor-pointer hover-fine-device:hover:font-bold`,
+        highlightIndex != null && index === highlightIndex && "font-bold",
+        charCounts != undefined && charCounts[symbols[index]] === symbols.length && "opacity-30",
+        lastFocusedEntryIndex !== null && !candidateMode && "shadow-green-700 drop-shadow-[1px_1px_0.5px_rgba(43,143,43,0.4)]",
+        lastFocusedEntryIndex !== null && candidateMode && "shadow-red-700 drop-shadow-[1px_1px_0.5px_rgba(255,43,43,0.4)]"
       )}
       onMouseEnter={handleMouseEnter}
-      onClick={handleClick}
       onMouseLeave={handleMouseLeave}
+      onPointerDown={handlePointerDown}
     >
-      {number}
+      {symbols[index]}
     </div>
   )
 }

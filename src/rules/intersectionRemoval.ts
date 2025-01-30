@@ -1,6 +1,7 @@
 import getRowColBox from "@/utils/getRowColBox"
 import { Candidate, Rule, Square, UnitType } from "./rulesInterface"
 import getAllSquaresByUnit from "@/utils/getAllSquaresByUnit"
+import { symbols } from "@/hooks/useSudokuManagement"
 
 //if all the candidates of a number in a unit are also all in a second unit, any other candidates matching that number in the second unit can be eliminated
 
@@ -11,8 +12,8 @@ const intersectionRemoval: Rule = {
     const unitTypes: UnitType[] = ["row", "col", "box"]
 
     for (const [unitIndex, unit] of allSquaresByUnit.entries()) {
-      const currentUnitType = unitTypes[unitIndex % 3]
-      for (let candidateIndex = 0; candidateIndex < 9; candidateIndex++) {
+      const currentUnitType = unitTypes[unitIndex % unitTypes.length]
+      for (let candidateIndex = 0; candidateIndex < symbols.length; candidateIndex++) {
         const candidateObjArr: Candidate[] = []
         let isIntersector = false
 
@@ -22,7 +23,7 @@ const intersectionRemoval: Rule = {
           const possible = square.candidates[candidateIndex]
 
           if (possible) {
-            if (candidateObjArr.length >= 3) {
+            if (candidateObjArr.length >= Math.sqrt(symbols.length)) {
               isIntersector = false
               break
             }
@@ -65,7 +66,7 @@ const intersectionRemoval: Rule = {
 
         const offset = unitTypes.indexOf(peerUnitType)
 
-        const peerUnit = allSquaresByUnit[peerUnitIndex * 3 + offset]
+        const peerUnit = allSquaresByUnit[peerUnitIndex * Math.sqrt(symbols.length) + offset]
         const candidatesToMarkGood = candidateObjArr
         const candidatesToMarkBad = []
         const actions: (() => void)[] = []

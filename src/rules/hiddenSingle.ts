@@ -1,5 +1,6 @@
 import getAllSquaresByUnit from "@/utils/getAllSquaresByUnit"
 import { Rule, Square } from "./rulesInterface"
+import { symbols } from "@/hooks/useSudokuManagement"
 
 // if a unit has only one square remaining that has a particular candidate number, that number can be entered in that square
 
@@ -9,7 +10,7 @@ const hiddenSingle: Rule = {
     const allSquaresByUnit: Square[][] = getAllSquaresByUnit(allSquares)
 
     for (const unit of allSquaresByUnit) {
-      for (let candidateIndex = 0; candidateIndex < 9; candidateIndex++) {
+      for (let candidateIndex = 0; candidateIndex < symbols.length; candidateIndex++) {
         let instanceCount = 0
         let targetGridSquareIndex: number | null = null
         for (const square of unit) {

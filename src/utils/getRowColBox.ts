@@ -1,9 +1,11 @@
+import { symbols } from "@/hooks/useSudokuManagement"
+
 const getRowColBox = (gridSquareIndex: number) => {
-  const rowIndex = Math.floor(gridSquareIndex / 9)
-  const colIndex = gridSquareIndex % 9
-  const boxRowIndex = Math.floor(rowIndex / 3)
-  const boxColIndex = Math.floor(colIndex / 3)
-  const boxIndex = boxRowIndex * 3 + boxColIndex
+  const rowIndex = Math.floor(gridSquareIndex / symbols.length)
+  const colIndex = gridSquareIndex % symbols.length
+  const boxRowIndex = Math.floor(rowIndex / Math.sqrt(symbols.length))
+  const boxColIndex = Math.floor(colIndex / Math.sqrt(symbols.length))
+  const boxIndex = boxRowIndex * Math.sqrt(symbols.length) + boxColIndex
 
   return {
     rowIndex,
