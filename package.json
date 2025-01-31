@@ -11,8 +11,8 @@
   "dependencies": {
     "classnames": "^2.5.1",
     "clsx": "^2.1.1",
-    "mongodb": "^6.8.0",
-    "next": "14.2.4",
+    "mongodb": "^6.8.2",
+    "next": "14.2.23",
     "react": "^18",
     "react-dom": "^18"
   },
@@ -21,9 +21,9 @@
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "eslint": "^8",
-    "eslint-config-next": "14.2.4",
+    "eslint-config-next": "14.2.23",
     "postcss": "^8",
-    "tailwindcss": "^3.4.1",
+    "tailwindcss": "^3.4.17",
     "typescript": "^5"
   }
 }
