@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@tailwindcss/postcss": "^4.0.3",
     "classnames": "^2.5.1",
     "clsx": "^2.1.1",
     "mongodb": "^6.13.0",
