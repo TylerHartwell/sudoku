@@ -165,10 +165,10 @@ const Entry = forwardRef<HTMLDivElement, EntryProps>(({ gridSquareIndex, shownVa
       ref={entryRef}
       className={clsx(
         "entry flex justify-center items-center size-full absolute text-[10vw] md:text-[clamp(10px,min(6vh,3vw),90px)] cursor-default focus:outline-hidden focus:border-[3px] focus:border-green-600 z-10",
-        candidateMode && "focus:border-red-500 hover-fine-device:pointer-events-none",
-        !candidateMode && "hover-fine-device:hover:border-[1px] hover-fine-device:hover:border-[rgb(80,80,80)]",
+        candidateMode && "focus:border-red-500 pointer-events-none",
+        !candidateMode && "hover:border-[1px] hover:border-[rgb(80,80,80)]",
         //equal priority focus styles follow after hover styles so they take precedence
-        !candidateMode && "hover-fine-device:focus:border-[3px] hover-fine-device:focus:border-green-600 ",
+        !candidateMode && "focus:border-[3px] focus:border-green-600",
         isLocked && "bg-[rgba(142,153,167,0.349)]",
         isWrong && "bg-red-500",
         highlightIndex != null && shownValue === symbols[highlightIndex] && "font-bold"

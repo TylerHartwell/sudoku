@@ -56,8 +56,8 @@ const Candidate = ({ gridSquareIndex, candidateIndex, entryShownValue }: Candida
           "candidate absolute text-[3vw] md:text-[clamp(12px,min(2vh,2vw),30px)] flex justify-center items-center size-full pointer-events-none",
           ((!showCandidates && !candidateMode) || entryShownValue) && "invisible",
           candidateIndex === highlightIndex && (showCandidates || candidateMode) && !isEliminated && "bg-[rgb(248,248,120)] font-bold",
-          isToggleable && "border-[1px] border-dashed border-[#0000ff31] hover-fine-device:hover:font-bold hover-fine-device:hover:bg-[#ff5353]",
-          candidateMode && "hover-fine-device:pointer-events-auto",
+          isToggleable && "border-[1px] border-dashed border-[#0000ff31] hover:font-bold hover:bg-[#ff5353]",
+          candidateMode && "pointer-events-auto",
           goodCandidates.includes(candidateKey) && !isEliminated && "bg-[rgb(45,241,77)] font-bold",
           badCandidates.includes(candidateKey) && !isEliminated && "bg-[red] font-bold"
         )}

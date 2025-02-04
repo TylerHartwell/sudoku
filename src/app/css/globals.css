@@ -1,6 +1,4 @@
-@import "tailwindcss";
-
-@config '../../../tailwind.config.ts';
+@import 'tailwindcss';
 
 /*
   The default border color has changed to `currentColor` in Tailwind CSS v4,
@@ -24,6 +22,36 @@
   text-wrap: balance;
 }
 
+@utility b1 {
+  border: 5px solid white;
+}
+
+@utility b2 {
+  border: 5px solid rgb(60, 255, 1);
+}
+
+@utility b3 {
+  border: 5px solid rgb(3, 104, 255);
+}
+
+/*
+  The default border color has changed to `currentColor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentColor);
+  }
+}
+
 @layer utilities {
   button {
     padding: 4px 6px;
@@ -32,15 +60,6 @@
 
   button:active:not(:disabled) {
     transform: scale(0.98);
-  }
-  .b1 {
-    border: 5px solid white;
-  }
-  .b2 {
-    border: 5px solid rgb(60, 255, 1);
-  }
-  .b3 {
-    border: 5px solid rgb(3, 104, 255);
   }
 
   @media (hover: hover) and (pointer: fine) {
