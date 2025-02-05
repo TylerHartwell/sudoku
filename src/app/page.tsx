@@ -46,7 +46,6 @@ export default function Page() {
     padNumberClicked,
     charCounts,
     restartPuzzle,
-    entryRefs,
     sortedEntries
   } = useSudokuManagement()
 
@@ -70,7 +69,6 @@ export default function Page() {
     handleLastFocusedEntryIndex,
     padNumberClicked,
     charCounts,
-    entryRefs,
     sortedEntries
   }
 

@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef, useContext, forwardRef, MutableRefObject } from "react"
+import { useRef, useContext, RefObject } from "react"
 import CandidateContext from "@/contexts/CandidateContext"
 import clsx from "clsx"
 import isValidChar from "@/utils/isValidChar"
@@ -22,13 +22,13 @@ interface CandidateContextValue {
   manualElimCandidates: string[]
   isAlreadyInUnit: (gridSquareIndex: number, character: string, puzzleString: string) => boolean
   handleLastFocusedEntryIndex: (entryIndex: number | null) => void
-  padNumberClicked: MutableRefObject<boolean>
+  padNumberClicked: RefObject<boolean>
   handleQueueAutoSolve: (beQueued: boolean) => void
   lastFocusedEntryIndex: number | null
   sortedEntries: (Element | null)[]
 }
 
-const Entry = forwardRef<HTMLDivElement, EntryProps>(({ gridSquareIndex, shownValue }: EntryProps, ref) => {
+const Entry = ({ gridSquareIndex, shownValue }: EntryProps) => {
   const {
     puzzleStringStart,
     puzzleStringCurrent,
@@ -46,12 +46,6 @@ const Entry = forwardRef<HTMLDivElement, EntryProps>(({ gridSquareIndex, shownVa
     sortedEntries
   } = useContext<CandidateContextValue>(CandidateContext)
   const entryRef = useRef<HTMLDivElement>(null)
-
-  if (ref) {
-    if (typeof ref === "function") {
-      ref(entryRef.current)
-    }
-  }
 
   const isLocked = boardIsSet && puzzleStringStart.length == Math.pow(symbols.length, 2) && puzzleStringStart[gridSquareIndex] == shownValue
   const isWrong = isAlreadyInUnit(gridSquareIndex, shownValue, puzzleStringCurrent)
@@ -164,11 +158,8 @@ const Entry = forwardRef<HTMLDivElement, EntryProps>(({ gridSquareIndex, shownVa
     <div
       ref={entryRef}
       className={clsx(
-        "entry flex justify-center items-center size-full absolute text-[10vw] md:text-[clamp(10px,min(6vh,3vw),90px)] cursor-default focus:outline-hidden focus:border-[3px] focus:border-green-600 z-10",
-        candidateMode && "focus:border-red-500 pointer-events-none",
-        !candidateMode && "hover:border-[1px] hover:border-[rgb(80,80,80)]",
-        //equal priority focus styles follow after hover styles so they take precedence
-        !candidateMode && "focus:border-[3px] focus:border-green-600",
+        "entry flex justify-center items-center size-full absolute text-[10vw] md:text-[clamp(10px,min(6vh,3vw),90px)] cursor-default hover:border hover:border-[rgb(80,80,80)] focus:outline-hidden focus:border-[3px] focus:border-green-600 z-10",
+        candidateMode && "focus:border-red-500 ",
         isLocked && "bg-[rgba(142,153,167,0.349)]",
         isWrong && "bg-red-500",
         highlightIndex != null && shownValue === symbols[highlightIndex] && "font-bold"
@@ -184,8 +175,8 @@ const Entry = forwardRef<HTMLDivElement, EntryProps>(({ gridSquareIndex, shownVa
       {shownValue}
     </div>
   )
-})
+}
 
-Entry.displayName = "Entry"
+// Entry.displayName = "Entry"
 
 export default Entry
