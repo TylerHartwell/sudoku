@@ -2,7 +2,7 @@ import { symbolsSqrt, symbols } from "@/hooks/useSudokuManagement"
 import Square from "./Square"
 import clsx from "clsx"
 
-const Box = ({ boxIndex, entryRefs }: { boxIndex: number; entryRefs: React.MutableRefObject<(HTMLDivElement | null)[]> }) => {
+const Box = ({ boxIndex }: { boxIndex: number }) => {
   return (
     <div
       className={clsx(
@@ -13,7 +13,7 @@ const Box = ({ boxIndex, entryRefs }: { boxIndex: number; entryRefs: React.Mutab
       )}
     >
       {Array.from({ length: symbols.length }).map((_, index) => (
-        <Square key={index} boxIndex={boxIndex} boxSquareIndex={index} entryRefs={entryRefs} />
+        <Square key={index} boxIndex={boxIndex} boxSquareIndex={index} />
       ))}
     </div>
   )

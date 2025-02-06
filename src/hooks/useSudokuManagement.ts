@@ -41,6 +41,8 @@ const initialStates = {
   lastClickedHighlightIndex: null,
   lastFocusedEntryIndex: null,
 
+  sortedEntries: [] as (Element | null)[],
+
   // Settings
   difficulty: "easy" as "easy" | "medium" | "hard" | "diabolical"
 }
@@ -68,11 +70,11 @@ function useSudokuManagement() {
 
   const [difficulty, setDifficulty] = useState<"easy" | "medium" | "hard" | "diabolical">(initialStates.difficulty)
 
+  const [sortedEntries, setSortedEntries] = useState<(Element | null)[]>([])
+
   const padNumberClicked = useRef(false)
 
   const charCounts = useMemo(() => countCharactersInString(puzzleStringCurrent, symbols), [puzzleStringCurrent])
-  const entryRefs = useRef<(HTMLDivElement | null)[]>(new Array(symbols.length ** 2).fill(null))
-  const [sortedEntries, setSortedEntries] = useState<(Element | null)[]>([])
 
   useEffect(() => {
     const entryDivs = Array.from(document.querySelectorAll(".entry"))
@@ -491,6 +493,8 @@ function useSudokuManagement() {
     setLastClickedHighlightIndex(initialStates.lastClickedHighlightIndex)
     setLastFocusedEntryIndex(initialStates.lastFocusedEntryIndex)
 
+    setSortedEntries(initialStates.sortedEntries)
+
     padNumberClicked.current = false
   }
 
@@ -529,7 +533,7 @@ function useSudokuManagement() {
     padNumberClicked,
     charCounts,
     restartPuzzle,
-    entryRefs,
+
     sortedEntries
   }
 }

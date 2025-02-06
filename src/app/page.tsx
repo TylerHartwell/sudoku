@@ -46,7 +46,6 @@ export default function Page() {
     padNumberClicked,
     charCounts,
     restartPuzzle,
-    entryRefs,
     sortedEntries
   } = useSudokuManagement()
 
@@ -70,7 +69,6 @@ export default function Page() {
     handleLastFocusedEntryIndex,
     padNumberClicked,
     charCounts,
-    entryRefs,
     sortedEntries
   }
 
@@ -131,7 +129,7 @@ export default function Page() {
             </section>
           </CandidateContext.Provider>
         </div>
-        <div className="w-full md:w-auto md:flex-grow md:min-w-fit md:max-w-[40%] md:overflow-auto md:mr-1 flex flex-col justify-between">
+        <div className="w-full md:w-auto md:grow md:min-w-fit md:max-w-[40%] md:overflow-auto md:mr-1 flex flex-col justify-between">
           <section className="rules mt-[10px] md:mt-0 text-center">
             <h2>Rules</h2>
             <ol className="mx-[10px] flex flex-col list-none overflow-auto">
@@ -178,8 +176,8 @@ export default function Page() {
               </div>
               <input
                 type="text"
-                placeholder={`paste or enter ${Math.pow(symbols.length, 2)}-character puzzle string`}
-                className={clsx("grid-string w-[98%] border-none h-[2em] text-[.85em] my-[2px] select-text", boardIsSet && "hidden")}
+                placeholder={`fetch or enter puzzle string of length ${Math.pow(symbols.length, 2)}`}
+                className={clsx("grid-string w-[98%] border-none bg-white px-1 h-[2em] text-[.85em] my-[2px] select-text", boardIsSet && "hidden")}
                 id="grid-string"
                 value={puzzleStringStart}
                 onChange={e => {

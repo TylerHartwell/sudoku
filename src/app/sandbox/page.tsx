@@ -7,7 +7,7 @@ export default function Sandbox() {
       <div className=" bounder bg-green-300 flex flex-row-reverse justify-center">
         <div className="playground bg-sky-600 flex flex-col ">
           <div className="board w-[max(min(60vw,calc(100vh-80px)),300px)] aspect-square text-center content-center">board</div>
-          <div className=" w-[max(min(60vw,calc(100vh-80px)),300px)] min-h-[40px] flex-grow content-center bg-yellow-300 text-center">numberpad</div>
+          <div className=" w-[max(min(60vw,calc(100vh-80px)),300px)] min-h-[40px] grow content-center bg-yellow-300 text-center">numberpad</div>
         </div>
         <div className="rules bg-stone-300 w-auto max-w-[40%] min-w-fit content-center overflow-auto">This has some stuff that should work</div>
       </div>
