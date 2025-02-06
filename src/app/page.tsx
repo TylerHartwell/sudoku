@@ -176,7 +176,7 @@ export default function Page() {
               </div>
               <input
                 type="text"
-                placeholder={`fetch, paste, or enter puzzle string (${Math.pow(symbols.length, 2)}-characters)`}
+                placeholder={`fetch or enter puzzle string of length ${Math.pow(symbols.length, 2)}`}
                 className={clsx("grid-string w-[98%] border-none bg-white px-1 h-[2em] text-[.85em] my-[2px] select-text", boardIsSet && "hidden")}
                 id="grid-string"
                 value={puzzleStringStart}

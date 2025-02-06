@@ -131,7 +131,7 @@ const Entry = ({ gridSquareIndex, shownValue }: EntryProps) => {
           handleQueueAutoSolve(true)
         }
         handleEntry(gridSquareIndex, e.key.toUpperCase())
-      } else if (e.key === " " || e.key === "0") {
+      } else if (e.key === " " || e.key === "0" || e.key.toUpperCase() == shownValue) {
         handleEntry(gridSquareIndex, "0")
       }
     }
@@ -159,7 +159,7 @@ const Entry = ({ gridSquareIndex, shownValue }: EntryProps) => {
       ref={entryRef}
       className={clsx(
         "entry flex justify-center items-center size-full absolute text-[10vw] md:text-[clamp(10px,min(6vh,3vw),90px)] cursor-default hover:border hover:border-[rgb(80,80,80)] focus:outline-hidden focus:border-[3px] focus:border-green-600 z-10",
-        candidateMode && "focus:border-red-500 ",
+        candidateMode && "focus:border-red-500 hover:border-none",
         isLocked && "bg-[rgba(142,153,167,0.349)]",
         isWrong && "bg-red-500",
         highlightIndex != null && shownValue === symbols[highlightIndex] && "font-bold"

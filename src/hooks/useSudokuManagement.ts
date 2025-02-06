@@ -41,6 +41,8 @@ const initialStates = {
   lastClickedHighlightIndex: null,
   lastFocusedEntryIndex: null,
 
+  sortedEntries: [] as (Element | null)[],
+
   // Settings
   difficulty: "easy" as "easy" | "medium" | "hard" | "diabolical"
 }
@@ -490,6 +492,8 @@ function useSudokuManagement() {
     setHighlightIndex(initialStates.highlightIndex)
     setLastClickedHighlightIndex(initialStates.lastClickedHighlightIndex)
     setLastFocusedEntryIndex(initialStates.lastFocusedEntryIndex)
+
+    setSortedEntries(initialStates.sortedEntries)
 
     padNumberClicked.current = false
   }
