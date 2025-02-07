@@ -7,6 +7,7 @@ import replaceNonDigitsWithZero from "@/utils/replaceNonDigitsWithZero"
 import isValidChar from "@/utils/isValidChar"
 import getValidSymbols from "@/utils/getValidSymbols"
 import countCharactersInString from "@/utils/getCountOfCharactersInStringFromArray"
+import { usePersistedState } from "./usePersistedState"
 
 // const inputSymbols = ["1", "2", "3", "4"]
 const inputSymbols = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
@@ -37,9 +38,9 @@ const initialStates = {
   badCandidates: [] as string[],
 
   // UI/Interaction states
-  highlightIndex: null,
-  lastClickedHighlightIndex: null,
-  lastFocusedEntryIndex: null,
+  highlightIndex: null as number | null,
+  lastClickedHighlightIndex: null as number | null,
+  lastFocusedEntryIndex: null as number | null,
 
   sortedEntries: [] as (Element | null)[],
 
@@ -48,29 +49,32 @@ const initialStates = {
 }
 
 function useSudokuManagement() {
-  const [puzzleStringCurrent, setPuzzleStringCurrent] = useState<string>(initialStates.puzzleStringCurrent)
-  const [puzzleStringStart, setPuzzleStringStart] = useState<string>(initialStates.puzzleStringStart)
-  const [boardIsSet, setBoardIsSet] = useState<boolean>(initialStates.boardIsSet)
-  const [boardIsSolved, setBoardIsSolved] = useState<boolean>(initialStates.boardIsSolved)
+  const [puzzleStringCurrent, setPuzzleStringCurrent] = usePersistedState("puzzleStringCurrent", initialStates.puzzleStringCurrent)
+  const [puzzleStringStart, setPuzzleStringStart] = usePersistedState("puzzleStringStart", initialStates.puzzleStringStart)
+  const [boardIsSet, setBoardIsSet] = usePersistedState("boardIsSet", initialStates.boardIsSet)
+  const [boardIsSolved, setBoardIsSolved] = usePersistedState("boardIsSolved", initialStates.boardIsSolved)
 
-  const [ruleOutcomes, setRuleOutcomes] = useState<RuleOutcome[]>(initialStates.ruleOutcomes)
-  const [checkedRuleIndices, setCheckedRuleIndices] = useState<number[]>(initialStates.checkedRuleIndices)
-  const [currentAutoRuleIndex, setCurrentAutoRuleIndex] = useState<number>(initialStates.currentAutoRuleIndex)
-  const [queueAutoSolve, setQueueAutoSolve] = useState<boolean>(initialStates.queueAutoSolve)
+  const [ruleOutcomes, setRuleOutcomes] = usePersistedState("ruleOutcomes", initialStates.ruleOutcomes)
+  const [checkedRuleIndices, setCheckedRuleIndices] = usePersistedState("checkedRuleIndices", initialStates.checkedRuleIndices)
+  const [currentAutoRuleIndex, setCurrentAutoRuleIndex] = usePersistedState("currentAutoRuleIndex", initialStates.currentAutoRuleIndex)
+  const [queueAutoSolve, setQueueAutoSolve] = usePersistedState("queueAutoSolve", initialStates.queueAutoSolve)
 
-  const [showCandidates, setShowCandidates] = useState<boolean>(initialStates.showCandidates)
-  const [candidateMode, setCandidateMode] = useState<boolean>(initialStates.candidateMode)
-  const [manualElimCandidates, setManualElimCandidates] = useState<string[]>(initialStates.manualElimCandidates)
-  const [goodCandidates, setGoodCandidates] = useState<string[]>(initialStates.goodCandidates)
-  const [badCandidates, setBadCandidates] = useState<string[]>(initialStates.badCandidates)
+  const [showCandidates, setShowCandidates] = usePersistedState("showCandidates", initialStates.showCandidates)
+  const [candidateMode, setCandidateMode] = usePersistedState("candidateMode", initialStates.candidateMode)
+  const [manualElimCandidates, setManualElimCandidates] = usePersistedState("manualElimCandidates", initialStates.manualElimCandidates)
+  const [goodCandidates, setGoodCandidates] = usePersistedState("goodCandidates", initialStates.goodCandidates)
+  const [badCandidates, setBadCandidates] = usePersistedState("badCandidates", initialStates.badCandidates)
 
-  const [highlightIndex, setHighlightIndex] = useState<number | null>(initialStates.highlightIndex)
-  const [lastClickedHighlightIndex, setLastClickedHighlightIndex] = useState<number | null>(initialStates.lastClickedHighlightIndex)
-  const [lastFocusedEntryIndex, setLastFocusedEntryIndex] = useState<number | null>(initialStates.lastFocusedEntryIndex)
+  const [highlightIndex, setHighlightIndex] = usePersistedState("highlightIndex", initialStates.highlightIndex)
+  const [lastClickedHighlightIndex, setLastClickedHighlightIndex] = usePersistedState(
+    "lastClickedHighlightIndex",
+    initialStates.lastClickedHighlightIndex
+  )
+  const [lastFocusedEntryIndex, setLastFocusedEntryIndex] = usePersistedState("lastFocusedEntryIndex", initialStates.lastFocusedEntryIndex)
 
-  const [difficulty, setDifficulty] = useState<"easy" | "medium" | "hard" | "diabolical">(initialStates.difficulty)
+  const [difficulty, setDifficulty] = usePersistedState("difficulty", initialStates.difficulty)
 
-  const [sortedEntries, setSortedEntries] = useState<(Element | null)[]>([])
+  const [sortedEntries, setSortedEntries] = useState<(Element | null)[]>(initialStates.sortedEntries)
 
   const padNumberClicked = useRef(false)
 
@@ -472,7 +476,7 @@ function useSudokuManagement() {
     padNumberClicked.current = false
   }
 
-  function resetBoardData() {
+  const resetBoardData = useCallback(() => {
     setPuzzleStringCurrent(initialStates.puzzleStringCurrent)
     setPuzzleStringStart(initialStates.puzzleStringStart)
     setBoardIsSet(initialStates.boardIsSet)
@@ -494,9 +498,12 @@ function useSudokuManagement() {
     setLastFocusedEntryIndex(initialStates.lastFocusedEntryIndex)
 
     setSortedEntries(initialStates.sortedEntries)
+    setDifficulty(initialStates.difficulty)
 
     padNumberClicked.current = false
-  }
+
+    localStorage.clear()
+  }, [])
 
   return {
     ruleOutcomes,
