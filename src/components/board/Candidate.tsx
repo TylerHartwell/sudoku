@@ -2,7 +2,7 @@
 
 import { useContext } from "react"
 import CandidateContext from "@/contexts/CandidateContext"
-import getPeerGridSquareIndices from "@/utils/getPeerGridSquareIndices"
+import getPeerGridSquareIndices from "@/utils/sudoku/getPeerGridSquareIndices"
 import clsx from "clsx"
 import { symbols } from "@/hooks/useSudokuManagement"
 
@@ -18,11 +18,10 @@ const Candidate = ({ gridSquareIndex, candidateIndex, entryShownValue }: Candida
     highlightIndex,
     showCandidates,
     candidateMode,
-    toggleManualElimCandidate,
     manualElimCandidates,
     goodCandidates,
     badCandidates,
-    handleQueueAutoSolve
+    toggleCandidateQueueSolveOnElim
   }: {
     puzzleStringCurrent: string
     highlightIndex: number | null
@@ -33,6 +32,7 @@ const Candidate = ({ gridSquareIndex, candidateIndex, entryShownValue }: Candida
     goodCandidates: string[]
     badCandidates: string[]
     handleQueueAutoSolve: (beQueued: boolean) => void
+    toggleCandidateQueueSolveOnElim: (gridSquareIndex: number, candidateIndex: number) => void
   } = useContext(CandidateContext)
 
   const candidateKey = `${gridSquareIndex}-${candidateIndex}`
@@ -69,8 +69,8 @@ const Candidate = ({ gridSquareIndex, candidateIndex, entryShownValue }: Candida
       } else {
         if (isToggleable) {
           e.stopPropagation()
-          toggleManualElimCandidate(gridSquareIndex, candidateIndex)
-          handleQueueAutoSolve(true)
+
+          toggleCandidateQueueSolveOnElim(gridSquareIndex, candidateIndex)
         }
       }
     }

@@ -25,6 +25,7 @@ interface CandidateContextValue {
   padNumberClicked: RefObject<boolean>
   handleQueueAutoSolve: (beQueued: boolean) => void
   lastFocusedEntryIndex: number | null
+  toggleCandidateQueueSolveOnElim: (gridSquareIndex: number, candidateIndex: number) => void
   sortedEntries: (Element | null)[]
 }
 
@@ -36,13 +37,13 @@ const Entry = ({ gridSquareIndex, shownValue }: EntryProps) => {
     boardIsSet,
     highlightIndex,
     handleEntry,
-    toggleManualElimCandidate,
     manualElimCandidates,
     isAlreadyInUnit,
     handleLastFocusedEntryIndex,
     padNumberClicked,
     handleQueueAutoSolve,
     lastFocusedEntryIndex,
+    toggleCandidateQueueSolveOnElim,
     sortedEntries
   } = useContext<CandidateContextValue>(CandidateContext)
   const entryRef = useRef<HTMLDivElement>(null)
@@ -68,9 +69,8 @@ const Entry = ({ gridSquareIndex, shownValue }: EntryProps) => {
             const isToggleable = !isEliminated || manualElimCandidates.includes(candidateKey)
 
             if (isToggleable) {
-              toggleManualElimCandidate(gridSquareIndex, candidateIndex)
+              toggleCandidateQueueSolveOnElim(gridSquareIndex, candidateIndex)
               ;(document.activeElement as HTMLElement)?.blur()
-              handleQueueAutoSolve(true)
             }
           } else {
             ;(document.activeElement as HTMLElement)?.blur()
@@ -125,7 +125,7 @@ const Entry = ({ gridSquareIndex, shownValue }: EntryProps) => {
     }
 
     if (!isLocked) {
-      if (isValidChar(e.key) && e.key.toUpperCase() != shownValue) {
+      if (isValidChar(e.key, symbols) && e.key.toUpperCase() != shownValue) {
         if (!isAlreadyInUnit(gridSquareIndex, e.key.toUpperCase(), puzzleStringCurrent)) {
           ;(document.activeElement as HTMLElement)?.blur()
           handleQueueAutoSolve(true)
@@ -176,7 +176,5 @@ const Entry = ({ gridSquareIndex, shownValue }: EntryProps) => {
     </div>
   )
 }
-
-// Entry.displayName = "Entry"
 
 export default Entry

@@ -1,6 +1,6 @@
-import getRowColBox from "@/utils/getRowColBox"
+import getRowColBox from "@/utils/sudoku/getRowColBox"
 import { Candidate, Rule, Square } from "./rulesInterface"
-import getAllSquaresByUnit from "@/utils/getAllSquaresByUnit"
+import getAllSquaresByUnit from "@/utils/sudoku/getAllSquaresByUnit"
 import { symbols } from "@/hooks/useSudokuManagement"
 
 const nakedTriple: Rule = {

@@ -1,6 +1,6 @@
-import getRowColBox from "@/utils/getRowColBox"
+import getRowColBox from "@/utils/sudoku/getRowColBox"
 import { Candidate, Rule, Square, UnitType } from "./rulesInterface"
-import getAllSquaresByUnit from "@/utils/getAllSquaresByUnit"
+import getAllSquaresByUnit from "@/utils/sudoku/getAllSquaresByUnit"
 import { symbols } from "@/hooks/useSudokuManagement"
 
 //if all the candidates of a number in a unit are also all in a second unit, any other candidates matching that number in the second unit can be eliminated

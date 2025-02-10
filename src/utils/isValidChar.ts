@@ -1,5 +1,3 @@
-import { symbols } from "@/hooks/useSudokuManagement"
-
-export default function isValidChar(sampleChar: string) {
-  return symbols.includes(sampleChar.toUpperCase())
+export default function isValidChar(sampleChar: string, charArr: string[]) {
+  return charArr.includes(sampleChar.toUpperCase())
 }

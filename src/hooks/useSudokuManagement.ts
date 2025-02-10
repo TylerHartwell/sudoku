@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { RuleOutcome, Square } from "@/rules/rulesInterface"
 import rulesArr from "@/rules/rulesArr"
 import truncateAndPad from "@/utils/truncateAndPad"
-import getPeerGridSquareIndices from "@/utils/getPeerGridSquareIndices"
+import getPeerGridSquareIndices from "@/utils/sudoku/getPeerGridSquareIndices"
 import replaceNonDigitsWithZero from "@/utils/replaceNonDigitsWithZero"
 import isValidChar from "@/utils/isValidChar"
 import getValidSymbols from "@/utils/getValidSymbols"
@@ -221,7 +221,7 @@ function useSudokuManagement() {
 
   const handleEntry = useCallback(
     (gridSquareIndex: number, entryChar: string) => {
-      const replacementChar = isValidChar(entryChar) ? entryChar : "0"
+      const replacementChar = isValidChar(entryChar, symbols) ? entryChar : "0"
 
       if (replacementChar == "0") {
         if (puzzleStringCurrent[gridSquareIndex] == "0") return
@@ -434,9 +434,17 @@ function useSudokuManagement() {
     setBoardIsSet(isSet)
   }
 
+  const toggleCandidateQueueSolveOnElim = (gridSquareIndex: number, candidateIndex: number) => {
+    toggleManualElimCandidate(gridSquareIndex, candidateIndex)
+    const candidateKey = `${gridSquareIndex}-${candidateIndex}`
+    if (!manualElimCandidates.includes(candidateKey)) {
+      handleQueueAutoSolve(true)
+    }
+  }
+
   const formatStringToPuzzleString = (value: string) => {
     const zeroReplaced = replaceNonDigitsWithZero(value)
-    return truncateAndPad(zeroReplaced, Math.pow(symbols.length, 2), "0")
+    return truncateAndPad(zeroReplaced, Math.pow(symbols.length, 2), "0", symbols)
   }
 
   const handlePuzzleStartChange = (newValue: string) => {
@@ -540,7 +548,7 @@ function useSudokuManagement() {
     padNumberClicked,
     charCounts,
     restartPuzzle,
-
+    toggleCandidateQueueSolveOnElim,
     sortedEntries
   }
 }

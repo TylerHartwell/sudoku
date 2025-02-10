@@ -1,8 +1,8 @@
 import CandidateContext from "@/contexts/CandidateContext"
 import { symbols } from "@/hooks/useSudokuManagement"
-import getPeerGridSquareIndices from "@/utils/getPeerGridSquareIndices"
+import getPeerGridSquareIndices from "@/utils/sudoku/getPeerGridSquareIndices"
 import clsx from "clsx"
-import { useContext, useMemo } from "react"
+import { useContext } from "react"
 
 interface PadNumberProps {
   index: number
@@ -25,12 +25,12 @@ const PadNumber = ({
     padNumberClicked,
     handleEntry,
     candidateMode,
-    toggleManualElimCandidate,
     charCounts,
     handleQueueAutoSolve,
     puzzleStringCurrent,
     isAlreadyInUnit,
-    manualElimCandidates
+    manualElimCandidates,
+    toggleCandidateQueueSolveOnElim
   }: {
     lastFocusedEntryIndex: number | null
     handleLastFocusedEntryIndex: (entryIndex: number | null) => void
@@ -43,6 +43,7 @@ const PadNumber = ({
     puzzleStringCurrent: string
     isAlreadyInUnit: (gridSquareIndex: number, character: string, puzzleString: string) => boolean
     manualElimCandidates: string[]
+    toggleCandidateQueueSolveOnElim: (gridSquareIndex: number, candidateIndex: number) => void
   } = useContext(CandidateContext)
 
   const handleMouseEnter = () => {
@@ -80,8 +81,7 @@ const PadNumber = ({
         const isEliminated = puzzleStringCurrent[lastFocusedEntryIndex] !== "0" || isAlreadyInUnit || manualElimCandidates.includes(candidateKey)
         const isToggleable = !isEliminated || manualElimCandidates.includes(candidateKey)
         if (isToggleable) {
-          toggleManualElimCandidate(lastFocusedEntryIndex, index)
-          handleQueueAutoSolve(true)
+          toggleCandidateQueueSolveOnElim(lastFocusedEntryIndex, index)
         } else {
           ;(document.activeElement as HTMLElement)?.blur()
         }

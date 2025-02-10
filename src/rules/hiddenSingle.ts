@@ -1,4 +1,4 @@
-import getAllSquaresByUnit from "@/utils/getAllSquaresByUnit"
+import getAllSquaresByUnit from "@/utils/sudoku/getAllSquaresByUnit"
 import { Rule, Square } from "./rulesInterface"
 import { symbols } from "@/hooks/useSudokuManagement"
 
