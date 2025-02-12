@@ -2,7 +2,7 @@ import CandidateContext from "@/contexts/CandidateContext"
 import { symbols } from "@/hooks/useSudokuManagement"
 import getPeerGridSquareIndices from "@/utils/sudoku/getPeerGridSquareIndices"
 import clsx from "clsx"
-import { useContext } from "react"
+import { RefObject, useContext } from "react"
 
 interface PadNumberProps {
   index: number
@@ -34,7 +34,7 @@ const PadNumber = ({
   }: {
     lastFocusedEntryIndex: number | null
     handleLastFocusedEntryIndex: (entryIndex: number | null) => void
-    padNumberClicked: React.MutableRefObject<boolean>
+    padNumberClicked: RefObject<boolean>
     handleEntry: (i: number, s: string) => void
     candidateMode: boolean
     toggleManualElimCandidate: (gridSquareIndex: number, candidateIndex: number, shouldManualElim?: boolean) => void

@@ -1,14 +1,16 @@
 "use client"
 
-import FetchPuzzleButton from "@/components/FetchPuzzleButton"
+import FetchPuzzleButton from "@/components/actions/FetchPuzzleBtn"
 import "./css/modern-normalize.css"
 import Board from "@/components/board/Board"
 import CandidateContext from "@/contexts/CandidateContext"
-import PadNumber from "@/components/PadNumber"
-import RuleItem from "@/components/RuleItem"
+import PadNumber from "@/components/controls/PadNumber"
+import RuleItem from "@/components/rules/RuleItem"
 import rulesArr from "@/rules/rulesArr"
 import useSudokuManagement, { symbols } from "@/hooks/useSudokuManagement"
 import clsx from "clsx"
+import InputModeBtn from "@/components/controls/InputModeBtn"
+import InputModeSwitch from "@/components/controls/InputModeSwitch"
 
 export default function Page() {
   const {
@@ -81,8 +83,8 @@ export default function Page() {
         <div className="w-full md:w-[max(calc(100vh-155px),300px)] flex flex-col md:content-center">
           <CandidateContext.Provider value={contextObj}>
             <Board />
-            <section className="numberpad flex md:h-[115px] flex-col items-center">
-              <div className="w-full flex justify-around items-center py-[10px]">
+            <section className="controls flex md:h-[115px] flex-col items-center">
+              <section aria-label="Number pad" className="w-full flex justify-around items-center py-[10px]">
                 {symbols.map((symbol, index) => (
                   <PadNumber
                     key={index}
@@ -93,41 +95,16 @@ export default function Page() {
                     changeLastClickedHighlightIndex={changeLastClickedHighlightIndex}
                   />
                 ))}
-              </div>
-              <div className="pad-mode-container w-full flex py-[5px] mx-auto justify-center items-center gap-[5px]">
-                <button
-                  className={clsx(
-                    "solution-mode-btn h-[90%] w-min border-none flex rounded-[10px] p-[5px] text-center text-[clamp(12px,6vw,16px)] justify-center items-center bg-transparent",
-                    !candidateMode && "font-bold pointer-events-none"
-                  )}
-                  onClick={() => toggleCandidateMode(false)}
-                >
+              </section>
+              <section aria-label="Input mode" className="w-full flex py-[5px] mx-auto justify-center items-center gap-[5px]">
+                <InputModeBtn isModeActive={!candidateMode} onClick={() => toggleCandidateMode(false)}>
                   Solution Mode
-                </button>
-                <div
-                  className={clsx(
-                    "mode-switch-outer h-[50px] aspect-[2] min-w-[50px] rounded-[25px] relative my-auto duration-300 cursor-pointer",
-                    candidateMode ? "bg-[#d14141]" : "bg-[rgb(43,143,43)]"
-                  )}
-                  onClick={() => toggleCandidateMode()}
-                >
-                  <div
-                    className={clsx(
-                      "mode-switch-inner h-[80%] aspect-square rounded-[50%] bg-white absolute top-[50%] -translate-y-1/2 pointer-events-none duration-300",
-                      candidateMode ? "left-[calc(100%-5px)] -translate-x-full" : "left-[5px] translate-x-0"
-                    )}
-                  ></div>
-                </div>
-                <button
-                  className={clsx(
-                    "candidate-mode-btn h-[90%] w-min border-none flex rounded-[10px] p-[5px] text-center text-[clamp(12px,6vw,16px)] justify-center items-center bg-transparent",
-                    candidateMode && "font-bold pointer-events-none"
-                  )}
-                  onClick={() => toggleCandidateMode(true)}
-                >
+                </InputModeBtn>
+                <InputModeSwitch isRightMode={candidateMode} onClick={() => toggleCandidateMode()} />
+                <InputModeBtn isModeActive={candidateMode} onClick={() => toggleCandidateMode(true)}>
                   Candidate Mode
-                </button>
-              </div>
+                </InputModeBtn>
+              </section>
             </section>
           </CandidateContext.Provider>
         </div>
@@ -149,8 +126,8 @@ export default function Page() {
               ))}
             </ol>
           </section>
-          <section className="controls mt-[10px] md:mt-0 flex flex-col justify-start items-center ">
-            <h2 className="controls-title text-center">Controls</h2>
+          <section className="actions mt-[10px] md:mt-0 flex flex-col justify-start items-center ">
+            <h2 className="actions-title text-center">Actions</h2>
             <div className="relative w-full flex flex-col items-center gap-[2px] overflow-auto">
               <div className="w-full flex pt-1">
                 <div className="flex-1"></div>
