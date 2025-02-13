@@ -4,11 +4,14 @@ import FetchPuzzleButton from "@/components/actions/FetchPuzzleBtn"
 import "./css/modern-normalize.css"
 import Board from "@/components/board/Board"
 import CandidateContext from "@/contexts/CandidateContext"
-import PadNumber from "@/components/controls/PadNumber"
 import RuleItem from "@/components/rules/RuleItem"
 import rulesArr from "@/rules/rulesArr"
 import useSudokuManagement, { symbols } from "@/hooks/useSudokuManagement"
 import clsx from "clsx"
+import Controls from "@/components/controls/Controls"
+import PadNumbers from "@/components/controls/PadNumbers"
+import InputModeSelector from "@/components/controls/InputModeSelector"
+import PadNumber from "@/components/controls/PadNumber"
 import InputModeBtn from "@/components/controls/InputModeBtn"
 import InputModeSwitch from "@/components/controls/InputModeSwitch"
 
@@ -83,20 +86,22 @@ export default function Page() {
         <div className="w-full md:w-[max(calc(100vh-155px),300px)] flex flex-col md:content-center">
           <CandidateContext.Provider value={contextObj}>
             <Board />
-            <section className="controls flex md:h-[115px] flex-col items-center">
-              <section aria-label="Number pad" className="w-full flex justify-around items-center py-[10px]">
+            <Controls>
+              <PadNumbers>
                 {symbols.map((symbol, index) => (
                   <PadNumber
                     key={index}
                     index={index}
+                    symbol={symbol}
+                    symbolsLength={symbols.length}
                     highlightIndex={highlightIndex}
                     handleHighlightIndexChange={handleHighlightIndexChange}
                     lastClickedHighlightIndex={lastClickedHighlightIndex}
                     changeLastClickedHighlightIndex={changeLastClickedHighlightIndex}
                   />
                 ))}
-              </section>
-              <section aria-label="Input mode" className="w-full flex py-[5px] mx-auto justify-center items-center gap-[5px]">
+              </PadNumbers>
+              <InputModeSelector>
                 <InputModeBtn isModeActive={!candidateMode} onClick={() => toggleCandidateMode(false)}>
                   Solution Mode
                 </InputModeBtn>
@@ -104,8 +109,8 @@ export default function Page() {
                 <InputModeBtn isModeActive={candidateMode} onClick={() => toggleCandidateMode(true)}>
                   Candidate Mode
                 </InputModeBtn>
-              </section>
-            </section>
+              </InputModeSelector>
+            </Controls>
           </CandidateContext.Provider>
         </div>
         <div className="w-full md:w-auto md:grow md:min-w-fit md:max-w-[40%] md:overflow-auto md:mr-1 flex flex-col justify-between">

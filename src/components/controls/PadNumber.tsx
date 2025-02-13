@@ -1,5 +1,4 @@
 import CandidateContext from "@/contexts/CandidateContext"
-import { symbols } from "@/hooks/useSudokuManagement"
 import getPeerGridSquareIndices from "@/utils/sudoku/getPeerGridSquareIndices"
 import clsx from "clsx"
 import { RefObject, useContext } from "react"
@@ -10,6 +9,8 @@ interface PadNumberProps {
   handleHighlightIndexChange: (n: number | null) => void
   lastClickedHighlightIndex: number | null
   changeLastClickedHighlightIndex: (n: number | null) => void
+  symbol: string
+  symbolsLength: number
 }
 
 const PadNumber = ({
@@ -17,7 +18,9 @@ const PadNumber = ({
   highlightIndex,
   handleHighlightIndexChange,
   lastClickedHighlightIndex,
-  changeLastClickedHighlightIndex
+  changeLastClickedHighlightIndex,
+  symbol,
+  symbolsLength
 }: PadNumberProps) => {
   const {
     lastFocusedEntryIndex,
@@ -60,11 +63,11 @@ const PadNumber = ({
 
     if (lastFocusedEntryIndex != null) {
       if (!candidateMode) {
-        if (symbols[index] == puzzleStringCurrent[lastFocusedEntryIndex]) {
+        if (symbol == puzzleStringCurrent[lastFocusedEntryIndex]) {
           handleEntry(lastFocusedEntryIndex, "0")
         } else {
-          handleEntry(lastFocusedEntryIndex, symbols[index])
-          const isWrong = isAlreadyInUnit(lastFocusedEntryIndex, symbols[index], puzzleStringCurrent)
+          handleEntry(lastFocusedEntryIndex, symbol)
+          const isWrong = isAlreadyInUnit(lastFocusedEntryIndex, symbol, puzzleStringCurrent)
 
           if (!isWrong) {
             handleLastFocusedEntryIndex(null)
@@ -76,7 +79,7 @@ const PadNumber = ({
         handleHighlightIndexChange(index)
       } else {
         const candidateKey = `${lastFocusedEntryIndex}-${index}`
-        const isAlreadyInUnit = getPeerGridSquareIndices(lastFocusedEntryIndex).some(i => puzzleStringCurrent[i] === symbols[index])
+        const isAlreadyInUnit = getPeerGridSquareIndices(lastFocusedEntryIndex).some(i => puzzleStringCurrent[i] === symbol)
 
         const isEliminated = puzzleStringCurrent[lastFocusedEntryIndex] !== "0" || isAlreadyInUnit || manualElimCandidates.includes(candidateKey)
         const isToggleable = !isEliminated || manualElimCandidates.includes(candidateKey)
@@ -107,7 +110,7 @@ const PadNumber = ({
       className={clsx(
         `pad-number pad${index} w-full h-full text-center place-content-center text-[5vw] md:text-[30px] select-none hover:cursor-pointer hover:font-bold`,
         highlightIndex != null && index === highlightIndex && "font-bold",
-        charCounts != undefined && charCounts[symbols[index]] === symbols.length && "opacity-30",
+        charCounts != undefined && charCounts[symbol] === symbolsLength && "opacity-30",
         lastFocusedEntryIndex !== null && !candidateMode && "shadow-green-700 drop-shadow-[1px_1px_0.5px_rgba(43,143,43,0.4)]",
         lastFocusedEntryIndex !== null && candidateMode && "shadow-red-700 drop-shadow-[1px_1px_0.5px_rgba(255,43,43,0.4)]"
       )}
@@ -115,7 +118,7 @@ const PadNumber = ({
       onMouseLeave={handleMouseLeave}
       onPointerDown={handlePointerDown}
     >
-      {symbols[index]}
+      {symbol}
     </div>
   )
 }
