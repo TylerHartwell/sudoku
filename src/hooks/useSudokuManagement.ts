@@ -17,6 +17,10 @@ const symbols = getValidSymbols(inputSymbols)
 
 const symbolsSqrt = Math.sqrt(symbols.length)
 
+const difficultyLevels = ["easy", "medium", "hard", "diabolical"] as const
+
+type Difficulty = (typeof difficultyLevels)[number] // Extracts the union type from the array
+
 const initialStates = {
   // Puzzle-related states
   puzzleStringCurrent: "0".repeat(Math.pow(symbols.length, 2)),
@@ -45,7 +49,7 @@ const initialStates = {
   sortedEntries: [] as (Element | null)[],
 
   // Settings
-  difficulty: "easy" as "easy" | "medium" | "hard" | "diabolical"
+  difficulty: "easy" as Difficulty
 }
 
 function useSudokuManagement() {
@@ -554,4 +558,5 @@ function useSudokuManagement() {
 }
 
 export default useSudokuManagement
-export { symbols, symbolsSqrt }
+export { symbols, symbolsSqrt, difficultyLevels }
+export type { Difficulty }

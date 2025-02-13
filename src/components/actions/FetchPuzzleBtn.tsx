@@ -2,7 +2,7 @@
 
 import { ReactNode, useState } from "react"
 
-const FetchPuzzleButton = ({
+const FetchPuzzleBtn = ({
   handlePuzzleStartChange,
   children,
   className,
@@ -42,4 +42,4 @@ const FetchPuzzleButton = ({
   )
 }
 
-export default FetchPuzzleButton
+export default FetchPuzzleBtn

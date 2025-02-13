@@ -1,12 +1,12 @@
 "use client"
 
-import FetchPuzzleButton from "@/components/actions/FetchPuzzleBtn"
+import FetchPuzzleBtn from "@/components/actions/FetchPuzzleBtn"
 import "./css/modern-normalize.css"
 import Board from "@/components/board/Board"
 import CandidateContext from "@/contexts/CandidateContext"
 import RuleItem from "@/components/rules/RuleItem"
 import rulesArr from "@/rules/rulesArr"
-import useSudokuManagement, { symbols } from "@/hooks/useSudokuManagement"
+import useSudokuManagement, { Difficulty, difficultyLevels, symbols } from "@/hooks/useSudokuManagement"
 import clsx from "clsx"
 import Controls from "@/components/controls/Controls"
 import PadNumbers from "@/components/controls/PadNumbers"
@@ -14,6 +14,12 @@ import InputModeSelector from "@/components/controls/InputModeSelector"
 import PadNumber from "@/components/controls/PadNumber"
 import InputModeBtn from "@/components/controls/InputModeBtn"
 import InputModeSwitch from "@/components/controls/InputModeSwitch"
+import ToggleCandidatesBtn from "@/components/actions/ToggleCandidatesBtn"
+import ClearAllBtn from "@/components/actions/ClearAllBtn"
+import RestartPuzzleBtn from "@/components/actions/RestartPuzzleBtn"
+import SetPuzzleBtn from "@/components/actions/SetPuzzleBtn"
+import PuzzleStringInput from "@/components/actions/PuzzleStringInput"
+import DifficultySelector from "@/components/actions/DifficultySelector"
 
 export default function Page() {
   const {
@@ -136,70 +142,47 @@ export default function Page() {
             <div className="relative w-full flex flex-col items-center gap-[2px] overflow-auto">
               <div className="w-full flex pt-1">
                 <div className="flex-1"></div>
-                <FetchPuzzleButton
+                <FetchPuzzleBtn
                   className={clsx("fetch-grid-string-btn p-2 rounded-[10px] shadow-[black_0px_0px_3px]", boardIsSet && "hidden")}
                   handlePuzzleStartChange={handlePuzzleStartChange}
                   difficulty={difficulty}
                 >
                   Fetch A New Puzzle
-                </FetchPuzzleButton>
+                </FetchPuzzleBtn>
                 <div className="flex-1 grow-0"></div>
                 <div className="flex-1 flex justify-start items-center">
-                  <select
-                    name={"difficulty"}
-                    className={clsx("difficulty m-1 py-0.5 h-min", boardIsSet && "hidden")}
-                    value={difficulty}
-                    onChange={e => handleDifficulty(e.target.value as "easy" | "medium" | "hard" | "diabolical")}
-                  >
-                    <option value="easy">Easy</option>
-                    <option value="medium">Medium</option>
-                    <option value="hard">Hard</option>
-                    <option value="diabolical">Diabolical</option>
-                  </select>
+                  <DifficultySelector<Difficulty>
+                    difficulty={difficulty}
+                    isHidden={boardIsSet}
+                    onChange={e => handleDifficulty(e.target.value as Difficulty)}
+                    difficultyLevels={difficultyLevels}
+                  />
                 </div>
               </div>
-              <input
-                type="text"
-                placeholder={`fetch or enter puzzle string of length ${Math.pow(symbols.length, 2)}`}
-                className={clsx("grid-string w-[98%] border-none bg-white px-1 h-[2em] text-[.85em] my-[2px] select-text", boardIsSet && "hidden")}
-                id="grid-string"
-                value={puzzleStringStart}
+              <PuzzleStringInput
+                puzzleLength={Math.pow(symbols.length, 2)}
+                isHidden={boardIsSet}
+                puzzleStringStart={puzzleStringStart}
                 onChange={e => {
                   handlePuzzleStartChange(e.target.value)
                 }}
               />
               <div className="flex w-full p-[2px] min-w-0">
                 <div className="flex-1">
-                  <button
-                    className="clear-all-btn w-min text-[clamp(12px,4vw,16px)] rounded-[10px] shadow-[black_0px_0px_3px]"
-                    onClick={() => resetBoardData()}
-                  >
-                    Clear All
-                  </button>
+                  <ClearAllBtn onClick={() => resetBoardData()}>Clear All</ClearAllBtn>
                 </div>
 
                 <div className="flex-1"></div>
-                <button
-                  className={clsx("set-puzzle-btn w-min text-[clamp(12px,4vw,16px)] rounded-[10px] shadow-[black_0px_0px_3px] active:bg-yellow-200")}
-                  onClick={() => {
-                    if (boardIsSet) {
-                      restartPuzzle()
-                    } else {
-                      handleBoardSet(true)
-                    }
-                  }}
-                >
-                  {boardIsSet ? "Restart" : "Set Puzzle"}
-                </button>
+                {boardIsSet ? (
+                  <RestartPuzzleBtn onClick={() => restartPuzzle()}>Restart</RestartPuzzleBtn>
+                ) : (
+                  <SetPuzzleBtn onClick={() => handleBoardSet(true)}>Set Puzzle</SetPuzzleBtn>
+                )}
                 <div className="flex-1"></div>
                 <div className="flex-1 flex justify-end">
-                  <button
-                    className="toggle-candidates-btn w-min text-[clamp(12px,4vw,16px)] rounded-[10px] shadow-[black_0px_0px_3px] justify-self-end disabled:opacity-50"
-                    onClick={() => toggleShowCandidates()}
-                    disabled={candidateMode}
-                  >
+                  <ToggleCandidatesBtn onClick={() => toggleShowCandidates()} disabled={candidateMode}>
                     Toggle Candidates
-                  </button>
+                  </ToggleCandidatesBtn>
                 </div>
               </div>
             </div>
