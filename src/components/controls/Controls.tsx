@@ -5,7 +5,11 @@ interface Props {
 }
 
 const Controls = ({ children }: Props) => {
-  return <section className="controls flex md:h-[115px] flex-col items-center">{children}</section>
+  return (
+    <section aria-label="Controls" className="flex md:h-[115px] flex-col items-center">
+      {children}
+    </section>
+  )
 }
 
 export default Controls

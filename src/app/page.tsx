@@ -1,12 +1,12 @@
 "use client"
 
-import FetchPuzzleBtn from "@/components/actions/FetchPuzzleBtn"
+import FetchPuzzleBtn from "@/components/actions/fetch-group/FetchPuzzleBtn"
 import "./css/modern-normalize.css"
 import Board from "@/components/board/Board"
 import CandidateContext from "@/contexts/CandidateContext"
 import RuleItem from "@/components/rules/RuleItem"
 import rulesArr from "@/rules/rulesArr"
-import useSudokuManagement, { Difficulty, difficultyLevels, symbols } from "@/hooks/useSudokuManagement"
+import useSudokuManagement, { Difficulty, difficultyLevels, symbols, symbolsSqrt } from "@/hooks/useSudokuManagement"
 import clsx from "clsx"
 import Controls from "@/components/controls/Controls"
 import PadNumbers from "@/components/controls/PadNumbers"
@@ -14,13 +14,26 @@ import InputModeSelector from "@/components/controls/InputModeSelector"
 import PadNumber from "@/components/controls/PadNumber"
 import InputModeBtn from "@/components/controls/InputModeBtn"
 import InputModeSwitch from "@/components/controls/InputModeSwitch"
-import ToggleCandidatesBtn from "@/components/actions/ToggleCandidatesBtn"
-import ClearAllBtn from "@/components/actions/ClearAllBtn"
-import RestartPuzzleBtn from "@/components/actions/RestartPuzzleBtn"
-import SetPuzzleBtn from "@/components/actions/SetPuzzleBtn"
+import ToggleCandidatesBtn from "@/components/actions/action-btn-group/ToggleCandidatesBtn"
+import ClearAllBtn from "@/components/actions/action-btn-group/ClearAllBtn"
+import RestartPuzzleBtn from "@/components/actions/action-btn-group/RestartPuzzleBtn"
+import SetPuzzleBtn from "@/components/actions/action-btn-group/SetPuzzleBtn"
 import PuzzleStringInput from "@/components/actions/PuzzleStringInput"
-import DifficultySelector from "@/components/actions/DifficultySelector"
-import ActionBtnGroup from "@/components/actions/ActionBtnGroup"
+import DifficultySelector from "@/components/actions/fetch-group/DifficultySelector"
+import ActionBtnGroup from "@/components/actions/action-btn-group/ActionBtnGroup"
+import FetchGroup from "@/components/actions/fetch-group/FetchGroup"
+import Actions from "@/components/actions/Actions"
+import ActionsSection from "@/components/actions/ActionsSection"
+import RuleItemList from "@/components/rules/RuleItemList"
+import SectionTitle from "@/components/SectionTitle"
+import RulesSection from "@/components/rules/RulesSection"
+import GameInterface from "@/components/GameInterface"
+import PuzzleOperations from "@/components/PuzzleOperations"
+import GameContent from "@/components/GameContent"
+import MainTitle from "@/components/MainTitle"
+import SudokuMain from "@/components/SudokuMain"
+import Box from "@/components/board/Box"
+import Square from "@/components/board/Square"
 
 export default function Page() {
   const {
@@ -87,12 +100,20 @@ export default function Page() {
   }
 
   return (
-    <main className="primary md:w-auto md:min-w-fit md:h-max md:min-h-min flex flex-col items-center md:overflow-y-auto ">
-      <h1 className="title md:h-[40px] text-center text-[1em] md:text-[2em]">SUDOKU RULER</h1>
-      <div className="w-full md:w-full md:max-w-[max(800px,80vw)] md:px-5 flex flex-col md:flex-row-reverse md:justify-center ">
-        <div className="w-full md:w-[max(calc(100vh-155px),300px)] flex flex-col md:content-center">
+    <SudokuMain>
+      <MainTitle>SUDOKU RULER</MainTitle>
+      <GameContent>
+        <GameInterface>
           <CandidateContext.Provider value={contextObj}>
-            <Board />
+            <Board boardIsSolved={boardIsSolved} gridSize={symbolsSqrt}>
+              {Array.from({ length: symbols.length }).map((_, boxIndex) => (
+                <Box key={boxIndex} boxSize={symbolsSqrt}>
+                  {Array.from({ length: symbols.length }).map((_, squareIndex) => (
+                    <Square key={squareIndex} boxIndex={boxIndex} boxSquareIndex={squareIndex} />
+                  ))}
+                </Box>
+              ))}
+            </Board>
             <Controls>
               <PadNumbers>
                 {symbols.map((symbol, index) => (
@@ -119,11 +140,11 @@ export default function Page() {
               </InputModeSelector>
             </Controls>
           </CandidateContext.Provider>
-        </div>
-        <div className="w-full md:w-auto md:grow md:min-w-fit md:max-w-[40%] md:overflow-auto md:mr-1 flex flex-col justify-between">
-          <section className="rules mt-[10px] md:mt-0 text-center">
-            <h2>Rules</h2>
-            <ol className="mx-[10px] flex flex-col list-none overflow-auto">
+        </GameInterface>
+        <PuzzleOperations>
+          <RulesSection>
+            <SectionTitle>Rules</SectionTitle>
+            <RuleItemList>
               {rulesArr.map((rule, index) => (
                 <RuleItem
                   key={index}
@@ -136,12 +157,12 @@ export default function Page() {
                   allDefault={ruleOutcomes.every(outcome => outcome === "default")}
                 />
               ))}
-            </ol>
-          </section>
-          <section className="actions mt-[10px] md:mt-0 flex flex-col justify-start items-center ">
-            <h2 className="actions-title text-center">Actions</h2>
-            <div className="relative w-full flex flex-col items-center gap-[2px] overflow-auto">
-              <div className="w-full grid grid-cols-3  pt-1">
+            </RuleItemList>
+          </RulesSection>
+          <ActionsSection>
+            <SectionTitle>Actions</SectionTitle>
+            <Actions>
+              <FetchGroup>
                 <FetchPuzzleBtn
                   className={clsx("fetch-grid-string-btn col-start-2 rounded-[10px] shadow-[black_0px_0px_3px]", boardIsSet && "hidden")}
                   handlePuzzleStartChange={handlePuzzleStartChange}
@@ -156,7 +177,7 @@ export default function Page() {
                   onChange={e => handleDifficulty(e.target.value as Difficulty)}
                   difficultyLevels={difficultyLevels}
                 />
-              </div>
+              </FetchGroup>
               <PuzzleStringInput
                 puzzleLength={Math.pow(symbols.length, 2)}
                 isHidden={boardIsSet}
@@ -176,10 +197,10 @@ export default function Page() {
                   Toggle Candidates
                 </ToggleCandidatesBtn>
               </ActionBtnGroup>
-            </div>
-          </section>
-        </div>
-      </div>
-    </main>
+            </Actions>
+          </ActionsSection>
+        </PuzzleOperations>
+      </GameContent>
+    </SudokuMain>
   )
 }
