@@ -20,6 +20,7 @@ import RestartPuzzleBtn from "@/components/actions/RestartPuzzleBtn"
 import SetPuzzleBtn from "@/components/actions/SetPuzzleBtn"
 import PuzzleStringInput from "@/components/actions/PuzzleStringInput"
 import DifficultySelector from "@/components/actions/DifficultySelector"
+import ActionBtnGroup from "@/components/actions/ActionBtnGroup"
 
 export default function Page() {
   const {
@@ -140,24 +141,21 @@ export default function Page() {
           <section className="actions mt-[10px] md:mt-0 flex flex-col justify-start items-center ">
             <h2 className="actions-title text-center">Actions</h2>
             <div className="relative w-full flex flex-col items-center gap-[2px] overflow-auto">
-              <div className="w-full flex pt-1">
-                <div className="flex-1"></div>
+              <div className="w-full grid grid-cols-3  pt-1">
                 <FetchPuzzleBtn
-                  className={clsx("fetch-grid-string-btn p-2 rounded-[10px] shadow-[black_0px_0px_3px]", boardIsSet && "hidden")}
+                  className={clsx("fetch-grid-string-btn col-start-2 rounded-[10px] shadow-[black_0px_0px_3px]", boardIsSet && "hidden")}
                   handlePuzzleStartChange={handlePuzzleStartChange}
                   difficulty={difficulty}
                 >
                   Fetch A New Puzzle
                 </FetchPuzzleBtn>
-                <div className="flex-1 grow-0"></div>
-                <div className="flex-1 flex justify-start items-center">
-                  <DifficultySelector<Difficulty>
-                    difficulty={difficulty}
-                    isHidden={boardIsSet}
-                    onChange={e => handleDifficulty(e.target.value as Difficulty)}
-                    difficultyLevels={difficultyLevels}
-                  />
-                </div>
+
+                <DifficultySelector<Difficulty>
+                  difficulty={difficulty}
+                  isHidden={boardIsSet}
+                  onChange={e => handleDifficulty(e.target.value as Difficulty)}
+                  difficultyLevels={difficultyLevels}
+                />
               </div>
               <PuzzleStringInput
                 puzzleLength={Math.pow(symbols.length, 2)}
@@ -167,24 +165,17 @@ export default function Page() {
                   handlePuzzleStartChange(e.target.value)
                 }}
               />
-              <div className="flex w-full p-[2px] min-w-0">
-                <div className="flex-1">
-                  <ClearAllBtn onClick={() => resetBoardData()}>Clear All</ClearAllBtn>
-                </div>
-
-                <div className="flex-1"></div>
+              <ActionBtnGroup>
+                <ClearAllBtn onClick={() => resetBoardData()}>Clear All</ClearAllBtn>
                 {boardIsSet ? (
                   <RestartPuzzleBtn onClick={() => restartPuzzle()}>Restart</RestartPuzzleBtn>
                 ) : (
                   <SetPuzzleBtn onClick={() => handleBoardSet(true)}>Set Puzzle</SetPuzzleBtn>
                 )}
-                <div className="flex-1"></div>
-                <div className="flex-1 flex justify-end">
-                  <ToggleCandidatesBtn onClick={() => toggleShowCandidates()} disabled={candidateMode}>
-                    Toggle Candidates
-                  </ToggleCandidatesBtn>
-                </div>
-              </div>
+                <ToggleCandidatesBtn onClick={() => toggleShowCandidates()} disabled={candidateMode}>
+                  Toggle Candidates
+                </ToggleCandidatesBtn>
+              </ActionBtnGroup>
             </div>
           </section>
         </div>
