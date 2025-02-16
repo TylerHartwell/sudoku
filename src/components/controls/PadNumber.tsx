@@ -1,9 +1,8 @@
-import CandidateContext from "@/contexts/CandidateContext"
 import getPeerGridSquareIndices from "@/utils/sudoku/getPeerGridSquareIndices"
 import clsx from "clsx"
-import { RefObject, useContext } from "react"
+import { RefObject } from "react"
 
-interface PadNumberProps {
+interface Props {
   index: number
   highlightIndex: number | null
   handleHighlightIndexChange: (n: number | null) => void
@@ -11,6 +10,17 @@ interface PadNumberProps {
   changeLastClickedHighlightIndex: (n: number | null) => void
   symbol: string
   symbolsLength: number
+  lastFocusedEntryIndex: number | null
+  handleLastFocusedEntryIndex: (entryIndex: number | null) => void
+  padNumberClicked: RefObject<boolean>
+  handleEntry: (i: number, s: string) => void
+  candidateMode: boolean
+  charCounts: { [key: string]: number }
+  handleQueueAutoSolve: (beQueued: boolean) => void
+  puzzleStringCurrent: string
+  isAlreadyInUnit: (gridSquareIndex: number, character: string, puzzleString: string) => boolean
+  manualElimCandidates: string[]
+  toggleCandidateQueueSolveOnElim: (gridSquareIndex: number, candidateIndex: number) => void
 }
 
 const PadNumber = ({
@@ -20,35 +30,19 @@ const PadNumber = ({
   lastClickedHighlightIndex,
   changeLastClickedHighlightIndex,
   symbol,
-  symbolsLength
-}: PadNumberProps) => {
-  const {
-    lastFocusedEntryIndex,
-    handleLastFocusedEntryIndex,
-    padNumberClicked,
-    handleEntry,
-    candidateMode,
-    charCounts,
-    handleQueueAutoSolve,
-    puzzleStringCurrent,
-    isAlreadyInUnit,
-    manualElimCandidates,
-    toggleCandidateQueueSolveOnElim
-  }: {
-    lastFocusedEntryIndex: number | null
-    handleLastFocusedEntryIndex: (entryIndex: number | null) => void
-    padNumberClicked: RefObject<boolean>
-    handleEntry: (i: number, s: string) => void
-    candidateMode: boolean
-    toggleManualElimCandidate: (gridSquareIndex: number, candidateIndex: number, shouldManualElim?: boolean) => void
-    charCounts: { [key: string]: number }
-    handleQueueAutoSolve: (beQueued: boolean) => void
-    puzzleStringCurrent: string
-    isAlreadyInUnit: (gridSquareIndex: number, character: string, puzzleString: string) => boolean
-    manualElimCandidates: string[]
-    toggleCandidateQueueSolveOnElim: (gridSquareIndex: number, candidateIndex: number) => void
-  } = useContext(CandidateContext)
-
+  symbolsLength,
+  lastFocusedEntryIndex,
+  handleLastFocusedEntryIndex,
+  padNumberClicked,
+  handleEntry,
+  candidateMode,
+  charCounts,
+  handleQueueAutoSolve,
+  puzzleStringCurrent,
+  isAlreadyInUnit,
+  manualElimCandidates,
+  toggleCandidateQueueSolveOnElim
+}: Props) => {
   const handleMouseEnter = () => {
     handleHighlightIndexChange(index)
   }
@@ -79,7 +73,7 @@ const PadNumber = ({
         handleHighlightIndexChange(index)
       } else {
         const candidateKey = `${lastFocusedEntryIndex}-${index}`
-        const isAlreadyInUnit = getPeerGridSquareIndices(lastFocusedEntryIndex).some(i => puzzleStringCurrent[i] === symbol)
+        const isAlreadyInUnit = getPeerGridSquareIndices(lastFocusedEntryIndex, symbolsLength).some(i => puzzleStringCurrent[i] === symbol)
 
         const isEliminated = puzzleStringCurrent[lastFocusedEntryIndex] !== "0" || isAlreadyInUnit || manualElimCandidates.includes(candidateKey)
         const isToggleable = !isEliminated || manualElimCandidates.includes(candidateKey)

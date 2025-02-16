@@ -3,10 +3,9 @@
 import FetchPuzzleBtn from "@/components/actions/fetch-group/FetchPuzzleBtn"
 import "./css/modern-normalize.css"
 import Board from "@/components/board/Board"
-import CandidateContext from "@/contexts/CandidateContext"
 import RuleItem from "@/components/rules/RuleItem"
 import rulesArr from "@/rules/rulesArr"
-import useSudokuManagement, { Difficulty, difficultyLevels, symbols, symbolsSqrt } from "@/hooks/useSudokuManagement"
+import useSudokuManagement, { Difficulty, difficultyLevels, symbols, symbolsLength, symbolsSqrt } from "@/hooks/useSudokuManagement"
 import clsx from "clsx"
 import Controls from "@/components/controls/Controls"
 import PadNumbers from "@/components/controls/PadNumbers"
@@ -34,6 +33,9 @@ import MainTitle from "@/components/MainTitle"
 import SudokuMain from "@/components/SudokuMain"
 import Box from "@/components/board/Box"
 import Square from "@/components/board/Square"
+import Entry from "@/components/board/Entry"
+import Candidate from "@/components/board/Candidate"
+import getGridSquareIndex from "@/utils/sudoku/getGridSquareIndex"
 
 export default function Page() {
   const {
@@ -53,7 +55,6 @@ export default function Page() {
     lastClickedHighlightIndex,
     changeLastClickedHighlightIndex,
     manualElimCandidates,
-    toggleManualElimCandidate,
     handleQueueAutoSolve,
     checkedRuleIndices,
     handleCheckboxChange,
@@ -61,7 +62,6 @@ export default function Page() {
     resetBoardData,
     goodCandidates,
     badCandidates,
-    getPeerSquares,
     boardIsSolved,
     difficulty,
     handleDifficulty,
@@ -75,71 +75,101 @@ export default function Page() {
     sortedEntries
   } = useSudokuManagement()
 
-  const contextObj = {
-    getPeerSquares,
-    highlightIndex,
-    showCandidates,
-    candidateMode,
-    puzzleStringStart,
-    puzzleStringCurrent,
-    handleEntry,
-    boardIsSet,
-    toggleManualElimCandidate,
-    manualElimCandidates,
-    handleQueueAutoSolve,
-    goodCandidates,
-    badCandidates,
-    boardIsSolved,
-    isAlreadyInUnit,
-    lastFocusedEntryIndex,
-    handleLastFocusedEntryIndex,
-    padNumberClicked,
-    charCounts,
-    toggleCandidateQueueSolveOnElim,
-    sortedEntries
-  }
-
   return (
     <SudokuMain>
       <MainTitle>SUDOKU RULER</MainTitle>
       <GameContent>
         <GameInterface>
-          <CandidateContext.Provider value={contextObj}>
-            <Board boardIsSolved={boardIsSolved} gridSize={symbolsSqrt}>
-              {Array.from({ length: symbols.length }).map((_, boxIndex) => (
-                <Box key={boxIndex} boxSize={symbolsSqrt}>
-                  {Array.from({ length: symbols.length }).map((_, squareIndex) => (
-                    <Square key={squareIndex} boxIndex={boxIndex} boxSquareIndex={squareIndex} />
-                  ))}
-                </Box>
+          <Board boardIsSolved={boardIsSolved} gridSize={symbolsSqrt}>
+            {Array.from({ length: symbolsLength }).map((_, boxIndex) => (
+              <Box key={boxIndex} boxSize={symbolsSqrt}>
+                {Array.from({ length: symbolsLength }).map((_, squareIndex) => {
+                  const gridSquareIndex = getGridSquareIndex(boxIndex, squareIndex, symbolsLength)
+
+                  const shownValue = puzzleStringCurrent[gridSquareIndex] == "0" ? "" : puzzleStringCurrent[gridSquareIndex]
+
+                  return (
+                    <Square key={squareIndex} squareSize={symbolsSqrt}>
+                      <Entry
+                        gridSquareIndex={gridSquareIndex}
+                        shownValue={shownValue}
+                        puzzleStringStart={puzzleStringStart}
+                        puzzleStringCurrent={puzzleStringCurrent}
+                        candidateMode={candidateMode}
+                        boardIsSet={boardIsSet}
+                        highlightIndex={highlightIndex}
+                        handleEntry={handleEntry}
+                        manualElimCandidates={manualElimCandidates}
+                        isAlreadyInUnit={isAlreadyInUnit}
+                        handleLastFocusedEntryIndex={handleLastFocusedEntryIndex}
+                        padNumberClicked={padNumberClicked}
+                        handleQueueAutoSolve={handleQueueAutoSolve}
+                        lastFocusedEntryIndex={lastFocusedEntryIndex}
+                        toggleCandidateQueueSolveOnElim={toggleCandidateQueueSolveOnElim}
+                        sortedEntries={sortedEntries}
+                        symbols={symbols}
+                        symbolsLength={symbolsLength}
+                      />
+                      {symbols.map((symbol, index) => (
+                        <Candidate
+                          key={index}
+                          symbol={symbol}
+                          gridSquareIndex={gridSquareIndex}
+                          candidateIndex={index}
+                          entryShownValue={shownValue}
+                          puzzleStringCurrent={puzzleStringCurrent}
+                          highlightIndex={highlightIndex}
+                          showCandidates={showCandidates}
+                          candidateMode={candidateMode}
+                          manualElimCandidates={manualElimCandidates}
+                          goodCandidates={goodCandidates}
+                          badCandidates={badCandidates}
+                          toggleCandidateQueueSolveOnElim={toggleCandidateQueueSolveOnElim}
+                          symbolsLength={symbolsLength}
+                        />
+                      ))}
+                    </Square>
+                  )
+                })}
+              </Box>
+            ))}
+          </Board>
+          <Controls>
+            <PadNumbers>
+              {symbols.map((symbol, index) => (
+                <PadNumber
+                  key={index}
+                  index={index}
+                  symbol={symbol}
+                  symbolsLength={symbolsLength}
+                  highlightIndex={highlightIndex}
+                  handleHighlightIndexChange={handleHighlightIndexChange}
+                  lastClickedHighlightIndex={lastClickedHighlightIndex}
+                  changeLastClickedHighlightIndex={changeLastClickedHighlightIndex}
+                  lastFocusedEntryIndex={lastFocusedEntryIndex}
+                  handleLastFocusedEntryIndex={handleLastFocusedEntryIndex}
+                  padNumberClicked={padNumberClicked}
+                  handleEntry={handleEntry}
+                  candidateMode={candidateMode}
+                  charCounts={charCounts}
+                  handleQueueAutoSolve={handleQueueAutoSolve}
+                  puzzleStringCurrent={puzzleStringCurrent}
+                  isAlreadyInUnit={isAlreadyInUnit}
+                  manualElimCandidates={manualElimCandidates}
+                  toggleCandidateQueueSolveOnElim={toggleCandidateQueueSolveOnElim}
+                />
               ))}
-            </Board>
-            <Controls>
-              <PadNumbers>
-                {symbols.map((symbol, index) => (
-                  <PadNumber
-                    key={index}
-                    index={index}
-                    symbol={symbol}
-                    symbolsLength={symbols.length}
-                    highlightIndex={highlightIndex}
-                    handleHighlightIndexChange={handleHighlightIndexChange}
-                    lastClickedHighlightIndex={lastClickedHighlightIndex}
-                    changeLastClickedHighlightIndex={changeLastClickedHighlightIndex}
-                  />
-                ))}
-              </PadNumbers>
-              <InputModeSelector>
-                <InputModeBtn isModeActive={!candidateMode} onClick={() => toggleCandidateMode(false)}>
-                  Solution Mode
-                </InputModeBtn>
-                <InputModeSwitch isRightMode={candidateMode} onClick={() => toggleCandidateMode()} />
-                <InputModeBtn isModeActive={candidateMode} onClick={() => toggleCandidateMode(true)}>
-                  Candidate Mode
-                </InputModeBtn>
-              </InputModeSelector>
-            </Controls>
-          </CandidateContext.Provider>
+            </PadNumbers>
+            <InputModeSelector>
+              <InputModeBtn isModeActive={!candidateMode} onClick={() => toggleCandidateMode(false)}>
+                Solution Mode
+              </InputModeBtn>
+              <InputModeSwitch isRightMode={candidateMode} onClick={() => toggleCandidateMode()} />
+              <InputModeBtn isModeActive={candidateMode} onClick={() => toggleCandidateMode(true)}>
+                Candidate Mode
+              </InputModeBtn>
+            </InputModeSelector>
+          </Controls>
         </GameInterface>
         <PuzzleOperations>
           <RulesSection>
@@ -179,7 +209,7 @@ export default function Page() {
                 />
               </FetchGroup>
               <PuzzleStringInput
-                puzzleLength={Math.pow(symbols.length, 2)}
+                puzzleLength={Math.pow(symbolsLength, 2)}
                 isHidden={boardIsSet}
                 puzzleStringStart={puzzleStringStart}
                 onChange={e => {

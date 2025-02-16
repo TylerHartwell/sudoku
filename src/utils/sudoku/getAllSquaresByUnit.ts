@@ -1,14 +1,15 @@
 import { Square } from "@/rules/rulesInterface"
 import getRowColBox from "./getRowColBox"
-import { symbols } from "@/hooks/useSudokuManagement"
 
 const getAllSquaresByUnit = (allSquares: Square[]) => {
-  const allSquaresByRow: Square[][] = Array.from({ length: symbols.length }, () => [])
-  const allSquaresByCol: Square[][] = Array.from({ length: symbols.length }, () => [])
-  const allSquaresByBox: Square[][] = Array.from({ length: symbols.length }, () => [])
+  const allSquaresSqrt = Math.sqrt(allSquares.length)
+
+  const allSquaresByRow: Square[][] = Array.from({ length: allSquaresSqrt }, () => [])
+  const allSquaresByCol: Square[][] = Array.from({ length: allSquaresSqrt }, () => [])
+  const allSquaresByBox: Square[][] = Array.from({ length: allSquaresSqrt }, () => [])
 
   allSquares.forEach(square => {
-    const { rowIndex, colIndex, boxIndex } = getRowColBox(square.gridSquareIndex)
+    const { rowIndex, colIndex, boxIndex } = getRowColBox(square.gridSquareIndex, allSquaresSqrt)
 
     allSquaresByRow[rowIndex].push(square)
     allSquaresByCol[colIndex].push(square)
@@ -17,7 +18,7 @@ const getAllSquaresByUnit = (allSquares: Square[]) => {
 
   const allSquaresByUnit: Square[][] = []
 
-  for (let i = 0; i < symbols.length; i++) {
+  for (let i = 0; i < allSquaresSqrt; i++) {
     allSquaresByUnit.push(allSquaresByRow[i])
     allSquaresByUnit.push(allSquaresByCol[i])
     allSquaresByUnit.push(allSquaresByBox[i])

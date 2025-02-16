@@ -15,7 +15,9 @@ const inputSymbols = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
 
 const symbols = getValidSymbols(inputSymbols)
 
-const symbolsSqrt = Math.sqrt(symbols.length)
+const symbolsLength = symbols.length
+
+const symbolsSqrt = Math.sqrt(symbolsLength)
 
 const difficultyLevels = ["easy", "medium", "hard", "diabolical"] as const
 
@@ -23,13 +25,13 @@ type Difficulty = (typeof difficultyLevels)[number] // Extracts the union type f
 
 const initialStates = {
   // Puzzle-related states
-  puzzleStringCurrent: "0".repeat(Math.pow(symbols.length, 2)),
+  puzzleStringCurrent: "0".repeat(Math.pow(symbolsLength, 2)),
   puzzleStringStart: "",
   boardIsSet: false,
   boardIsSolved: false,
 
   // Rule-related states
-  ruleOutcomes: rulesArr.map(_ => "default") as RuleOutcome[],
+  ruleOutcomes: rulesArr.map(_ => "default" as RuleOutcome),
   checkedRuleIndices: [] as number[],
   currentAutoRuleIndex: 0,
   queueAutoSolve: false,
@@ -114,7 +116,7 @@ function useSudokuManagement() {
   }, [])
 
   const handleLastFocusedEntryIndex = useCallback((entryIndex: number | null) => {
-    if (entryIndex == null || (Number.isInteger(entryIndex) && entryIndex >= 0 && entryIndex < Math.pow(symbols.length, 2))) {
+    if (entryIndex == null || (Number.isInteger(entryIndex) && entryIndex >= 0 && entryIndex < Math.pow(symbolsLength, 2))) {
       setLastFocusedEntryIndex(entryIndex)
       return
     }
@@ -122,12 +124,12 @@ function useSudokuManagement() {
 
   const getCandidates = useCallback(
     (gridSquareIndex: number) => {
-      const candidateArr = Array.from({ length: symbols.length }, (_, candidateIndex) => {
+      const candidateArr = Array.from({ length: symbolsLength }, (_, candidateIndex) => {
         const candidateKey = `${gridSquareIndex}-${candidateIndex}`
 
         const isSquareOccupied = puzzleStringCurrent[gridSquareIndex] != "0"
 
-        const isAlreadyInUnit = getPeerGridSquareIndices(gridSquareIndex).some(i => puzzleStringCurrent[i] === symbols[candidateIndex])
+        const isAlreadyInUnit = getPeerGridSquareIndices(gridSquareIndex, symbolsLength).some(i => puzzleStringCurrent[i] === symbols[candidateIndex])
 
         if (isSquareOccupied || isAlreadyInUnit || manualElimCandidates.includes(candidateKey)) {
           return false
@@ -142,11 +144,11 @@ function useSudokuManagement() {
 
   const allSquares: Square[] = useMemo(
     () =>
-      Array.from({ length: Math.pow(symbols.length, 2) }, (_, gridSquareIndex) => {
+      Array.from({ length: Math.pow(symbolsLength, 2) }, (_, gridSquareIndex) => {
         return {
           entryValue: puzzleStringCurrent[gridSquareIndex],
           candidates: getCandidates(gridSquareIndex),
-          gridSquareIndex
+          gridSquareIndex: gridSquareIndex
         }
       }),
     [getCandidates, puzzleStringCurrent]
@@ -154,7 +156,7 @@ function useSudokuManagement() {
 
   const getPeerSquares = useCallback(
     (gridSquareIndex: number) => {
-      return allSquares.filter(square => getPeerGridSquareIndices(gridSquareIndex).includes(square.gridSquareIndex))
+      return allSquares.filter(square => getPeerGridSquareIndices(gridSquareIndex, symbolsLength).includes(square.gridSquareIndex))
     },
     [allSquares]
   )
@@ -165,7 +167,7 @@ function useSudokuManagement() {
 
   const isAlreadyInUnit = useCallback((gridSquareIndex: number, character: string, puzzleString: string) => {
     if (character == "0" || character == "") return false
-    return getPeerGridSquareIndices(gridSquareIndex).some(i => {
+    return getPeerGridSquareIndices(gridSquareIndex, symbolsLength).some(i => {
       if (i < 0 || i >= puzzleString.length) {
         console.error(`Index ${i} is out of bounds for puzzleStringCurrent with length ${puzzleString.length}`)
         return false
@@ -412,7 +414,7 @@ function useSudokuManagement() {
   }
 
   const changeLastClickedHighlightIndex = (newHighlightIndex: number | null) => {
-    setLastClickedHighlightIndex(newHighlightIndex == null || newHighlightIndex < 0 || newHighlightIndex >= symbols.length ? null : newHighlightIndex)
+    setLastClickedHighlightIndex(newHighlightIndex == null || newHighlightIndex < 0 || newHighlightIndex >= symbolsLength ? null : newHighlightIndex)
   }
 
   const toggleCandidateMode = (beCandidateMode?: boolean) => {
@@ -423,7 +425,7 @@ function useSudokuManagement() {
   }
 
   const handleHighlightIndexChange = (newHighlightIndex: number | null) => {
-    setHighlightIndex(newHighlightIndex == null || newHighlightIndex < 0 || newHighlightIndex >= symbols.length ? null : newHighlightIndex)
+    setHighlightIndex(newHighlightIndex == null || newHighlightIndex < 0 || newHighlightIndex >= symbolsLength ? null : newHighlightIndex)
   }
 
   const handleBoardSet = (isSet: boolean) => {
@@ -448,7 +450,7 @@ function useSudokuManagement() {
 
   const formatStringToPuzzleString = (value: string) => {
     const zeroReplaced = replaceNonDigitsWithZero(value)
-    return truncateAndPad(zeroReplaced, Math.pow(symbols.length, 2), "0", symbols)
+    return truncateAndPad(zeroReplaced, Math.pow(symbolsLength, 2), "0", symbols)
   }
 
   const handlePuzzleStartChange = (newValue: string) => {
@@ -558,5 +560,5 @@ function useSudokuManagement() {
 }
 
 export default useSudokuManagement
-export { symbols, symbolsSqrt, difficultyLevels }
+export { symbols, symbolsLength, symbolsSqrt, difficultyLevels }
 export type { Difficulty }

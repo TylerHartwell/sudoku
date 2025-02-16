@@ -1,11 +1,12 @@
 import getRowColBox from "@/utils/sudoku/getRowColBox"
 import { Candidate, Rule, Square } from "./rulesInterface"
 import getAllSquaresByUnit from "@/utils/sudoku/getAllSquaresByUnit"
-import { symbols } from "@/hooks/useSudokuManagement"
 
 const nakedPairs: Rule = {
   ruleName: "Naked Pairs",
   ruleAttempt: ({ allSquares, toggleManualElimCandidate }) => {
+    const allSquaresSqrt = Math.sqrt(allSquares.length)
+
     const allSquaresByUnit: Square[][] = getAllSquaresByUnit(allSquares)
     const groupSize = 2
 
@@ -64,9 +65,12 @@ const nakedPairs: Rule = {
 
               const isUnitABox = unitIndex % 3 === 2
 
-              if (!isUnitABox && getRowColBox(firstGroupGridSquareIndex).boxIndex == getRowColBox(secondGroupGridSquareIndex).boxIndex) {
+              if (
+                !isUnitABox &&
+                getRowColBox(firstGroupGridSquareIndex, allSquaresSqrt).boxIndex == getRowColBox(secondGroupGridSquareIndex, allSquaresSqrt).boxIndex
+              ) {
                 //eliminate others from box if present
-                const unit = allSquaresByUnit[getRowColBox(firstGroupGridSquareIndex).boxIndex * Math.sqrt(symbols.length) + 2]
+                const unit = allSquaresByUnit[getRowColBox(firstGroupGridSquareIndex, allSquaresSqrt).boxIndex * Math.sqrt(allSquaresSqrt) + 2]
                 processUnit(unit)
               }
 

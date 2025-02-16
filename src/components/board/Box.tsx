@@ -1,5 +1,3 @@
-import { symbolsSqrt } from "@/hooks/useSudokuManagement"
-
 import clsx from "clsx"
 import { ReactNode } from "react"
 

@@ -1,24 +1,18 @@
 "use client"
 
-import { useRef, useContext, RefObject } from "react"
-import CandidateContext from "@/contexts/CandidateContext"
+import { useRef, RefObject } from "react"
 import clsx from "clsx"
 import isValidChar from "@/utils/isValidChar"
-import { symbols } from "@/hooks/useSudokuManagement"
 
-interface EntryProps {
+interface Props {
   gridSquareIndex: number
   shownValue: string
-}
-
-interface CandidateContextValue {
   puzzleStringStart: string
   puzzleStringCurrent: string
   candidateMode: boolean
   boardIsSet: boolean
   highlightIndex: number | null
   handleEntry: (i: number, s: string) => void
-  toggleManualElimCandidate: (gridSquareIndex: number, candidateIndex: number, shouldManualElim?: boolean) => void
   manualElimCandidates: string[]
   isAlreadyInUnit: (gridSquareIndex: number, character: string, puzzleString: string) => boolean
   handleLastFocusedEntryIndex: (entryIndex: number | null) => void
@@ -27,28 +21,33 @@ interface CandidateContextValue {
   lastFocusedEntryIndex: number | null
   toggleCandidateQueueSolveOnElim: (gridSquareIndex: number, candidateIndex: number) => void
   sortedEntries: (Element | null)[]
+  symbols: string[]
+  symbolsLength: number
 }
 
-const Entry = ({ gridSquareIndex, shownValue }: EntryProps) => {
-  const {
-    puzzleStringStart,
-    puzzleStringCurrent,
-    candidateMode,
-    boardIsSet,
-    highlightIndex,
-    handleEntry,
-    manualElimCandidates,
-    isAlreadyInUnit,
-    handleLastFocusedEntryIndex,
-    padNumberClicked,
-    handleQueueAutoSolve,
-    lastFocusedEntryIndex,
-    toggleCandidateQueueSolveOnElim,
-    sortedEntries
-  } = useContext<CandidateContextValue>(CandidateContext)
+const Entry = ({
+  gridSquareIndex,
+  shownValue,
+  puzzleStringStart,
+  puzzleStringCurrent,
+  candidateMode,
+  boardIsSet,
+  highlightIndex,
+  handleEntry,
+  manualElimCandidates,
+  isAlreadyInUnit,
+  handleLastFocusedEntryIndex,
+  padNumberClicked,
+  handleQueueAutoSolve,
+  lastFocusedEntryIndex,
+  toggleCandidateQueueSolveOnElim,
+  sortedEntries,
+  symbols,
+  symbolsLength
+}: Props) => {
   const entryRef = useRef<HTMLDivElement>(null)
 
-  const isLocked = boardIsSet && puzzleStringStart.length == Math.pow(symbols.length, 2) && puzzleStringStart[gridSquareIndex] == shownValue
+  const isLocked = boardIsSet && puzzleStringStart.length == Math.pow(symbolsLength, 2) && puzzleStringStart[gridSquareIndex] == shownValue
   const isWrong = isAlreadyInUnit(gridSquareIndex, shownValue, puzzleStringCurrent)
 
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {

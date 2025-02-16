@@ -1,42 +1,41 @@
 "use client"
 
-import { useContext } from "react"
-import CandidateContext from "@/contexts/CandidateContext"
 import getPeerGridSquareIndices from "@/utils/sudoku/getPeerGridSquareIndices"
 import clsx from "clsx"
-import { symbols } from "@/hooks/useSudokuManagement"
 
-interface CandidateProps {
+interface Props {
+  symbol: string
   gridSquareIndex: number
   candidateIndex: number
   entryShownValue: string
+  puzzleStringCurrent: string
+  highlightIndex: number | null
+  showCandidates: boolean
+  candidateMode: boolean
+  manualElimCandidates: string[]
+  goodCandidates: string[]
+  badCandidates: string[]
+  toggleCandidateQueueSolveOnElim: (gridSquareIndex: number, candidateIndex: number) => void
+  symbolsLength: number
 }
 
-const Candidate = ({ gridSquareIndex, candidateIndex, entryShownValue }: CandidateProps) => {
-  const {
-    puzzleStringCurrent,
-    highlightIndex,
-    showCandidates,
-    candidateMode,
-    manualElimCandidates,
-    goodCandidates,
-    badCandidates,
-    toggleCandidateQueueSolveOnElim
-  }: {
-    puzzleStringCurrent: string
-    highlightIndex: number | null
-    showCandidates: boolean
-    candidateMode: boolean
-    toggleManualElimCandidate: (gridSquareIndex: number, candidateIndex: number, shouldManualElim?: boolean) => void
-    manualElimCandidates: string[]
-    goodCandidates: string[]
-    badCandidates: string[]
-    handleQueueAutoSolve: (beQueued: boolean) => void
-    toggleCandidateQueueSolveOnElim: (gridSquareIndex: number, candidateIndex: number) => void
-  } = useContext(CandidateContext)
-
+const Candidate = ({
+  symbol,
+  gridSquareIndex,
+  candidateIndex,
+  entryShownValue,
+  puzzleStringCurrent,
+  highlightIndex,
+  showCandidates,
+  candidateMode,
+  manualElimCandidates,
+  goodCandidates,
+  badCandidates,
+  toggleCandidateQueueSolveOnElim,
+  symbolsLength
+}: Props) => {
   const candidateKey = `${gridSquareIndex}-${candidateIndex}`
-  const isAlreadyInUnit = getPeerGridSquareIndices(gridSquareIndex).some(i => puzzleStringCurrent[i] === symbols[candidateIndex])
+  const isAlreadyInUnit = getPeerGridSquareIndices(gridSquareIndex, symbolsLength).some(i => puzzleStringCurrent[i] === symbol)
 
   const isEliminated = entryShownValue || isAlreadyInUnit || manualElimCandidates.includes(candidateKey)
   const isToggleable = !isEliminated || manualElimCandidates.includes(candidateKey)
@@ -93,7 +92,7 @@ const Candidate = ({ gridSquareIndex, candidateIndex, entryShownValue }: Candida
         data-candidate-index={candidateIndex}
         onPointerDown={handlePointerDown}
       >
-        {!isEliminated ? symbols[candidateIndex] : ""}
+        {!isEliminated ? symbol : ""}
       </div>
     </div>
   )

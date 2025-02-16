@@ -1,7 +1,6 @@
 import getRowColBox from "@/utils/sudoku/getRowColBox"
 import { Candidate, Rule, Square, UnitType } from "./rulesInterface"
 import getAllSquaresByUnit from "@/utils/sudoku/getAllSquaresByUnit"
-import { symbols } from "@/hooks/useSudokuManagement"
 
 //if all the candidates of a number in a unit are also all in a second unit, any other candidates matching that number in the second unit can be eliminated
 
@@ -11,9 +10,11 @@ const intersectionRemoval: Rule = {
     const allSquaresByUnit: Square[][] = getAllSquaresByUnit(allSquares)
     const unitTypes: UnitType[] = ["row", "col", "box"]
 
+    const allSquaresSqrt = Math.sqrt(allSquares.length)
+
     for (const [unitIndex, unit] of allSquaresByUnit.entries()) {
       const currentUnitType = unitTypes[unitIndex % unitTypes.length]
-      for (let candidateIndex = 0; candidateIndex < symbols.length; candidateIndex++) {
+      for (let candidateIndex = 0; candidateIndex < allSquaresSqrt; candidateIndex++) {
         const candidateObjArr: Candidate[] = []
         let isIntersector = false
 
@@ -23,7 +24,7 @@ const intersectionRemoval: Rule = {
           const possible = square.candidates[candidateIndex]
 
           if (possible) {
-            if (candidateObjArr.length >= Math.sqrt(symbols.length)) {
+            if (candidateObjArr.length >= Math.sqrt(allSquaresSqrt)) {
               isIntersector = false
               break
             }
@@ -39,23 +40,32 @@ const intersectionRemoval: Rule = {
 
         if (!isIntersector || candidateObjArr.length <= 1) continue
 
-        const { rowIndex, colIndex, boxIndex } = getRowColBox(candidateObjArr[0].gridSquareIndex)
+        const { rowIndex, colIndex, boxIndex } = getRowColBox(candidateObjArr[0].gridSquareIndex, allSquaresSqrt)
         let peerUnitType: UnitType | undefined
         let peerUnitIndex: number | undefined
 
         for (const unitType of unitTypes) {
           if (currentUnitType === unitType) continue
-          if (unitType === "row" && candidateObjArr.every(candidateObj => getRowColBox(candidateObj.gridSquareIndex).rowIndex === rowIndex)) {
+          if (
+            unitType === "row" &&
+            candidateObjArr.every(candidateObj => getRowColBox(candidateObj.gridSquareIndex, allSquaresSqrt).rowIndex === rowIndex)
+          ) {
             peerUnitIndex = rowIndex
             peerUnitType = unitType
             break
           }
-          if (unitType === "col" && candidateObjArr.every(candidateObj => getRowColBox(candidateObj.gridSquareIndex).colIndex === colIndex)) {
+          if (
+            unitType === "col" &&
+            candidateObjArr.every(candidateObj => getRowColBox(candidateObj.gridSquareIndex, allSquaresSqrt).colIndex === colIndex)
+          ) {
             peerUnitIndex = colIndex
             peerUnitType = unitType
             break
           }
-          if (unitType === "box" && candidateObjArr.every(candidateObj => getRowColBox(candidateObj.gridSquareIndex).boxIndex === boxIndex)) {
+          if (
+            unitType === "box" &&
+            candidateObjArr.every(candidateObj => getRowColBox(candidateObj.gridSquareIndex, allSquaresSqrt).boxIndex === boxIndex)
+          ) {
             peerUnitIndex = boxIndex
             peerUnitType = unitType
             break
@@ -66,7 +76,7 @@ const intersectionRemoval: Rule = {
 
         const offset = unitTypes.indexOf(peerUnitType)
 
-        const peerUnit = allSquaresByUnit[peerUnitIndex * Math.sqrt(symbols.length) + offset]
+        const peerUnit = allSquaresByUnit[peerUnitIndex * Math.sqrt(allSquaresSqrt) + offset]
         const candidatesToMarkGood = candidateObjArr
         const candidatesToMarkBad = []
         const actions: (() => void)[] = []
