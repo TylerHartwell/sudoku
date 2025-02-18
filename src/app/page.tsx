@@ -6,7 +6,6 @@ import Board from "@/components/board/Board"
 import RuleItem from "@/components/rules/RuleItem"
 import rulesArr from "@/rules/rulesArr"
 import useSudokuManagement, { Difficulty, difficultyLevels, symbols, symbolsLength, symbolsSqrt } from "@/hooks/useSudokuManagement"
-import clsx from "clsx"
 import Controls from "@/components/controls/Controls"
 import PadNumbers from "@/components/controls/PadNumbers"
 import InputModeSelector from "@/components/controls/InputModeSelector"
@@ -193,11 +192,7 @@ export default function Page() {
             <SectionTitle>Actions</SectionTitle>
             <Actions>
               <FetchGroup>
-                <FetchPuzzleBtn
-                  className={clsx("fetch-grid-string-btn col-start-2 rounded-[10px] shadow-[black_0px_0px_3px]", boardIsSet && "hidden")}
-                  handlePuzzleStartChange={handlePuzzleStartChange}
-                  difficulty={difficulty}
-                >
+                <FetchPuzzleBtn handlePuzzleStartChange={handlePuzzleStartChange} difficulty={difficulty} isHidden={boardIsSet}>
                   Fetch A New Puzzle
                 </FetchPuzzleBtn>
 

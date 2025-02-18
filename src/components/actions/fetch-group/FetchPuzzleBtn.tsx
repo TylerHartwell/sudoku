@@ -1,16 +1,17 @@
 "use client"
 
+import clsx from "clsx"
 import { ReactNode, useState } from "react"
 
 const FetchPuzzleBtn = ({
   handlePuzzleStartChange,
   children,
-  className,
+  isHidden,
   difficulty
 }: {
   handlePuzzleStartChange: (puzzleStringStart: string) => void
   children: ReactNode
-  className: string
+  isHidden: boolean
   difficulty: "easy" | "medium" | "hard" | "diabolical"
 }) => {
   const [loading, setLoading] = useState(false)
@@ -36,7 +37,10 @@ const FetchPuzzleBtn = ({
   }
 
   return (
-    <button className={className} onClick={handleClick}>
+    <button
+      className={clsx("fetch-grid-string-btn col-start-2 rounded-[10px] shadow-[black_0px_0px_3px]", isHidden && "hidden")}
+      onClick={handleClick}
+    >
       {loading ? "Loading..." : children}
     </button>
   )

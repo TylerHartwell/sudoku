@@ -10,7 +10,7 @@ interface Props<T extends string> {
 
 const DifficultySelector = <T extends string>({ difficulty, difficultyLevels, isHidden, onChange }: Props<T>) => {
   return (
-    <select name={"difficulty"} className={clsx("difficulty m-1 py-0.5 h-min", isHidden && "hidden")} value={difficulty} onChange={onChange}>
+    <select name={"difficulty"} className={clsx("difficulty m-1 py-0.5 h-min w-min", isHidden && "hidden")} value={difficulty} onChange={onChange}>
       {difficultyLevels.map(level => (
         <option key={level} value={level}>
           {level.charAt(0).toUpperCase() + level.slice(1)}
