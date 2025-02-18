@@ -87,7 +87,7 @@ function useSudokuManagement() {
   const charCounts = useMemo(() => countCharactersInString(puzzleStringCurrent, symbols), [puzzleStringCurrent])
 
   useEffect(() => {
-    const entryDivs = Array.from(document.querySelectorAll(".entry"))
+    const entryDivs = Array.from(document.querySelectorAll("[data-entry]"))
 
     const filteredDivs = entryDivs.filter(div => (div as HTMLElement).tabIndex !== -1)
 
@@ -467,7 +467,7 @@ function useSudokuManagement() {
     })
   }
 
-  const handleDifficulty = (diff: "easy" | "medium" | "hard" | "diabolical") => {
+  const handleDifficulty = (diff: Difficulty) => {
     setDifficulty(diff)
   }
 

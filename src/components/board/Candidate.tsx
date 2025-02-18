@@ -79,7 +79,7 @@ const Candidate = ({
     <div className="relative size-full">
       <div
         className={clsx(
-          "candidate absolute text-[3vw] md:text-[clamp(12px,min(2vh,2vw),30px)] flex justify-center items-center size-full z-20",
+          "absolute text-[3vw] md:text-[clamp(12px,min(2vh,2vw),30px)] flex justify-center items-center size-full z-20",
           ((!showCandidates && !candidateMode) || entryShownValue) && "invisible",
           candidateIndex === highlightIndex && (showCandidates || candidateMode) && !isEliminated && "bg-[rgb(248,248,120)] font-bold",
           isToggleable && "border-[1px] border-dashed border-[#0000ff31]",

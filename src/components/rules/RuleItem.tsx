@@ -15,7 +15,7 @@ const RuleItem = ({ ruleN, ruleName, isChecked, handleCheckboxChange, ruleOutcom
     <li className="flex justify-between items-center h-[30px] p-1">
       <button
         className={clsx(
-          "try-next-btn border-none rounded-[10px] m-[2px] px-[5px] py-[2px] shadow-[black_0px_0px_4px] whitespace-nowrap w-[70px] transition-colors ease-out duration-300",
+          "border-none rounded-[10px] m-[2px] px-[5px] py-[2px] shadow-[black_0px_0px_4px] whitespace-nowrap w-[70px] transition-colors ease-out duration-300",
           ruleOutcome === "success" && "bg-[green]",
           ruleOutcome === "fail" && "bg-[red]"
         )}

@@ -11,7 +11,7 @@ const Board = ({ children, boardIsSolved, gridSize }: Props) => {
   return (
     <section
       className={clsx(
-        `board select-none grid border-black border-[1px]`,
+        `select-none grid border-black border-[1px]`,
         boardIsSolved && "border-[5px] border-yellow-300",
         gridSize == 2 && "grid-cols-[repeat(2,1fr)] grid-rows-[repeat(2,1fr)]",
         gridSize == 3 && "grid-cols-[repeat(3,1fr)] grid-rows-[repeat(3,1fr)]",

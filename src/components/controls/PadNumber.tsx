@@ -102,7 +102,7 @@ const PadNumber = ({
   return (
     <div
       className={clsx(
-        `pad-number pad${index} w-full h-full text-center place-content-center text-[5vw] md:text-[30px] select-none hover:cursor-pointer hover:font-bold`,
+        `pad${index} w-full h-full text-center place-content-center text-[5vw] md:text-[30px] select-none hover:cursor-pointer hover:font-bold`,
         highlightIndex != null && index === highlightIndex && "font-bold",
         charCounts != undefined && charCounts[symbol] === symbolsLength && "opacity-30",
         lastFocusedEntryIndex !== null && !candidateMode && "shadow-green-700 drop-shadow-[1px_1px_0.5px_rgba(43,143,43,0.4)]",

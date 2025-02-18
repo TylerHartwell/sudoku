@@ -10,7 +10,7 @@ const InputModeBtn = ({ isModeActive, onClick, children }: Props) => {
   return (
     <button
       className={clsx(
-        "solution-mode-btn h-[90%] w-min border-none flex rounded-[10px] p-[5px] text-center text-[clamp(12px,6vw,16px)] justify-center items-center bg-transparent",
+        "h-[90%] w-min border-none flex rounded-[10px] p-[5px] text-center text-[clamp(12px,6vw,16px)] justify-center items-center bg-transparent",
         isModeActive && "font-bold pointer-events-none"
       )}
       onClick={onClick}

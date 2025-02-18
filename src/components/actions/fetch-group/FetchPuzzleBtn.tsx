@@ -1,19 +1,17 @@
 "use client"
 
+import { Difficulty } from "@/hooks/useSudokuManagement"
 import clsx from "clsx"
 import { ReactNode, useState } from "react"
 
-const FetchPuzzleBtn = ({
-  handlePuzzleStartChange,
-  children,
-  isHidden,
-  difficulty
-}: {
+interface Props {
   handlePuzzleStartChange: (puzzleStringStart: string) => void
   children: ReactNode
   isHidden: boolean
-  difficulty: "easy" | "medium" | "hard" | "diabolical"
-}) => {
+  difficulty: Difficulty
+}
+
+const FetchPuzzleBtn = ({ handlePuzzleStartChange, children, isHidden, difficulty }: Props) => {
   const [loading, setLoading] = useState(false)
 
   const handleClick = async () => {
@@ -37,10 +35,7 @@ const FetchPuzzleBtn = ({
   }
 
   return (
-    <button
-      className={clsx("fetch-grid-string-btn col-start-2 rounded-[10px] shadow-[black_0px_0px_3px]", isHidden && "hidden")}
-      onClick={handleClick}
-    >
+    <button className={clsx("col-start-2 rounded-[10px] shadow-[black_0px_0px_3px]", isHidden && "hidden")} onClick={handleClick}>
       {loading ? "Loading..." : children}
     </button>
   )
