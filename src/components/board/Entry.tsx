@@ -9,8 +9,8 @@ interface Props {
   shownValue: string
   puzzleStringStart: string
   puzzleStringCurrent: string
-  candidateMode: boolean
-  boardIsSet: boolean
+  isCandidateMode: boolean
+  isBoardSet: boolean
   highlightIndex: number | null
   handleEntry: (i: number, s: string) => void
   manualElimCandidates: string[]
@@ -30,8 +30,8 @@ const Entry = ({
   shownValue,
   puzzleStringStart,
   puzzleStringCurrent,
-  candidateMode,
-  boardIsSet,
+  isCandidateMode,
+  isBoardSet,
   highlightIndex,
   handleEntry,
   manualElimCandidates,
@@ -47,13 +47,13 @@ const Entry = ({
 }: Props) => {
   const entryRef = useRef<HTMLDivElement>(null)
 
-  const isLocked = boardIsSet && puzzleStringStart.length == Math.pow(symbolsLength, 2) && puzzleStringStart[gridSquareIndex] == shownValue
+  const isLocked = isBoardSet && puzzleStringStart.length == Math.pow(symbolsLength, 2) && puzzleStringStart[gridSquareIndex] == shownValue
   const isWrong = isAlreadyInUnit(gridSquareIndex, shownValue, puzzleStringCurrent)
 
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     e.preventDefault()
     if (!isLocked) {
-      if (candidateMode && e.pointerType === "touch") {
+      if (isCandidateMode && e.pointerType === "touch") {
         if (entryRef.current !== document.activeElement) {
           entryRef.current?.focus()
         } else {
@@ -158,7 +158,7 @@ const Entry = ({
       ref={entryRef}
       className={clsx(
         "flex justify-center items-center size-full absolute text-[10vw] md:text-[clamp(10px,min(6vh,3vw),90px)] cursor-default hover:border hover:border-[rgb(80,80,80)] focus:outline-hidden focus:border-[3px] focus:border-green-600 z-10",
-        candidateMode && "focus:border-red-500 hover:border-none",
+        isCandidateMode && "focus:border-red-500 hover:border-none",
         isLocked && "bg-[rgba(142,153,167,0.349)]",
         isWrong && "bg-red-500",
         highlightIndex != null && shownValue === symbols[highlightIndex] && "font-bold"

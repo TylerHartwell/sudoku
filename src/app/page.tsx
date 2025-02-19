@@ -43,16 +43,16 @@ export default function Page() {
     handleEntry,
     puzzleStringStart,
     handlePuzzleStartChange,
-    boardIsSet,
-    handleBoardSet,
+    isBoardSet,
+    handleIsBoardSet,
     highlightIndex,
-    handleHighlightIndexChange,
-    showCandidates,
+    handleHighlightIndex,
+    shouldShowCandidates,
     toggleShowCandidates,
-    candidateMode,
+    isCandidateMode,
     toggleCandidateMode,
     lastClickedHighlightIndex,
-    changeLastClickedHighlightIndex,
+    handleLastClickedHighlightIndex,
     manualElimCandidates,
     handleQueueAutoSolve,
     checkedRuleIndices,
@@ -61,7 +61,7 @@ export default function Page() {
     resetBoardData,
     goodCandidates,
     badCandidates,
-    boardIsSolved,
+    isBoardSolved,
     difficulty,
     handleDifficulty,
     isAlreadyInUnit,
@@ -79,7 +79,7 @@ export default function Page() {
       <MainTitle>SUDOKU RULER</MainTitle>
       <GameContent>
         <GameInterface>
-          <Board boardIsSolved={boardIsSolved} gridSize={symbolsSqrt}>
+          <Board isBoardSolved={isBoardSolved} gridSize={symbolsSqrt}>
             {Array.from({ length: symbolsLength }).map((_, boxIndex) => (
               <Box key={boxIndex} boxSize={symbolsSqrt}>
                 {Array.from({ length: symbolsLength }).map((_, squareIndex) => {
@@ -94,8 +94,8 @@ export default function Page() {
                         shownValue={shownValue}
                         puzzleStringStart={puzzleStringStart}
                         puzzleStringCurrent={puzzleStringCurrent}
-                        candidateMode={candidateMode}
-                        boardIsSet={boardIsSet}
+                        isCandidateMode={isCandidateMode}
+                        isBoardSet={isBoardSet}
                         highlightIndex={highlightIndex}
                         handleEntry={handleEntry}
                         manualElimCandidates={manualElimCandidates}
@@ -118,8 +118,8 @@ export default function Page() {
                           entryShownValue={shownValue}
                           puzzleStringCurrent={puzzleStringCurrent}
                           highlightIndex={highlightIndex}
-                          showCandidates={showCandidates}
-                          candidateMode={candidateMode}
+                          shouldShowCandidates={shouldShowCandidates}
+                          isCandidateMode={isCandidateMode}
                           manualElimCandidates={manualElimCandidates}
                           goodCandidates={goodCandidates}
                           badCandidates={badCandidates}
@@ -142,14 +142,14 @@ export default function Page() {
                   symbol={symbol}
                   symbolsLength={symbolsLength}
                   highlightIndex={highlightIndex}
-                  handleHighlightIndexChange={handleHighlightIndexChange}
+                  handleHighlightIndex={handleHighlightIndex}
                   lastClickedHighlightIndex={lastClickedHighlightIndex}
-                  changeLastClickedHighlightIndex={changeLastClickedHighlightIndex}
+                  handleLastClickedHighlightIndex={handleLastClickedHighlightIndex}
                   lastFocusedEntryIndex={lastFocusedEntryIndex}
                   handleLastFocusedEntryIndex={handleLastFocusedEntryIndex}
                   padNumberClicked={padNumberClicked}
                   handleEntry={handleEntry}
-                  candidateMode={candidateMode}
+                  isCandidateMode={isCandidateMode}
                   charCounts={charCounts}
                   handleQueueAutoSolve={handleQueueAutoSolve}
                   puzzleStringCurrent={puzzleStringCurrent}
@@ -160,11 +160,11 @@ export default function Page() {
               ))}
             </PadNumbers>
             <InputModeSelector>
-              <InputModeBtn isModeActive={!candidateMode} onClick={() => toggleCandidateMode(false)}>
+              <InputModeBtn isModeActive={!isCandidateMode} onClick={() => toggleCandidateMode(false)}>
                 Solution Mode
               </InputModeBtn>
-              <InputModeSwitch isRightMode={candidateMode} onClick={() => toggleCandidateMode()} />
-              <InputModeBtn isModeActive={candidateMode} onClick={() => toggleCandidateMode(true)}>
+              <InputModeSwitch isRightMode={isCandidateMode} onClick={() => toggleCandidateMode()} />
+              <InputModeBtn isModeActive={isCandidateMode} onClick={() => toggleCandidateMode(true)}>
                 Candidate Mode
               </InputModeBtn>
             </InputModeSelector>
@@ -192,20 +192,20 @@ export default function Page() {
             <SectionTitle>Actions</SectionTitle>
             <Actions>
               <FetchGroup>
-                <FetchPuzzleBtn handlePuzzleStartChange={handlePuzzleStartChange} difficulty={difficulty} isHidden={boardIsSet}>
+                <FetchPuzzleBtn handlePuzzleStartChange={handlePuzzleStartChange} difficulty={difficulty} isHidden={isBoardSet}>
                   Fetch A New Puzzle
                 </FetchPuzzleBtn>
 
-                <DifficultySelector<Difficulty>
+                <DifficultySelector
                   difficulty={difficulty}
-                  isHidden={boardIsSet}
+                  isHidden={isBoardSet}
                   onChange={e => handleDifficulty(e.target.value as Difficulty)}
                   difficultyLevels={difficultyLevels}
                 />
               </FetchGroup>
               <PuzzleStringInput
                 puzzleLength={Math.pow(symbolsLength, 2)}
-                isHidden={boardIsSet}
+                isHidden={isBoardSet}
                 puzzleStringStart={puzzleStringStart}
                 onChange={e => {
                   handlePuzzleStartChange(e.target.value)
@@ -213,12 +213,12 @@ export default function Page() {
               />
               <ActionBtnGroup>
                 <ClearAllBtn onClick={() => resetBoardData()}>Clear All</ClearAllBtn>
-                {boardIsSet ? (
+                {isBoardSet ? (
                   <RestartPuzzleBtn onClick={() => restartPuzzle()}>Restart</RestartPuzzleBtn>
                 ) : (
-                  <SetPuzzleBtn onClick={() => handleBoardSet(true)}>Set Puzzle</SetPuzzleBtn>
+                  <SetPuzzleBtn onClick={() => handleIsBoardSet(true)}>Set Puzzle</SetPuzzleBtn>
                 )}
-                <ToggleCandidatesBtn onClick={() => toggleShowCandidates()} disabled={candidateMode}>
+                <ToggleCandidatesBtn onClick={() => toggleShowCandidates()} disabled={isCandidateMode}>
                   Toggle Candidates
                 </ToggleCandidatesBtn>
               </ActionBtnGroup>

@@ -5,16 +5,16 @@ import { RefObject } from "react"
 interface Props {
   index: number
   highlightIndex: number | null
-  handleHighlightIndexChange: (n: number | null) => void
+  handleHighlightIndex: (n: number | null) => void
   lastClickedHighlightIndex: number | null
-  changeLastClickedHighlightIndex: (n: number | null) => void
+  handleLastClickedHighlightIndex: (n: number | null) => void
   symbol: string
   symbolsLength: number
   lastFocusedEntryIndex: number | null
   handleLastFocusedEntryIndex: (entryIndex: number | null) => void
   padNumberClicked: RefObject<boolean>
   handleEntry: (i: number, s: string) => void
-  candidateMode: boolean
+  isCandidateMode: boolean
   charCounts: { [key: string]: number }
   handleQueueAutoSolve: (beQueued: boolean) => void
   puzzleStringCurrent: string
@@ -26,16 +26,16 @@ interface Props {
 const PadNumber = ({
   index,
   highlightIndex,
-  handleHighlightIndexChange,
+  handleHighlightIndex,
   lastClickedHighlightIndex,
-  changeLastClickedHighlightIndex,
+  handleLastClickedHighlightIndex,
   symbol,
   symbolsLength,
   lastFocusedEntryIndex,
   handleLastFocusedEntryIndex,
   padNumberClicked,
   handleEntry,
-  candidateMode,
+  isCandidateMode,
   charCounts,
   handleQueueAutoSolve,
   puzzleStringCurrent,
@@ -44,11 +44,11 @@ const PadNumber = ({
   toggleCandidateQueueSolveOnElim
 }: Props) => {
   const handleMouseEnter = () => {
-    handleHighlightIndexChange(index)
+    handleHighlightIndex(index)
   }
 
   const handleMouseLeave = () => {
-    handleHighlightIndexChange(lastClickedHighlightIndex)
+    handleHighlightIndex(lastClickedHighlightIndex)
   }
 
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
@@ -56,7 +56,7 @@ const PadNumber = ({
     padNumberClicked.current = true
 
     if (lastFocusedEntryIndex != null) {
-      if (!candidateMode) {
+      if (!isCandidateMode) {
         if (symbol == puzzleStringCurrent[lastFocusedEntryIndex]) {
           handleEntry(lastFocusedEntryIndex, "0")
         } else {
@@ -69,8 +69,8 @@ const PadNumber = ({
             handleQueueAutoSolve(true)
           }
         }
-        changeLastClickedHighlightIndex(index)
-        handleHighlightIndexChange(index)
+        handleLastClickedHighlightIndex(index)
+        handleHighlightIndex(index)
       } else {
         const candidateKey = `${lastFocusedEntryIndex}-${index}`
         const isAlreadyInUnit = getPeerGridSquareIndices(lastFocusedEntryIndex, symbolsLength).some(i => puzzleStringCurrent[i] === symbol)
@@ -83,20 +83,20 @@ const PadNumber = ({
           ;(document.activeElement as HTMLElement)?.blur()
         }
 
-        changeLastClickedHighlightIndex(index)
+        handleLastClickedHighlightIndex(index)
       }
 
       return
     }
 
     if (index === lastClickedHighlightIndex) {
-      changeLastClickedHighlightIndex(null)
-      handleHighlightIndexChange(null)
+      handleLastClickedHighlightIndex(null)
+      handleHighlightIndex(null)
       return
     }
 
-    changeLastClickedHighlightIndex(index)
-    handleHighlightIndexChange(index)
+    handleLastClickedHighlightIndex(index)
+    handleHighlightIndex(index)
   }
 
   return (
@@ -105,8 +105,8 @@ const PadNumber = ({
         `pad${index} w-full h-full text-center place-content-center text-[5vw] md:text-[30px] select-none hover:cursor-pointer hover:font-bold`,
         highlightIndex != null && index === highlightIndex && "font-bold",
         charCounts != undefined && charCounts[symbol] === symbolsLength && "opacity-30",
-        lastFocusedEntryIndex !== null && !candidateMode && "shadow-green-700 drop-shadow-[1px_1px_0.5px_rgba(43,143,43,0.4)]",
-        lastFocusedEntryIndex !== null && candidateMode && "shadow-red-700 drop-shadow-[1px_1px_0.5px_rgba(255,43,43,0.4)]"
+        lastFocusedEntryIndex !== null && !isCandidateMode && "shadow-green-700 drop-shadow-[1px_1px_0.5px_rgba(43,143,43,0.4)]",
+        lastFocusedEntryIndex !== null && isCandidateMode && "shadow-red-700 drop-shadow-[1px_1px_0.5px_rgba(255,43,43,0.4)]"
       )}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}

@@ -4,7 +4,7 @@ import { ChangeEventHandler } from "react"
 
 interface Props {
   difficulty: Difficulty
-  difficultyLevels: Difficulty[]
+  difficultyLevels: readonly Difficulty[]
   isHidden: boolean
   onChange: ChangeEventHandler<HTMLSelectElement>
 }
