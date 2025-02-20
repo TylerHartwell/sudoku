@@ -71,8 +71,13 @@ export default function Page() {
     charCounts,
     restartPuzzle,
     toggleCandidateQueueSolveOnElim,
-    sortedEntries
+    sortedEntries,
+    isLoadingFromLocalStorage
   } = useSudokuManagement()
+
+  if (isLoadingFromLocalStorage) {
+    return <div>Loading...</div>
+  }
 
   return (
     <SudokuMain>

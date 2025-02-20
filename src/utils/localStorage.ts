@@ -1,15 +1,21 @@
-export function setItem(key: string, value: unknown) {
+export function setItem<T>(key: string, value: T) {
   try {
+    if (typeof value === "function") {
+      throw new Error("Cannot store functions in localStorage")
+    }
+
     window.localStorage.setItem(key, JSON.stringify(value))
   } catch (error) {
-    console.log(`Error setting local storage state for ${key}:`, error)
+    console.error(`❌ Error setting localStorage key "${key}":`, error)
   }
 }
-export function getItem(key: string) {
+
+export function getItem<T>(key: string): T | null {
   try {
     const item = window.localStorage.getItem(key)
-    return item ? JSON.parse(item) : undefined
+    return item ? (JSON.parse(item) as T) : null
   } catch (error) {
-    console.log(`Error loading local storage state for ${key}:`, error)
+    console.error(`❌ Error parsing localStorage key "${key}":`, error)
+    return null
   }
 }

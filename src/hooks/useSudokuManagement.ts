@@ -32,57 +32,101 @@ const initialStates = {
 
   // Rule-related states
   ruleOutcomes: rulesArr.map(_ => "default" as RuleOutcome),
-  checkedRuleIndices: [] as number[],
+  checkedRuleIndices: [],
   currentAutoRuleIndex: 0,
   shouldAutoSolve: false,
 
   // Candidate-related states
   shouldShowCandidates: false,
   isCandidateMode: false,
-  manualElimCandidates: [] as string[],
-  goodCandidates: [] as string[],
-  badCandidates: [] as string[],
+  manualElimCandidates: [],
+  goodCandidates: [],
+  badCandidates: [],
 
   // UI/Interaction states
-  highlightIndex: null as number | null,
-  lastClickedHighlightIndex: null as number | null,
-  lastFocusedEntryIndex: null as number | null,
-  sortedEntries: [] as (Element | null)[],
+  highlightIndex: null,
+  lastClickedHighlightIndex: null,
+  lastFocusedEntryIndex: null,
+  sortedEntries: [],
 
   // Settings
   difficulty: "easy" as Difficulty
 }
 
 function useSudokuManagement() {
-  const [puzzleStringCurrent, setPuzzleStringCurrent] = usePersistedState("puzzleStringCurrent", initialStates.puzzleStringCurrent)
-  const [puzzleStringStart, setPuzzleStringStart] = usePersistedState("puzzleStringStart", initialStates.puzzleStringStart)
-  const [isBoardSet, setIsBoardSet] = usePersistedState("isBoardSet", initialStates.isBoardSet)
-  const [isBoardSolved, setIsBoardSolved] = usePersistedState("isBoardSolved", initialStates.isBoardSolved)
+  const [puzzleStringCurrent, setPuzzleStringCurrent, isLoadingPuzzleStringCurrent] = usePersistedState<string>(
+    "puzzleStringCurrent",
+    initialStates.puzzleStringCurrent
+  )
+  const [puzzleStringStart, setPuzzleStringStart, isLoadingPuzzleStringStart] = usePersistedState<string>(
+    "puzzleStringStart",
+    initialStates.puzzleStringStart
+  )
+  const [isBoardSet, setIsBoardSet, isLoadingIsBoardSet] = usePersistedState<boolean>("isBoardSet", initialStates.isBoardSet)
+  const [isBoardSolved, setIsBoardSolved, isLoadingIsBoardSolved] = usePersistedState<boolean>("isBoardSolved", initialStates.isBoardSolved)
 
-  const [ruleOutcomes, setRuleOutcomes] = usePersistedState("ruleOutcomes", initialStates.ruleOutcomes)
-  const [checkedRuleIndices, setCheckedRuleIndices] = usePersistedState("checkedRuleIndices", initialStates.checkedRuleIndices)
-  const [currentAutoRuleIndex, setCurrentAutoRuleIndex] = usePersistedState("currentAutoRuleIndex", initialStates.currentAutoRuleIndex)
-  const [shouldAutoSolve, setShouldAutoSolve] = usePersistedState("shouldAutoSolve", initialStates.shouldAutoSolve)
+  const [ruleOutcomes, setRuleOutcomes, isLoadingRuleOutcomes] = usePersistedState<RuleOutcome[]>("ruleOutcomes", initialStates.ruleOutcomes)
+  const [checkedRuleIndices, setCheckedRuleIndices, isLoadingCheckedRuleIndices] = usePersistedState<number[]>(
+    "checkedRuleIndices",
+    initialStates.checkedRuleIndices
+  )
+  const [currentAutoRuleIndex, setCurrentAutoRuleIndex, isLoadingCurrentAutoRuleIndex] = usePersistedState<number>(
+    "currentAutoRuleIndex",
+    initialStates.currentAutoRuleIndex
+  )
+  const [shouldAutoSolve, setShouldAutoSolve, isLoadingShouldAutoSolve] = usePersistedState<boolean>("shouldAutoSolve", initialStates.shouldAutoSolve)
 
-  const [shouldShowCandidates, setShouldShowCandidates] = usePersistedState("shouldShowCandidates", initialStates.shouldShowCandidates)
-  const [isCandidateMode, setIsCandidateMode] = usePersistedState("isCandidateMode", initialStates.isCandidateMode)
-  const [manualElimCandidates, setManualElimCandidates] = usePersistedState("manualElimCandidates", initialStates.manualElimCandidates)
-  const [goodCandidates, setGoodCandidates] = usePersistedState("goodCandidates", initialStates.goodCandidates)
-  const [badCandidates, setBadCandidates] = usePersistedState("badCandidates", initialStates.badCandidates)
+  const [shouldShowCandidates, setShouldShowCandidates, isLoadingShouldShowCandidates] = usePersistedState<boolean>(
+    "shouldShowCandidates",
+    initialStates.shouldShowCandidates
+  )
+  const [isCandidateMode, setIsCandidateMode, isLoadingIsCandidateMode] = usePersistedState<boolean>("isCandidateMode", initialStates.isCandidateMode)
+  const [manualElimCandidates, setManualElimCandidates, isLoadingManualElimCandidates] = usePersistedState<string[]>(
+    "manualElimCandidates",
+    initialStates.manualElimCandidates
+  )
+  const [goodCandidates, setGoodCandidates, isLoadingGoodCandidates] = usePersistedState<string[]>("goodCandidates", initialStates.goodCandidates)
+  const [badCandidates, setBadCandidates, isLoadingBadCandidates] = usePersistedState<string[]>("badCandidates", initialStates.badCandidates)
 
-  const [highlightIndex, setHighlightIndex] = usePersistedState("highlightIndex", initialStates.highlightIndex)
-  const [lastClickedHighlightIndex, setLastClickedHighlightIndex] = usePersistedState(
+  const [highlightIndex, setHighlightIndex, isLoadingHighlightIndex] = usePersistedState<number | null>(
+    "highlightIndex",
+    initialStates.highlightIndex
+  )
+  const [lastClickedHighlightIndex, setLastClickedHighlightIndex, isLoadingLastClickedHighlightIndex] = usePersistedState<number | null>(
     "lastClickedHighlightIndex",
     initialStates.lastClickedHighlightIndex
   )
-  const [lastFocusedEntryIndex, setLastFocusedEntryIndex] = usePersistedState("lastFocusedEntryIndex", initialStates.lastFocusedEntryIndex)
-  const [sortedEntries, setSortedEntries] = useState(initialStates.sortedEntries)
+  const [lastFocusedEntryIndex, setLastFocusedEntryIndex, isLoadingLastFocusedEntryIndex] = usePersistedState<number | null>(
+    "lastFocusedEntryIndex",
+    initialStates.lastFocusedEntryIndex
+  )
+  const [sortedEntries, setSortedEntries] = useState<(Element | null)[]>(initialStates.sortedEntries)
 
-  const [difficulty, setDifficulty] = usePersistedState("difficulty", initialStates.difficulty)
+  const [difficulty, setDifficulty, isLoadingDifficulty] = usePersistedState<Difficulty>("difficulty", initialStates.difficulty)
 
   const padNumberClicked = useRef(false)
 
   const charCounts = useMemo(() => countCharactersInString(puzzleStringCurrent, symbols), [puzzleStringCurrent])
+
+  const isLoadingFromLocalStorage = [
+    isLoadingPuzzleStringCurrent,
+    isLoadingPuzzleStringStart,
+    isLoadingIsBoardSet,
+    isLoadingIsBoardSolved,
+    isLoadingRuleOutcomes,
+    isLoadingCheckedRuleIndices,
+    isLoadingCurrentAutoRuleIndex,
+    isLoadingShouldAutoSolve,
+    isLoadingShouldShowCandidates,
+    isLoadingIsCandidateMode,
+    isLoadingManualElimCandidates,
+    isLoadingGoodCandidates,
+    isLoadingBadCandidates,
+    isLoadingHighlightIndex,
+    isLoadingLastClickedHighlightIndex,
+    isLoadingLastFocusedEntryIndex,
+    isLoadingDifficulty
+  ].some(Boolean)
 
   useEffect(() => {
     const entryDivs = Array.from(document.querySelectorAll("[data-entry]"))
@@ -452,15 +496,19 @@ function useSudokuManagement() {
 
   /////
 
-  const handleHighlightIndex = (newValue: number | null) => {
+  const handleBadCandidates = (newValue: typeof badCandidates) => {
+    setBadCandidates(newValue)
+  }
+
+  const handleHighlightIndex = (newValue: typeof highlightIndex) => {
     setHighlightIndex(newValue == null || newValue < 0 || newValue >= symbolsLength ? null : newValue)
   }
 
-  const handleLastClickedHighlightIndex = (newValue: number | null) => {
+  const handleLastClickedHighlightIndex = (newValue: typeof lastClickedHighlightIndex) => {
     setLastClickedHighlightIndex(newValue == null || newValue < 0 || newValue >= symbolsLength ? null : newValue)
   }
 
-  const handleLastFocusedEntryIndex = useCallback((newValue: number | null) => {
+  const handleLastFocusedEntryIndex = useCallback((newValue: typeof lastFocusedEntryIndex) => {
     if (newValue == null || (Number.isInteger(newValue) && newValue >= 0 && newValue < Math.pow(symbolsLength, 2))) {
       setLastFocusedEntryIndex(newValue)
     }
@@ -470,7 +518,7 @@ function useSudokuManagement() {
     setSortedEntries(newValue)
   }
 
-  const handleDifficulty = (newValue: Difficulty) => {
+  const handleDifficulty = (newValue: typeof difficulty) => {
     setDifficulty(newValue)
   }
 
@@ -558,7 +606,8 @@ function useSudokuManagement() {
     charCounts,
     restartPuzzle,
     toggleCandidateQueueSolveOnElim,
-    sortedEntries
+    sortedEntries,
+    isLoadingFromLocalStorage
   }
 }
 
