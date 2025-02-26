@@ -6,7 +6,7 @@ interface RuleItemProps {
   isChecked: boolean
   handleCheckboxChange: () => void
   ruleOutcome: RuleOutcome
-  tryRuleAtIndex: () => Promise<boolean>
+  tryRuleAtIndex: () => Promise<RuleOutcome>
   allDefault: boolean
 }
 

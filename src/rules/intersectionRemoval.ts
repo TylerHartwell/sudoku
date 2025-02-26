@@ -88,7 +88,7 @@ const intersectionRemoval: Rule = {
           const isInCurrentUnit = candidateObjArr.some(candidateObj => candidateObj.gridSquareIndex === gridSquareIndex)
 
           if (!isInCurrentUnit && possible) {
-            console.log("intersection eliminated for candidate ", candidateIndex + 1, "at ", gridSquareIndex)
+            // console.log("intersection eliminated for candidate ", candidateIndex + 1, "at ", gridSquareIndex)
             candidatesToMarkBad.push({ gridSquareIndex, candidateIndex, possible })
             actions.push(() => toggleManualElimCandidate(gridSquareIndex, candidateIndex, true))
           }

@@ -75,7 +75,7 @@ const nakedPairs: Rule = {
               }
 
               if (actions.length !== 0) {
-                console.log("has elimination for pair ", firstIndexOfGroup + 1, "and ", secondIndexOfGroup + 1, "in unit ", unitIndex)
+                // console.log("has elimination for pair ", firstIndexOfGroup + 1, "and ", secondIndexOfGroup + 1, "in unit ", unitIndex)
                 return {
                   hasProgress: true,
                   candidatesToMarkGood: [

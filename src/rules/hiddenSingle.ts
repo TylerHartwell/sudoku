@@ -29,7 +29,7 @@ const hiddenSingle: Rule = {
         if (instanceCount === 1 && targetGridSquareIndex !== null) {
           const candidateNumber = candidateIndex + 1
           const gridSquareIndex = targetGridSquareIndex //narrow type to number
-          console.log("hidden single of ", candidateNumber, "at ", gridSquareIndex)
+          // console.log("hidden single of ", candidateNumber, "at ", gridSquareIndex)
           return {
             hasProgress: true,
             candidatesToMarkGood: [{ gridSquareIndex, candidateIndex }],

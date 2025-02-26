@@ -19,7 +19,7 @@ const nakedSingle: Rule = {
 
       const candidateIndex = targetCandidateIndex as number
       const candidateNumber = candidateIndex + 1
-      console.log("naked single of ", candidateNumber, "at ", gridSquareIndex)
+      // console.log("naked single of ", candidateNumber, "at ", gridSquareIndex)
 
       return {
         hasProgress: true,

@@ -93,16 +93,16 @@ const nakedTriple: Rule = {
                 }
 
                 if (actions.length !== 0) {
-                  console.log(
-                    "has elimination for triple ",
-                    firstIndexOfGroup + 1,
-                    "and ",
-                    secondIndexOfGroup + 1,
-                    "and ",
-                    thirdIndexOfGroup + 1,
-                    "in unit ",
-                    unitIndex
-                  )
+                  // console.log(
+                  //   "has elimination for triple ",
+                  //   firstIndexOfGroup + 1,
+                  //   "and ",
+                  //   secondIndexOfGroup + 1,
+                  //   "and ",
+                  //   thirdIndexOfGroup + 1,
+                  //   "in unit ",
+                  //   unitIndex
+                  // )
                   return {
                     hasProgress: true,
                     candidatesToMarkGood: [
