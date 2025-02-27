@@ -16,7 +16,7 @@ interface Props {
   handleEntry: (i: number, s: string) => void
   isCandidateMode: boolean
   charCounts: { [key: string]: number }
-  handleQueueAutoSolve: (beQueued: boolean) => void
+  handleShouldAutoSolve: (beQueued: boolean) => void
   puzzleStringCurrent: string
   isAlreadyInUnit: (gridSquareIndex: number, character: string, puzzleString: string) => boolean
   manualElimCandidates: string[]
@@ -37,7 +37,7 @@ const PadNumber = ({
   handleEntry,
   isCandidateMode,
   charCounts,
-  handleQueueAutoSolve,
+  handleShouldAutoSolve,
   puzzleStringCurrent,
   isAlreadyInUnit,
   manualElimCandidates,
@@ -66,7 +66,7 @@ const PadNumber = ({
           if (!isWrong) {
             handleLastFocusedEntryIndex(null)
             ;(document.activeElement as HTMLElement)?.blur()
-            handleQueueAutoSolve(true)
+            handleShouldAutoSolve(true)
           }
         }
         handleLastClickedHighlightIndex(index)

@@ -17,7 +17,7 @@ interface Props {
   isAlreadyInUnit: (gridSquareIndex: number, character: string, puzzleString: string) => boolean
   handleLastFocusedEntryIndex: (entryIndex: number | null) => void
   padNumberClicked: RefObject<boolean>
-  handleQueueAutoSolve: (beQueued: boolean) => void
+  handleShouldAutoSolve: (beQueued: boolean) => void
   lastFocusedEntryIndex: number | null
   toggleCandidateQueueSolveOnElim: (gridSquareIndex: number, candidateIndex: number) => void
   sortedEntries: (Element | null)[]
@@ -38,7 +38,7 @@ const Entry = ({
   isAlreadyInUnit,
   handleLastFocusedEntryIndex,
   padNumberClicked,
-  handleQueueAutoSolve,
+  handleShouldAutoSolve,
   lastFocusedEntryIndex,
   toggleCandidateQueueSolveOnElim,
   sortedEntries,
@@ -90,7 +90,7 @@ const Entry = ({
                 ;(document.activeElement as HTMLElement)?.blur()
               }
 
-              handleQueueAutoSolve(true)
+              handleShouldAutoSolve(true)
             }
           }
         }
@@ -127,7 +127,7 @@ const Entry = ({
       if (isValidChar(e.key, symbols) && e.key.toUpperCase() != shownValue) {
         if (!isAlreadyInUnit(gridSquareIndex, e.key.toUpperCase(), puzzleStringCurrent)) {
           ;(document.activeElement as HTMLElement)?.blur()
-          handleQueueAutoSolve(true)
+          handleShouldAutoSolve(true)
         }
         handleEntry(gridSquareIndex, e.key.toUpperCase())
       } else if (e.key === " " || e.key === "0" || e.key.toUpperCase() == shownValue) {

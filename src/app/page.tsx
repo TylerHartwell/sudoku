@@ -42,7 +42,7 @@ export default function Page() {
     puzzleStringCurrent,
     handleEntry,
     puzzleStringStart,
-    handlePuzzleStartChange,
+    handlePuzzleStringStart,
     isBoardSet,
     handleIsBoardSet,
     highlightIndex,
@@ -54,7 +54,7 @@ export default function Page() {
     lastClickedHighlightIndex,
     handleLastClickedHighlightIndex,
     manualElimCandidates,
-    handleQueueAutoSolve,
+    handleShouldAutoSolve,
     checkedRuleIndices,
     handleCheckboxChange,
     tryRuleAtIndex,
@@ -107,7 +107,7 @@ export default function Page() {
                         isAlreadyInUnit={isAlreadyInUnit}
                         handleLastFocusedEntryIndex={handleLastFocusedEntryIndex}
                         padNumberClicked={padNumberClicked}
-                        handleQueueAutoSolve={handleQueueAutoSolve}
+                        handleShouldAutoSolve={handleShouldAutoSolve}
                         lastFocusedEntryIndex={lastFocusedEntryIndex}
                         toggleCandidateQueueSolveOnElim={toggleCandidateQueueSolveOnElim}
                         sortedEntries={sortedEntries}
@@ -156,7 +156,7 @@ export default function Page() {
                   handleEntry={handleEntry}
                   isCandidateMode={isCandidateMode}
                   charCounts={charCounts}
-                  handleQueueAutoSolve={handleQueueAutoSolve}
+                  handleShouldAutoSolve={handleShouldAutoSolve}
                   puzzleStringCurrent={puzzleStringCurrent}
                   isAlreadyInUnit={isAlreadyInUnit}
                   manualElimCandidates={manualElimCandidates}
@@ -197,7 +197,7 @@ export default function Page() {
             <SectionTitle>Actions</SectionTitle>
             <Actions>
               <FetchGroup>
-                <FetchPuzzleBtn handlePuzzleStartChange={handlePuzzleStartChange} difficulty={difficulty} isHidden={isBoardSet}>
+                <FetchPuzzleBtn handlePuzzleStringStart={handlePuzzleStringStart} difficulty={difficulty} isHidden={isBoardSet}>
                   Fetch A New Puzzle
                 </FetchPuzzleBtn>
 
@@ -213,7 +213,7 @@ export default function Page() {
                 isHidden={isBoardSet}
                 puzzleStringStart={puzzleStringStart}
                 onChange={e => {
-                  handlePuzzleStartChange(e.target.value)
+                  handlePuzzleStringStart(e.target.value)
                 }}
               />
               <ActionBtnGroup>

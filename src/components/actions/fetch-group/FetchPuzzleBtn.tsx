@@ -5,13 +5,13 @@ import clsx from "clsx"
 import { ReactNode, useState } from "react"
 
 interface Props {
-  handlePuzzleStartChange: (puzzleStringStart: string) => void
+  handlePuzzleStringStart: (puzzleStringStart: string) => void
   children: ReactNode
   isHidden: boolean
   difficulty: Difficulty
 }
 
-const FetchPuzzleBtn = ({ handlePuzzleStartChange, children, isHidden, difficulty }: Props) => {
+const FetchPuzzleBtn = ({ handlePuzzleStringStart, children, isHidden, difficulty }: Props) => {
   const [loading, setLoading] = useState(false)
 
   const handleClick = async () => {
@@ -26,7 +26,7 @@ const FetchPuzzleBtn = ({ handlePuzzleStartChange, children, isHidden, difficult
 
       const data: { puzzle: string; difficulty: number } = await response.json()
 
-      handlePuzzleStartChange(data.puzzle)
+      handlePuzzleStringStart(data.puzzle)
     } catch (error) {
       console.log("PUZZLE FETCH ERROR: ", error)
     } finally {

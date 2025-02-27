@@ -105,44 +105,85 @@ function useSudokuManagement() {
 
   const [difficulty, setDifficulty, isLoadingDifficulty] = usePersistedState<Difficulty>("difficulty", initialStates.difficulty)
 
+  const handlePuzzleStringCurrent = createStateHandler(setPuzzleStringCurrent, {
+    sideEffect: newValue => {
+      if (newValue === undefined) return
+      handleIsBoardSolved(isBoardSet && checkBoardSolution(newValue))
+    }
+  })
+  const handlePuzzleStringStart = createStateHandler(setPuzzleStringStart, {
+    sideEffect: newValue => {
+      if (newValue === undefined) return
+      handlePuzzleStringCurrent(formatStringToPuzzleString(newValue))
+    }
+  })
+  const handleIsBoardSet = createStateHandler(setIsBoardSet, {
+    validator: newValue => {
+      if (newValue && checkForAnySudokuConflict()) {
+        alert("There is a sudoku conflict")
+        return false
+      } else return true
+    },
+    sideEffect: newValue => {
+      if (newValue) {
+        handleShouldAutoSolve(true)
+      }
+    }
+  })
+  const handleIsBoardSolved = createStateHandler(setIsBoardSolved)
+
+  const handleRuleOutcomes = createStateHandler(setRuleOutcomes)
+  const handleCheckedRuleIndices = createStateHandler(setCheckedRuleIndices)
+  const handleCurrentAutoRuleIndex = createStateHandler(setCurrentAutoRuleIndex)
+  const handleShouldAutoSolve = createStateHandler(setShouldAutoSolve)
+
+  const handleShouldShowCandidates = createStateHandler(setShouldShowCandidates)
+  const handleIsCandidateMode = createStateHandler(setIsCandidateMode)
+  const handleManualElimCandidates = createStateHandler(setManualElimCandidates)
+  const handleGoodCandidates = createStateHandler(setGoodCandidates)
+  const handleBadCandidates = createStateHandler(setBadCandidates)
+
+  const handleHighlightIndex = createStateHandler(setHighlightIndex, {
+    modifier: getValidIndexOrNull
+  })
+  const handleLastClickedHighlightIndex = createStateHandler(setLastClickedHighlightIndex, {
+    modifier: getValidIndexOrNull
+  })
+  const handleLastFocusedEntryIndex = createStateHandler(setLastFocusedEntryIndex, {
+    validator: newValue => {
+      return newValue == null || (Number.isInteger(newValue) && newValue >= 0 && newValue < Math.pow(symbolsLength, 2))
+    }
+  })
+  const handleSortedEntries = createStateHandler(setSortedEntries)
+
+  const handleDifficulty = createStateHandler(setDifficulty)
+
   const padNumberClicked = useRef(false)
 
   const charCounts = useMemo(() => countCharactersInString(puzzleStringCurrent, symbols), [puzzleStringCurrent])
 
-  const isLoadingFromLocalStorage = [
-    isLoadingPuzzleStringCurrent,
-    isLoadingPuzzleStringStart,
-    isLoadingIsBoardSet,
-    isLoadingIsBoardSolved,
-    isLoadingRuleOutcomes,
-    isLoadingCheckedRuleIndices,
-    isLoadingCurrentAutoRuleIndex,
-    isLoadingShouldAutoSolve,
-    isLoadingShouldShowCandidates,
-    isLoadingIsCandidateMode,
-    isLoadingManualElimCandidates,
-    isLoadingGoodCandidates,
-    isLoadingBadCandidates,
-    isLoadingHighlightIndex,
-    isLoadingLastClickedHighlightIndex,
-    isLoadingLastFocusedEntryIndex,
-    isLoadingDifficulty
-  ].some(Boolean)
+  const isAlreadyInUnit = useCallback((gridSquareIndex: number, character: string, puzzleString: string) => {
+    if (character == "0" || character == "") return false
+    return getPeerGridSquareIndices(gridSquareIndex, symbolsLength).some(i => {
+      if (i < 0 || i >= puzzleString.length) {
+        console.error(`Index ${i} is out of bounds for puzzleStringCurrent with length ${puzzleString.length}`)
+        return false
+      }
+      return puzzleString[i] == character && i != gridSquareIndex
+    })
+  }, [])
 
-  useEffect(() => {
-    const handlePointerDown = (e: PointerEvent) => {
-      const target = e.target as HTMLElement
-      if (!target.matches(".entry") && !target.matches(".pad-number")) {
-        padNumberClicked.current = false
+  const checkForAnySudokuConflict = useCallback(() => {
+    for (let i = 0; i < puzzleStringCurrent.length; i++) {
+      const character = puzzleStringCurrent[i]
+      if (character !== "0") {
+        if (isAlreadyInUnit(i, character, puzzleStringCurrent)) {
+          return true
+        }
       }
     }
-
-    document.addEventListener("pointerdown", handlePointerDown)
-
-    return () => {
-      document.removeEventListener("pointerdown", handlePointerDown)
-    }
-  }, [])
+    return false
+  }, [isAlreadyInUnit, puzzleStringCurrent])
 
   const getCandidates = useCallback(
     (gridSquareIndex: number) => {
@@ -183,21 +224,6 @@ function useSudokuManagement() {
     [allSquares]
   )
 
-  const handleQueueAutoSolve = useCallback((beQueued: boolean) => {
-    setShouldAutoSolve(beQueued)
-  }, [])
-
-  const isAlreadyInUnit = useCallback((gridSquareIndex: number, character: string, puzzleString: string) => {
-    if (character == "0" || character == "") return false
-    return getPeerGridSquareIndices(gridSquareIndex, symbolsLength).some(i => {
-      if (i < 0 || i >= puzzleString.length) {
-        console.error(`Index ${i} is out of bounds for puzzleStringCurrent with length ${puzzleString.length}`)
-        return false
-      }
-      return puzzleString[i] == character && i != gridSquareIndex
-    })
-  }, [])
-
   const toggleManualElimCandidate = useCallback(
     (gridSquareIndex: number, candidateIndex: number, shouldManualElim?: boolean) => {
       const candidateKey = `${gridSquareIndex}-${candidateIndex}`
@@ -228,24 +254,6 @@ function useSudokuManagement() {
     },
     [isAlreadyInUnit, puzzleStringCurrent]
   )
-
-  const replacePuzzleStringCurrentAtWith = (gridSquareIndex: number, replacement: string) => {
-    const newValue = puzzleStringCurrent.slice(0, gridSquareIndex) + replacement + puzzleStringCurrent.slice(gridSquareIndex + 1)
-
-    handlePuzzleStringCurrent(newValue)
-  }
-
-  const checkForAnySudokuConflict = useCallback(() => {
-    for (let i = 0; i < puzzleStringCurrent.length; i++) {
-      const character = puzzleStringCurrent[i]
-      if (character !== "0") {
-        if (isAlreadyInUnit(i, character, puzzleStringCurrent)) {
-          return true
-        }
-      }
-    }
-    return false
-  }, [isAlreadyInUnit, puzzleStringCurrent])
 
   const handleEntry = useCallback(
     (gridSquareIndex: number, entryChar: string) => {
@@ -288,7 +296,7 @@ function useSudokuManagement() {
     async (ruleIndex: number, isAuto: boolean = false) => {
       if (isBoardSolved) {
         console.log("tryRuleAtIndex isBoardSolved")
-        handleRuleOutcome(ruleIndex, "default")
+        handleRuleOutcomeAtIndex(ruleIndex, "default")
         return "default" as RuleOutcome
       }
       const outcomeTime = isAuto ? 50 : 500
@@ -296,7 +304,7 @@ function useSudokuManagement() {
 
       const ruleOutcome: RuleOutcome = ruleResult.hasProgress ? "success" : "fail"
 
-      handleRuleOutcome(ruleIndex, ruleOutcome)
+      handleRuleOutcomeAtIndex(ruleIndex, ruleOutcome)
       if (ruleResult.candidatesToMarkGood !== undefined) {
         ruleResult.candidatesToMarkGood.forEach(candidate => {
           toggleGoodCandidates(candidate.gridSquareIndex, candidate.candidateIndex, true)
@@ -312,10 +320,10 @@ function useSudokuManagement() {
 
       if (ruleResult.hasProgress && ruleResult.resolve) {
         ruleResult.resolve()
-        handleQueueAutoSolve(true)
+        handleShouldAutoSolve(true)
       }
 
-      handleRuleOutcome(ruleIndex, "default")
+      handleRuleOutcomeAtIndex(ruleIndex, "default")
       if (ruleResult.candidatesToMarkGood !== undefined) {
         ruleResult.candidatesToMarkGood.forEach(candidate => {
           toggleGoodCandidates(candidate.gridSquareIndex, candidate.candidateIndex, false)
@@ -329,7 +337,7 @@ function useSudokuManagement() {
 
       return ruleOutcome
     },
-    [allSquares, handleEntry, handleQueueAutoSolve, toggleManualElimCandidate]
+    [allSquares, handleEntry, handleShouldAutoSolve, toggleManualElimCandidate]
   )
 
   const tryAutoSolves = useCallback(async () => {
@@ -338,7 +346,7 @@ function useSudokuManagement() {
     }
     if (currentAutoRuleIndex >= checkedRuleIndices.length || isBoardSolved) {
       resetCurrentAutoRuleIndex()
-      handleQueueAutoSolve(false)
+      handleShouldAutoSolve(false)
       return
     }
 
@@ -348,46 +356,103 @@ function useSudokuManagement() {
 
     if (isSuccess) {
       resetCurrentAutoRuleIndex()
-      handleQueueAutoSolve(true)
+      handleShouldAutoSolve(true)
     } else {
       if (currentAutoRuleIndex >= checkedRuleIndices.length - 1) {
         resetCurrentAutoRuleIndex()
-        handleQueueAutoSolve(false)
+        handleShouldAutoSolve(false)
       } else {
         increaseCurrentAutoRuleIndex()
-        handleQueueAutoSolve(true)
+        handleShouldAutoSolve(true)
       }
     }
-  }, [checkedRuleIndices, currentAutoRuleIndex, handleQueueAutoSolve, tryRuleAtIndex])
+  }, [checkedRuleIndices, currentAutoRuleIndex, handleShouldAutoSolve, tryRuleAtIndex])
+
+  const isLoadingFromLocalStorage = [
+    isLoadingPuzzleStringCurrent,
+    isLoadingPuzzleStringStart,
+    isLoadingIsBoardSet,
+    isLoadingIsBoardSolved,
+    isLoadingRuleOutcomes,
+    isLoadingCheckedRuleIndices,
+    isLoadingCurrentAutoRuleIndex,
+    isLoadingShouldAutoSolve,
+    isLoadingShouldShowCandidates,
+    isLoadingIsCandidateMode,
+    isLoadingManualElimCandidates,
+    isLoadingGoodCandidates,
+    isLoadingBadCandidates,
+    isLoadingHighlightIndex,
+    isLoadingLastClickedHighlightIndex,
+    isLoadingLastFocusedEntryIndex,
+    isLoadingDifficulty
+  ].some(Boolean)
+
+  useEffect(() => {
+    const handlePointerDown = (e: PointerEvent) => {
+      const target = e.target as HTMLElement
+      if (!target.matches(".entry") && !target.matches(".pad-number")) {
+        padNumberClicked.current = false
+      }
+    }
+
+    document.addEventListener("pointerdown", handlePointerDown)
+
+    return () => {
+      document.removeEventListener("pointerdown", handlePointerDown)
+    }
+  }, [])
+
+  useEffect(() => {
+    console.log("Effect triggered, isBoardSet:", isBoardSet)
+    const entryDivs = Array.from(document.querySelectorAll("[data-entry]"))
+
+    const filteredDivs = entryDivs.filter(div => (div as HTMLElement).tabIndex !== -1)
+
+    const sortedDivs = filteredDivs.sort((a, b) => {
+      const indexA = parseInt(a.getAttribute("data-grid-square-index") || "0", 10)
+      const indexB = parseInt(b.getAttribute("data-grid-square-index") || "0", 10)
+      return indexA - indexB
+    })
+
+    handleSortedEntries(sortedDivs)
+  }, [isBoardSet])
 
   useEffect(() => {
     if (shouldAutoSolve && isBoardSet && !isBoardSolved && !checkForAnySudokuConflict()) {
-      handleQueueAutoSolve(false)
+      handleShouldAutoSolve(false)
       tryAutoSolves()
     }
-  }, [isBoardSet, isBoardSolved, checkForAnySudokuConflict, handleQueueAutoSolve, shouldAutoSolve, tryAutoSolves])
+  }, [isBoardSet, isBoardSolved, checkForAnySudokuConflict, handleShouldAutoSolve, shouldAutoSolve, tryAutoSolves])
+
+  const replacePuzzleStringCurrentAtWith = (gridSquareIndex: number, replacement: string) => {
+    const newValue = puzzleStringCurrent.slice(0, gridSquareIndex) + replacement + puzzleStringCurrent.slice(gridSquareIndex + 1)
+
+    handlePuzzleStringCurrent(newValue)
+  }
 
   const checkBoardSolution = (puzzleStringCurrent: string) => {
     return !puzzleStringCurrent.includes("0")
   }
 
   const resetCurrentAutoRuleIndex = () => {
-    setCurrentAutoRuleIndex(0)
+    handleCurrentAutoRuleIndex(0)
   }
+
   const increaseCurrentAutoRuleIndex = () => {
-    setCurrentAutoRuleIndex(prev => prev + 1)
+    handleCurrentAutoRuleIndex(prev => prev + 1)
   }
 
   const handleCheckboxChange = (ruleIndex: number) => {
     const isNewCheck = !checkedRuleIndices.includes(ruleIndex)
 
-    setCheckedRuleIndices(prev => {
+    handleCheckedRuleIndices(prev => {
       const updatedRules = isNewCheck ? [...prev, ruleIndex] : prev.filter(n => n !== ruleIndex)
       return updatedRules.sort((a, b) => a - b)
     })
 
     if (isNewCheck && isBoardSet) {
-      handleQueueAutoSolve(true)
+      handleShouldAutoSolve(true)
     }
   }
 
@@ -428,29 +493,16 @@ function useSudokuManagement() {
   const toggleCandidateMode = (beCandidateMode?: boolean) => {
     handleIsCandidateMode(prev => (beCandidateMode === undefined ? !prev : beCandidateMode))
   }
+
   const toggleShowCandidates = (shouldShow?: boolean) => {
     handleShouldShowCandidates(prev => (shouldShow === undefined ? !prev : shouldShow))
   }
-
-  useEffect(() => {
-    const entryDivs = Array.from(document.querySelectorAll("[data-entry]"))
-
-    const filteredDivs = entryDivs.filter(div => (div as HTMLElement).tabIndex !== -1)
-
-    const sortedDivs = filteredDivs.sort((a, b) => {
-      const indexA = parseInt(a.getAttribute("data-grid-square-index") || "0", 10)
-      const indexB = parseInt(b.getAttribute("data-grid-square-index") || "0", 10)
-      return indexA - indexB
-    })
-
-    handleSortedEntries(sortedDivs)
-  }, [isBoardSet])
 
   const toggleCandidateQueueSolveOnElim = (gridSquareIndex: number, candidateIndex: number) => {
     toggleManualElimCandidate(gridSquareIndex, candidateIndex)
     const candidateKey = `${gridSquareIndex}-${candidateIndex}`
     if (!manualElimCandidates.includes(candidateKey)) {
-      handleQueueAutoSolve(true)
+      handleShouldAutoSolve(true)
     }
   }
 
@@ -459,80 +511,25 @@ function useSudokuManagement() {
     return truncateAndPad(zeroReplaced, Math.pow(symbolsLength, 2), "0", symbols)
   }
 
-  const handleRuleOutcome = (ruleIndex: number, newOutcome: RuleOutcome) => {
-    setRuleOutcomes(prev => {
+  const handleRuleOutcomeAtIndex = (ruleIndex: number, newOutcome: RuleOutcome) => {
+    handleRuleOutcomes(prev => {
       const updatedOutcomes = [...prev]
       updatedOutcomes[ruleIndex] = newOutcome
       return updatedOutcomes
     })
   }
 
-  const getValidIndexOrNull = (newValue: number | null) => {
+  function getValidIndexOrNull(newValue: number | null) {
     return typeof newValue !== "number" || !Number.isInteger(newValue) || newValue < 0 || newValue >= symbolsLength ? null : newValue
   }
-
-  /////
-
-  const handlePuzzleStringCurrent = createStateHandler(setPuzzleStringCurrent, {
-    sideEffect: newValue => {
-      if (newValue === undefined) return
-      handleIsBoardSolved(isBoardSet && checkBoardSolution(newValue))
-    }
-  })
-  const handlePuzzleStringStart = createStateHandler(setPuzzleStringStart, {
-    sideEffect: newValue => {
-      if (newValue === undefined) return
-      handlePuzzleStringCurrent(formatStringToPuzzleString(newValue))
-    }
-  })
-  const handleIsBoardSet = createStateHandler(setIsBoardSet, {
-    validator: newValue => {
-      if (newValue && checkForAnySudokuConflict()) {
-        alert("There is a sudoku conflict")
-        return false
-      } else return true
-    },
-    sideEffect: newValue => {
-      if (newValue) {
-        handleQueueAutoSolve(true)
-      }
-    }
-  })
-  const handleIsBoardSolved = createStateHandler(setIsBoardSolved)
-
-  //
-  //
-  //
-  //
-
-  const handleShouldShowCandidates = createStateHandler(setShouldShowCandidates)
-  const handleIsCandidateMode = createStateHandler(setIsCandidateMode)
-  const handleManualElimCandidates = createStateHandler(setManualElimCandidates)
-  const handleGoodCandidates = createStateHandler(setGoodCandidates)
-  const handleBadCandidates = createStateHandler(setBadCandidates)
-
-  const handleHighlightIndex = createStateHandler(setHighlightIndex, {
-    modifier: getValidIndexOrNull
-  })
-  const handleLastClickedHighlightIndex = createStateHandler(setLastClickedHighlightIndex, {
-    modifier: getValidIndexOrNull
-  })
-  const handleLastFocusedEntryIndex = createStateHandler(setLastFocusedEntryIndex, {
-    validator: newValue => {
-      return newValue == null || (Number.isInteger(newValue) && newValue >= 0 && newValue < Math.pow(symbolsLength, 2))
-    }
-  })
-  const handleSortedEntries = createStateHandler(setSortedEntries)
-
-  const handleDifficulty = createStateHandler(setDifficulty)
 
   const restartPuzzle = () => {
     handlePuzzleStringCurrent(formatStringToPuzzleString(puzzleStringStart))
     handleIsBoardSolved(initialStates.isBoardSolved)
 
-    setRuleOutcomes(initialStates.ruleOutcomes)
-    setCurrentAutoRuleIndex(initialStates.currentAutoRuleIndex)
-    setShouldAutoSolve(initialStates.shouldAutoSolve)
+    handleRuleOutcomes(initialStates.ruleOutcomes)
+    handleCurrentAutoRuleIndex(initialStates.currentAutoRuleIndex)
+    handleShouldAutoSolve(initialStates.shouldAutoSolve)
 
     handleManualElimCandidates(initialStates.manualElimCandidates)
     handleGoodCandidates(initialStates.goodCandidates)
@@ -551,10 +548,10 @@ function useSudokuManagement() {
     handleIsBoardSet(initialStates.isBoardSet)
     handleIsBoardSolved(initialStates.isBoardSolved)
 
-    setRuleOutcomes(initialStates.ruleOutcomes)
-    setCheckedRuleIndices(initialStates.checkedRuleIndices)
-    setCurrentAutoRuleIndex(initialStates.currentAutoRuleIndex)
-    setShouldAutoSolve(initialStates.shouldAutoSolve)
+    handleRuleOutcomes(initialStates.ruleOutcomes)
+    handleCheckedRuleIndices(initialStates.checkedRuleIndices)
+    handleCurrentAutoRuleIndex(initialStates.currentAutoRuleIndex)
+    handleShouldAutoSolve(initialStates.shouldAutoSolve)
 
     handleShouldShowCandidates(initialStates.shouldShowCandidates)
     handleIsCandidateMode(initialStates.isCandidateMode)
@@ -592,7 +589,7 @@ function useSudokuManagement() {
     handleLastClickedHighlightIndex,
     manualElimCandidates,
     toggleManualElimCandidate,
-    handleQueueAutoSolve,
+    handleShouldAutoSolve,
     checkedRuleIndices,
     handleCheckboxChange,
     tryRuleAtIndex,
