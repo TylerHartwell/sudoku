@@ -48,7 +48,7 @@ export default function Page() {
     highlightIndex,
     handleHighlightIndex,
     shouldShowCandidates,
-    toggleShowCandidates,
+    toggleShouldShowCandidates,
     isCandidateMode,
     toggleCandidateMode,
     lastClickedHighlightIndex,
@@ -223,7 +223,7 @@ export default function Page() {
                 ) : (
                   <SetPuzzleBtn onClick={() => handleIsBoardSet(true)}>Set Puzzle</SetPuzzleBtn>
                 )}
-                <ToggleCandidatesBtn onClick={() => toggleShowCandidates()} disabled={isCandidateMode}>
+                <ToggleCandidatesBtn onClick={() => toggleShouldShowCandidates()} disabled={isCandidateMode}>
                   Toggle Candidates
                 </ToggleCandidatesBtn>
               </ActionBtnGroup>
