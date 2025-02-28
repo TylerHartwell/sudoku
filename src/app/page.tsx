@@ -72,7 +72,8 @@ export default function Page() {
     restartPuzzle,
     toggleCandidateQueueSolveOnElim,
     sortedEntries,
-    isLoadingFromLocalStorage
+    isLoadingFromLocalStorage,
+    entryDivRefs
   } = useSudokuManagement()
 
   if (isLoadingFromLocalStorage) {
@@ -113,6 +114,7 @@ export default function Page() {
                         sortedEntries={sortedEntries}
                         symbols={symbols}
                         symbolsLength={symbolsLength}
+                        entryDivRefs={entryDivRefs}
                       />
                       {symbols.map((symbol, index) => (
                         <Candidate

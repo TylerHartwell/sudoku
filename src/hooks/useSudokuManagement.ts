@@ -252,6 +252,8 @@ function useSudokuManagement() {
   const [difficulty, setDifficulty, isLoadingDifficulty] = usePersistedState<Difficulty>("difficulty", initialStates.difficulty)
   const handleDifficulty = createStateHandler(setDifficulty)
 
+  const entryDivRefs = useRef<(HTMLDivElement | null)[]>([])
+
   const padNumberClicked = useRef(false)
 
   const charCounts = useMemo(() => getCountOfCharactersInStringFromArray(puzzleStringCurrent, symbols), [puzzleStringCurrent])
@@ -418,17 +420,10 @@ function useSudokuManagement() {
 
   useEffect(() => {
     console.log("Effect triggered, isBoardSet:", isBoardSet)
-    const entryDivs = Array.from(document.querySelectorAll("[data-entry]"))
 
-    const filteredDivs = entryDivs.filter(div => (div as HTMLElement).tabIndex !== -1)
+    const filteredDivs = entryDivRefs.current.filter(div => div && div.tabIndex !== -1)
 
-    const sortedDivs = filteredDivs.sort((a, b) => {
-      const indexA = parseInt(a.getAttribute("data-grid-square-index") || "0", 10)
-      const indexB = parseInt(b.getAttribute("data-grid-square-index") || "0", 10)
-      return indexA - indexB
-    })
-
-    handleSortedEntries(sortedDivs)
+    handleSortedEntries(filteredDivs)
   }, [isBoardSet])
 
   useEffect(() => {
@@ -601,7 +596,8 @@ function useSudokuManagement() {
     isAlreadyInUnit,
     padNumberClicked,
     charCounts,
-    isLoadingFromLocalStorage
+    isLoadingFromLocalStorage,
+    entryDivRefs
   }
 }
 

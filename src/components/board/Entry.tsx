@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef, RefObject } from "react"
+import { useRef, RefObject, useEffect } from "react"
 import clsx from "clsx"
 import isValidChar from "@/utils/isValidChar"
 
@@ -23,6 +23,7 @@ interface Props {
   sortedEntries: (Element | null)[]
   symbols: string[]
   symbolsLength: number
+  entryDivRefs: RefObject<(HTMLDivElement | null)[]>
 }
 
 const Entry = ({
@@ -43,19 +44,21 @@ const Entry = ({
   toggleCandidateQueueSolveOnElim,
   sortedEntries,
   symbols,
-  symbolsLength
+  symbolsLength,
+  entryDivRefs
 }: Props) => {
-  const entryRef = useRef<HTMLDivElement>(null)
+  useEffect(() => {}, [])
 
   const isLocked = isBoardSet && puzzleStringStart.length == Math.pow(symbolsLength, 2) && puzzleStringStart[gridSquareIndex] == shownValue
   const isWrong = isAlreadyInUnit(gridSquareIndex, shownValue, puzzleStringCurrent)
 
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     e.preventDefault()
+    console.log(entryDivRefs.current[gridSquareIndex])
     if (!isLocked) {
       if (isCandidateMode && e.pointerType === "touch") {
-        if (entryRef.current !== document.activeElement) {
-          entryRef.current?.focus()
+        if (entryDivRefs.current[gridSquareIndex] !== document.activeElement) {
+          entryDivRefs.current[gridSquareIndex]?.focus()
         } else {
           if (highlightIndex != null) {
             const candidateIndex = highlightIndex
@@ -77,8 +80,8 @@ const Entry = ({
         }
         return
       }
-      if (entryRef.current !== document.activeElement) {
-        entryRef.current?.focus()
+      if (entryDivRefs.current[gridSquareIndex] !== document.activeElement) {
+        entryDivRefs.current[gridSquareIndex]?.focus()
       } else {
         if (highlightIndex !== null) {
           if (highlightIndex == symbols.indexOf(shownValue)) {
@@ -155,7 +158,9 @@ const Entry = ({
 
   return (
     <div
-      ref={entryRef}
+      ref={el => {
+        entryDivRefs.current[gridSquareIndex] = el
+      }}
       className={clsx(
         "flex justify-center items-center size-full absolute text-[10vw] md:text-[clamp(10px,min(6vh,3vw),90px)] cursor-default hover:border hover:border-[rgb(80,80,80)] focus:outline-hidden focus:border-[3px] focus:border-green-600 z-10",
         isCandidateMode && "focus:border-red-500 hover:border-none",
