@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef, RefObject, useEffect } from "react"
+import { RefObject, useEffect } from "react"
 import clsx from "clsx"
 import isValidChar from "@/utils/isValidChar"
 

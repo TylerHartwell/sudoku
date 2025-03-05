@@ -406,8 +406,9 @@ function useSudokuManagement() {
   useEffect(() => {
     const handlePointerDown = (e: PointerEvent) => {
       const target = e.target as HTMLElement
-      if (!target.matches(".entry") && !target.matches(".pad-number")) {
+      if (!target.dataset.entry && !target.dataset.padNumber) {
         padNumberClicked.current = false
+        console.log("not paNumberClicked")
       }
     }
 
@@ -419,11 +420,10 @@ function useSudokuManagement() {
   }, [])
 
   useEffect(() => {
-    console.log("Effect triggered, isBoardSet:", isBoardSet)
-
-    const filteredDivs = entryDivRefs.current.filter(div => div && div.tabIndex !== -1)
-
-    handleSortedEntries(filteredDivs)
+    const timeoutId = setTimeout(() => {
+      handleSortedEntries(entryDivRefs.current.filter(div => div && div.tabIndex !== -1))
+    }, 0)
+    return () => clearTimeout(timeoutId)
   }, [isBoardSet])
 
   useEffect(() => {

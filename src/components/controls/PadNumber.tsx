@@ -108,6 +108,7 @@ const PadNumber = ({
         lastFocusedEntryIndex !== null && !isCandidateMode && "shadow-green-700 drop-shadow-[1px_1px_0.5px_rgba(43,143,43,0.4)]",
         lastFocusedEntryIndex !== null && isCandidateMode && "shadow-red-700 drop-shadow-[1px_1px_0.5px_rgba(255,43,43,0.4)]"
       )}
+      data-pad-number
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onPointerDown={handlePointerDown}
