@@ -54,13 +54,12 @@ const Entry = ({
 
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     e.preventDefault()
-    console.log(entryDivRefs.current[gridSquareIndex])
     if (!isLocked) {
       if (isCandidateMode && e.pointerType === "touch") {
         if (entryDivRefs.current[gridSquareIndex] !== document.activeElement) {
           entryDivRefs.current[gridSquareIndex]?.focus()
         } else {
-          if (highlightIndex != null) {
+          if (highlightIndex !== null) {
             const candidateIndex = highlightIndex
             const candidateKey = `${gridSquareIndex}-${candidateIndex}`
 
@@ -84,7 +83,7 @@ const Entry = ({
         entryDivRefs.current[gridSquareIndex]?.focus()
       } else {
         if (highlightIndex !== null) {
-          if (highlightIndex == symbols.indexOf(shownValue)) {
+          if (highlightIndex === symbols.indexOf(shownValue)) {
             handleEntry(gridSquareIndex, "0")
           } else {
             handleEntry(gridSquareIndex, symbols[highlightIndex])
@@ -96,6 +95,8 @@ const Entry = ({
               handleShouldAutoSolve(true)
             }
           }
+        } else {
+          ;(document.activeElement as HTMLElement)?.blur()
         }
       }
     } else {

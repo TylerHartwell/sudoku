@@ -92,6 +92,7 @@ const PadNumber = ({
     if (index === lastClickedHighlightIndex) {
       handleLastClickedHighlightIndex(null)
       handleHighlightIndex(null)
+      padNumberClicked.current = false
       return
     }
 

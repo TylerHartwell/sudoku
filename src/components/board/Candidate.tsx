@@ -19,6 +19,8 @@ interface Props {
   symbolsLength: number
 }
 
+let isPointerDownInProgress = false
+
 const Candidate = ({
   symbol,
   gridSquareIndex,
@@ -42,10 +44,13 @@ const Candidate = ({
 
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     e.preventDefault()
+    if (isPointerDownInProgress) return
     if (isCandidateMode) {
       if (e.pointerType === "touch") {
         const candidateElement = e.currentTarget
+        console.log("touch")
 
+        if (candidateElement.classList.contains("pointer-events-none")) return
         candidateElement.classList.add("pointer-events-none")
 
         const elementUnderneath = document.elementFromPoint(e.clientX, e.clientY)
@@ -53,6 +58,7 @@ const Candidate = ({
         candidateElement.classList.remove("pointer-events-none")
 
         if (elementUnderneath) {
+          isPointerDownInProgress = true
           const event = new PointerEvent("pointerdown", {
             bubbles: true,
             cancelable: true,
@@ -64,6 +70,9 @@ const Candidate = ({
           })
 
           elementUnderneath.dispatchEvent(event)
+          setTimeout(() => {
+            isPointerDownInProgress = false
+          }, 0)
         }
       } else {
         if (isToggleable) {

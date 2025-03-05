@@ -310,7 +310,6 @@ function useSudokuManagement() {
   const tryRuleAtIndex = useCallback(
     async (ruleIndex: number, isAuto: boolean = false) => {
       if (isBoardSolved) {
-        console.log("tryRuleAtIndex isBoardSolved")
         handleRuleOutcomeAtIndex(ruleIndex, "default")
         return "default" as RuleOutcome
       }
@@ -356,9 +355,6 @@ function useSudokuManagement() {
   )
 
   const tryAutoSolves = useCallback(async () => {
-    if (isBoardSolved) {
-      console.log("tryAutoSolves isBoardSolved")
-    }
     if (currentAutoRuleIndex >= checkedRuleIndices.length || isBoardSolved) {
       resetCurrentAutoRuleIndex()
       handleShouldAutoSolve(false)
@@ -408,7 +404,6 @@ function useSudokuManagement() {
       const target = e.target as HTMLElement
       if (!target.dataset.entry && !target.dataset.padNumber) {
         padNumberClicked.current = false
-        console.log("not paNumberClicked")
       }
     }
 
