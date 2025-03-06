@@ -1,15 +1,18 @@
-import { ReactNode } from "react"
+import { ReactNode } from "react";
 
 interface Props {
-  children: ReactNode
+  children: ReactNode;
 }
 
 const ActionsSection = ({ children }: Props) => {
   return (
-    <section aria-label="Actions" className="mt-[10px] md:mt-0 flex flex-col justify-start items-center ">
+    <section
+      aria-label="Actions"
+      className="mt-[10px] flex flex-col items-center justify-start md:mt-0"
+    >
       {children}
     </section>
-  )
-}
+  );
+};
 
-export default ActionsSection
+export default ActionsSection;

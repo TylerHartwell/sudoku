@@ -1,15 +1,18 @@
-import { ReactNode } from "react"
+import { ReactNode } from "react";
 
 interface Props {
-  children: ReactNode
+  children: ReactNode;
 }
 
 const PadNumbers = ({ children }: Props) => {
   return (
-    <section aria-label="Number pad" className="w-full flex justify-around items-center py-[10px]">
+    <section
+      aria-label="Number pad"
+      className="flex w-full items-center justify-around py-[10px]"
+    >
       {children}
     </section>
-  )
-}
+  );
+};
 
-export default PadNumbers
+export default PadNumbers;

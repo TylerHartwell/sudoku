@@ -1,15 +1,18 @@
-import { ReactNode } from "react"
+import { ReactNode } from "react";
 
 interface Props {
-  children: ReactNode
+  children: ReactNode;
 }
 
 const InputModeSelector = ({ children }: Props) => {
   return (
-    <section aria-label="Input mode" className="w-full flex py-[5px] mx-auto justify-center items-center gap-[5px]">
+    <section
+      aria-label="Input mode"
+      className="mx-auto flex w-full items-center justify-center gap-[5px] py-[5px]"
+    >
       {children}
     </section>
-  )
-}
+  );
+};
 
-export default InputModeSelector
+export default InputModeSelector;

@@ -1,11 +1,15 @@
-import { ReactNode } from "react"
+import { ReactNode } from "react";
 
 interface Props {
-  children: ReactNode
+  children: ReactNode;
 }
 
 const RuleItemList = ({ children }: Props) => {
-  return <ol className="mx-[10px] flex flex-col list-none overflow-auto">{children}</ol>
-}
+  return (
+    <ol className="mx-[10px] flex list-none flex-col overflow-auto">
+      {children}
+    </ol>
+  );
+};
 
-export default RuleItemList
+export default RuleItemList;

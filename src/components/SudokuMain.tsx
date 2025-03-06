@@ -1,11 +1,15 @@
-import { ReactNode } from "react"
+import { ReactNode } from "react";
 
 interface Props {
-  children: ReactNode
+  children: ReactNode;
 }
 
 const SudokuMain = ({ children }: Props) => {
-  return <main className="md:w-auto md:min-w-fit md:h-max md:min-h-min flex flex-col items-center md:overflow-y-auto">{children}</main>
-}
+  return (
+    <main className="flex flex-col items-center md:h-max md:min-h-min md:w-auto md:min-w-fit md:overflow-y-auto">
+      {children}
+    </main>
+  );
+};
 
-export default SudokuMain
+export default SudokuMain;

@@ -1,11 +1,15 @@
-import { ReactNode } from "react"
+import { ReactNode } from "react";
 
 interface Props {
-  children: ReactNode
+  children: ReactNode;
 }
 
 const ActionBtnGroup = ({ children }: Props) => {
-  return <div className="flex justify-between w-full p-[2px] min-w-0">{children}</div>
-}
+  return (
+    <div className="flex w-full min-w-0 justify-between p-[2px]">
+      {children}
+    </div>
+  );
+};
 
-export default ActionBtnGroup
+export default ActionBtnGroup;

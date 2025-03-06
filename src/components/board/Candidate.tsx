@@ -1,25 +1,28 @@
-"use client"
+"use client";
 
-import getPeerGridSquareIndices from "@/utils/sudoku/getPeerGridSquareIndices"
-import clsx from "clsx"
+import getPeerGridSquareIndices from "@/utils/sudoku/getPeerGridSquareIndices";
+import clsx from "clsx";
 
 interface Props {
-  symbol: string
-  gridSquareIndex: number
-  candidateIndex: number
-  entryShownValue: string
-  puzzleStringCurrent: string
-  highlightIndex: number | null
-  shouldShowCandidates: boolean
-  isCandidateMode: boolean
-  manualElimCandidates: string[]
-  goodCandidates: string[]
-  badCandidates: string[]
-  toggleCandidateQueueSolveOnElim: (gridSquareIndex: number, candidateIndex: number) => void
-  symbolsLength: number
+  symbol: string;
+  gridSquareIndex: number;
+  candidateIndex: number;
+  entryShownValue: string;
+  puzzleStringCurrent: string;
+  highlightIndex: number | null;
+  shouldShowCandidates: boolean;
+  isCandidateMode: boolean;
+  manualElimCandidates: string[];
+  goodCandidates: string[];
+  badCandidates: string[];
+  toggleCandidateQueueSolveOnElim: (
+    gridSquareIndex: number,
+    candidateIndex: number,
+  ) => void;
+  symbolsLength: number;
 }
 
-let isPointerDownInProgress = false
+let isPointerDownInProgress = false;
 
 const Candidate = ({
   symbol,
@@ -34,31 +37,41 @@ const Candidate = ({
   goodCandidates,
   badCandidates,
   toggleCandidateQueueSolveOnElim,
-  symbolsLength
+  symbolsLength,
 }: Props) => {
-  const candidateKey = `${gridSquareIndex}-${candidateIndex}`
-  const isAlreadyInUnit = getPeerGridSquareIndices(gridSquareIndex, symbolsLength).some(i => puzzleStringCurrent[i] === symbol)
+  const candidateKey = `${gridSquareIndex}-${candidateIndex}`;
+  const isAlreadyInUnit = getPeerGridSquareIndices(
+    gridSquareIndex,
+    symbolsLength,
+  ).some((i) => puzzleStringCurrent[i] === symbol);
 
-  const isEliminated = entryShownValue || isAlreadyInUnit || manualElimCandidates.includes(candidateKey)
-  const isToggleable = !isEliminated || manualElimCandidates.includes(candidateKey)
+  const isEliminated =
+    entryShownValue ||
+    isAlreadyInUnit ||
+    manualElimCandidates.includes(candidateKey);
+  const isToggleable =
+    !isEliminated || manualElimCandidates.includes(candidateKey);
 
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
-    e.preventDefault()
-    if (isPointerDownInProgress) return
+    e.preventDefault();
+    if (isPointerDownInProgress) return;
     if (isCandidateMode) {
       if (e.pointerType === "touch") {
-        const candidateElement = e.currentTarget
-        console.log("touch")
+        const candidateElement = e.currentTarget;
+        console.log("touch");
 
-        if (candidateElement.classList.contains("pointer-events-none")) return
-        candidateElement.classList.add("pointer-events-none")
+        if (candidateElement.classList.contains("pointer-events-none")) return;
+        candidateElement.classList.add("pointer-events-none");
 
-        const elementUnderneath = document.elementFromPoint(e.clientX, e.clientY)
+        const elementUnderneath = document.elementFromPoint(
+          e.clientX,
+          e.clientY,
+        );
 
-        candidateElement.classList.remove("pointer-events-none")
+        candidateElement.classList.remove("pointer-events-none");
 
         if (elementUnderneath) {
-          isPointerDownInProgress = true
+          isPointerDownInProgress = true;
           const event = new PointerEvent("pointerdown", {
             bubbles: true,
             cancelable: true,
@@ -66,36 +79,46 @@ const Candidate = ({
             pointerType: e.pointerType,
             isPrimary: true,
             clientX: e.clientX,
-            clientY: e.clientY
-          })
+            clientY: e.clientY,
+          });
 
-          elementUnderneath.dispatchEvent(event)
+          elementUnderneath.dispatchEvent(event);
           setTimeout(() => {
-            isPointerDownInProgress = false
-          }, 0)
+            isPointerDownInProgress = false;
+          }, 0);
         }
       } else {
         if (isToggleable) {
-          e.stopPropagation()
+          e.stopPropagation();
 
-          toggleCandidateQueueSolveOnElim(gridSquareIndex, candidateIndex)
+          toggleCandidateQueueSolveOnElim(gridSquareIndex, candidateIndex);
         }
       }
     }
-  }
+  };
 
   return (
     <div className="relative size-full">
       <div
         className={clsx(
-          "absolute text-[3vw] md:text-[clamp(12px,min(2vh,2vw),30px)] flex justify-center items-center size-full z-20",
-          ((!shouldShowCandidates && !isCandidateMode) || entryShownValue) && "invisible",
-          candidateIndex === highlightIndex && (shouldShowCandidates || isCandidateMode) && !isEliminated && "bg-[rgb(248,248,120)] font-bold",
+          "absolute z-20 flex size-full items-center justify-center bg-neutral-100 text-[3vw] md:text-[clamp(12px,min(2vh,2vw),30px)]",
+          ((!shouldShowCandidates && !isCandidateMode) || entryShownValue) &&
+            "invisible",
+          candidateIndex === highlightIndex &&
+            (shouldShowCandidates || isCandidateMode) &&
+            !isEliminated &&
+            "bg-[rgb(248,248,120)] font-bold",
           isToggleable && "border-[1px] border-dashed border-[#0000ff31]",
-          isCandidateMode && isToggleable && "hover:font-bold hover:bg-[#ff5353]",
+          isCandidateMode &&
+            isToggleable &&
+            "hover:bg-[#ff5353] hover:font-bold",
           !isCandidateMode && "pointer-events-none",
-          goodCandidates.includes(candidateKey) && !isEliminated && "bg-[rgb(45,241,77)] font-bold",
-          badCandidates.includes(candidateKey) && !isEliminated && "bg-[red] font-bold"
+          goodCandidates.includes(candidateKey) &&
+            !isEliminated &&
+            "bg-[rgb(45,241,77)] font-bold",
+          badCandidates.includes(candidateKey) &&
+            !isEliminated &&
+            "bg-[red] font-bold",
         )}
         data-grid-square-index={gridSquareIndex}
         data-candidate-index={candidateIndex}
@@ -104,7 +127,7 @@ const Candidate = ({
         {!isEliminated ? symbol : ""}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Candidate
+export default Candidate;
