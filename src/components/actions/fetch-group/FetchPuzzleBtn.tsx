@@ -45,7 +45,7 @@ const FetchPuzzleBtn = ({
   return (
     <button
       className={clsx(
-        "col-start-2 rounded-[10px] shadow-[black_0px_0px_3px]",
+        "text-copy border-accent col-start-2 rounded-[10px] border-2",
         isHidden && "hidden",
       )}
       onClick={handleClick}

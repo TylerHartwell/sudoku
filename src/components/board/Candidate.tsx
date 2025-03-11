@@ -101,14 +101,14 @@ const Candidate = ({
     <div className="relative size-full">
       <div
         className={clsx(
-          "absolute z-20 flex size-full items-center justify-center bg-neutral-100 text-[3vw] md:text-[clamp(12px,min(2vh,2vw),30px)]",
+          "absolute z-20 flex size-full items-center justify-center text-[3vw] md:text-[clamp(12px,min(2vh,2vw),30px)]",
           ((!shouldShowCandidates && !isCandidateMode) || entryShownValue) &&
             "invisible",
           candidateIndex === highlightIndex &&
             (shouldShowCandidates || isCandidateMode) &&
             !isEliminated &&
-            "bg-[rgb(248,248,120)] font-bold",
-          isToggleable && "border-[1px] border-dashed border-[#0000ff31]",
+            "border-primary border-[1px] border-dashed bg-[rgb(248,248,120)] font-bold text-black",
+          isToggleable && "border-secondary/50 border-[1px] border-dashed",
           isCandidateMode &&
             isToggleable &&
             "hover:bg-[#ff5353] hover:font-bold",

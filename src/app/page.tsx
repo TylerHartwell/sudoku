@@ -41,6 +41,8 @@ import Square from "@/components/board/Square";
 import Entry from "@/components/board/Entry";
 import Candidate from "@/components/board/Candidate";
 import getGridSquareIndex from "@/utils/sudoku/getGridSquareIndex";
+import Header from "@/components/Header";
+import ThemeSelector from "@/components/ThemeSelector";
 
 export default function Page() {
   const {
@@ -88,7 +90,10 @@ export default function Page() {
 
   return (
     <SudokuMain>
-      <MainTitle>SUDOKU RULER</MainTitle>
+      <Header>
+        <MainTitle>SUDOKU RULER</MainTitle>
+        <ThemeSelector />
+      </Header>
       <GameContent>
         <GameInterface>
           <Board isBoardSolved={isBoardSolved} gridSize={symbolsSqrt}>

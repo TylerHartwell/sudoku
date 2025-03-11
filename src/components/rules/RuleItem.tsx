@@ -23,7 +23,7 @@ const RuleItem = ({
     <li className="flex h-[30px] items-center justify-between p-1">
       <button
         className={clsx(
-          "m-[2px] w-[70px] whitespace-nowrap rounded-[10px] border-none px-[5px] py-[2px] shadow-[black_0px_0px_4px] transition-colors duration-300 ease-out",
+          "m-[2px] w-[70px] whitespace-nowrap rounded-[10px] px-[5px] py-[2px] transition-colors duration-300 ease-out",
           ruleOutcome === "success" && "bg-[green]",
           ruleOutcome === "fail" && "bg-[red]",
         )}
@@ -37,7 +37,7 @@ const RuleItem = ({
       </span>
       <label
         htmlFor={"checkbox" + ruleN}
-        className="ml-auto whitespace-nowrap border-none text-[clamp(12px,4vw,16px)]"
+        className="ml-auto whitespace-nowrap text-[clamp(12px,4vw,16px)]"
       >
         Auto:
       </label>

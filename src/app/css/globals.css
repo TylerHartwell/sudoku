@@ -1,7 +1,33 @@
 @import "tailwindcss";
 
+@theme inline {
+  --color-primary: var(--primary);
+  --color-secondary: var(--secondary);
+  --color-accent: var(--accent);
+  --color-copy: var(--copy);
+}
+
+[data-theme="light"] {
+  --primary: oklch(1 0 0);
+  --secondary: oklch(0 0 0);
+  --accent: oklch(0.8 0 0);
+  --copy: oklch(0 0 0);
+}
+[data-theme="dark"] {
+  --primary: oklch(0 0 0);
+  --secondary: oklch(0.8 0 0);
+  --accent: oklch(0.5 0 0);
+  --copy: oklch(1 0 0);
+}
+[data-theme="neon"] {
+  --primary: oklch(0.5 0.5 0.3);
+  --secondary: oklch(84.85% 0.2516 142.41);
+  --accent: oklch(0.1 0.1 0.1);
+  --copy: oklch(0 0 0);
+}
+
 @utility b1 {
-  border: 5px solid white;
+  border: 5px solid var(--accent);
 }
 
 @utility b2 {
@@ -15,7 +41,9 @@
 @layer utilities {
   button {
     padding: 4px 6px;
-    background-color: rgb(240, 240, 240);
+    background-color: var(--primary);
+    color: var(--copy);
+    border: 1px solid var(--secondary);
   }
 
   button:active:not(:disabled) {
@@ -24,8 +52,12 @@
 
   @media (hover: hover) and (pointer: fine) {
     button:hover:not(:disabled) {
-      box-shadow: 0 0 4px 1px black;
+      box-shadow: 0 0 4px 1px var(--secondary);
       cursor: pointer;
     }
+  }
+
+  * {
+    border-color: var(--secondary);
   }
 }

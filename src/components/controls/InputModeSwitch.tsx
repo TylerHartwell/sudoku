@@ -9,7 +9,7 @@ const InputModeSwitch = ({ isRightMode, onClick }: Props) => {
   return (
     <div
       className={clsx(
-        "relative my-auto aspect-[2] h-[50px] min-w-[50px] cursor-pointer rounded-[25px] duration-300",
+        "border-secondary relative my-auto aspect-[2] h-[50px] min-w-[50px] cursor-pointer rounded-[25px] border-[2px] duration-300",
         isRightMode ? "bg-[#d14141]" : "bg-[rgb(43,143,43)]",
       )}
       onClick={onClick}

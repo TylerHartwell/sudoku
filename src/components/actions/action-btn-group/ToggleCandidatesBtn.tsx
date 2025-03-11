@@ -9,7 +9,7 @@ interface Props {
 const ToggleCandidatesBtn = ({ children, onClick, disabled }: Props) => {
   return (
     <button
-      className="w-min justify-self-end rounded-[10px] text-[clamp(12px,4vw,16px)] shadow-[black_0px_0px_3px] disabled:opacity-50"
+      className="w-min justify-self-end rounded-[10px] text-[clamp(12px,4vw,16px)] disabled:opacity-50"
       onClick={onClick}
       disabled={disabled}
     >
