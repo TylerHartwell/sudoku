@@ -1,13 +1,13 @@
-import { RuleOutcome } from "@/rules/rulesInterface";
-import clsx from "clsx";
+import { RuleOutcome } from "@/rules/rulesInterface"
+import clsx from "clsx"
 interface RuleItemProps {
-  ruleN: number;
-  ruleName: string;
-  isChecked: boolean;
-  handleCheckboxChange: () => void;
-  ruleOutcome: RuleOutcome;
-  tryRuleAtIndex: () => Promise<RuleOutcome>;
-  allDefault: boolean;
+  ruleN: number
+  ruleName: string
+  isChecked: boolean
+  handleCheckboxChange: () => void
+  ruleOutcome: RuleOutcome
+  tryRuleAtIndex: () => Promise<RuleOutcome>
+  allDefault: boolean
 }
 
 const RuleItem = ({
@@ -50,7 +50,7 @@ const RuleItem = ({
         onChange={handleCheckboxChange}
       />
     </li>
-  );
-};
+  )
+}
 
-export default RuleItem;
+export default RuleItem

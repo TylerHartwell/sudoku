@@ -1,48 +1,48 @@
-"use client";
+"use client"
 
-import FetchPuzzleBtn from "@/components/actions/fetch-group/FetchPuzzleBtn";
-import "./css/modern-normalize.css";
-import Board from "@/components/board/Board";
-import RuleItem from "@/components/rules/RuleItem";
-import rulesArr from "@/rules/rulesArr";
+import FetchPuzzleBtn from "@/components/actions/fetch-group/FetchPuzzleBtn"
+import "./css/modern-normalize.css"
+import Board from "@/components/board/Board"
+import RuleItem from "@/components/rules/RuleItem"
+import rulesArr from "@/rules/rulesArr"
 import useSudokuManagement, {
   Difficulty,
   difficultyLevels,
   symbols,
   symbolsLength,
   symbolsSqrt,
-} from "@/hooks/useSudokuManagement";
-import Controls from "@/components/controls/Controls";
-import PadNumbers from "@/components/controls/PadNumbers";
-import InputModeSelector from "@/components/controls/InputModeSelector";
-import PadNumber from "@/components/controls/PadNumber";
-import InputModeBtn from "@/components/controls/InputModeBtn";
-import InputModeSwitch from "@/components/controls/InputModeSwitch";
-import ToggleCandidatesBtn from "@/components/actions/action-btn-group/ToggleCandidatesBtn";
-import ClearAllBtn from "@/components/actions/action-btn-group/ClearAllBtn";
-import RestartPuzzleBtn from "@/components/actions/action-btn-group/RestartPuzzleBtn";
-import SetPuzzleBtn from "@/components/actions/action-btn-group/SetPuzzleBtn";
-import PuzzleStringInput from "@/components/actions/PuzzleStringInput";
-import DifficultySelector from "@/components/actions/fetch-group/DifficultySelector";
-import ActionBtnGroup from "@/components/actions/action-btn-group/ActionBtnGroup";
-import FetchGroup from "@/components/actions/fetch-group/FetchGroup";
-import Actions from "@/components/actions/Actions";
-import ActionsSection from "@/components/actions/ActionsSection";
-import RuleItemList from "@/components/rules/RuleItemList";
-import SectionTitle from "@/components/SectionTitle";
-import RulesSection from "@/components/rules/RulesSection";
-import GameInterface from "@/components/GameInterface";
-import PuzzleOperations from "@/components/PuzzleOperations";
-import GameContent from "@/components/GameContent";
-import MainTitle from "@/components/MainTitle";
-import SudokuMain from "@/components/SudokuMain";
-import Box from "@/components/board/Box";
-import Square from "@/components/board/Square";
-import Entry from "@/components/board/Entry";
-import Candidate from "@/components/board/Candidate";
-import getGridSquareIndex from "@/utils/sudoku/getGridSquareIndex";
-import Header from "@/components/Header";
-import ThemeSelector from "@/components/ThemeSelector";
+} from "@/hooks/useSudokuManagement"
+import Controls from "@/components/controls/Controls"
+import PadNumbers from "@/components/controls/PadNumbers"
+import InputModeSelector from "@/components/controls/InputModeSelector"
+import PadNumber from "@/components/controls/PadNumber"
+import InputModeBtn from "@/components/controls/InputModeBtn"
+import InputModeSwitch from "@/components/controls/InputModeSwitch"
+import ToggleCandidatesBtn from "@/components/actions/action-btn-group/ToggleCandidatesBtn"
+import ClearAllBtn from "@/components/actions/action-btn-group/ClearAllBtn"
+import RestartPuzzleBtn from "@/components/actions/action-btn-group/RestartPuzzleBtn"
+import SetPuzzleBtn from "@/components/actions/action-btn-group/SetPuzzleBtn"
+import PuzzleStringInput from "@/components/actions/PuzzleStringInput"
+import DifficultySelector from "@/components/actions/fetch-group/DifficultySelector"
+import ActionBtnGroup from "@/components/actions/action-btn-group/ActionBtnGroup"
+import FetchGroup from "@/components/actions/fetch-group/FetchGroup"
+import Actions from "@/components/actions/Actions"
+import ActionsSection from "@/components/actions/ActionsSection"
+import RuleItemList from "@/components/rules/RuleItemList"
+import SectionTitle from "@/components/SectionTitle"
+import RulesSection from "@/components/rules/RulesSection"
+import GameInterface from "@/components/GameInterface"
+import PuzzleOperations from "@/components/PuzzleOperations"
+import GameContent from "@/components/GameContent"
+import MainTitle from "@/components/MainTitle"
+import SudokuMain from "@/components/SudokuMain"
+import Box from "@/components/board/Box"
+import Square from "@/components/board/Square"
+import Entry from "@/components/board/Entry"
+import Candidate from "@/components/board/Candidate"
+import getGridSquareIndex from "@/utils/sudoku/getGridSquareIndex"
+import Header from "@/components/Header"
+import ThemeSelector from "@/components/ThemeSelector"
 
 export default function Page() {
   const {
@@ -82,10 +82,14 @@ export default function Page() {
     sortedEntries,
     isLoadingFromLocalStorage,
     entryDivRefs,
-  } = useSudokuManagement();
+  } = useSudokuManagement()
 
   if (isLoadingFromLocalStorage) {
-    return <div>Loading...</div>;
+    return (
+      <div className="bg-primary text-copy flex h-screen items-center justify-center text-center">
+        Loading...
+      </div>
+    )
   }
 
   return (
@@ -104,12 +108,12 @@ export default function Page() {
                     boxIndex,
                     squareIndex,
                     symbolsLength,
-                  );
+                  )
 
                   const shownValue =
                     puzzleStringCurrent[gridSquareIndex] == "0"
                       ? ""
-                      : puzzleStringCurrent[gridSquareIndex];
+                      : puzzleStringCurrent[gridSquareIndex]
 
                   return (
                     <Square key={squareIndex} squareSize={symbolsSqrt}>
@@ -159,7 +163,7 @@ export default function Page() {
                         />
                       ))}
                     </Square>
-                  );
+                  )
                 })}
               </Box>
             ))}
@@ -260,7 +264,7 @@ export default function Page() {
                 isHidden={isBoardSet}
                 puzzleStringStart={puzzleStringStart}
                 onChange={(e) => {
-                  handlePuzzleStringStart(e.target.value);
+                  handlePuzzleStringStart(e.target.value)
                 }}
               />
               <ActionBtnGroup>
@@ -288,5 +292,5 @@ export default function Page() {
         </PuzzleOperations>
       </GameContent>
     </SudokuMain>
-  );
+  )
 }

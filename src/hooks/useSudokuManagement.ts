@@ -32,7 +32,7 @@ const initialStates = {
   isBoardSolved: false,
 
   // Rule-related states
-  ruleOutcomes: rulesArr.map(_ => "default" as RuleOutcome),
+  ruleOutcomes: rulesArr.map((_) => "default" as RuleOutcome),
   checkedRuleIndices: [],
   currentAutoRuleIndex: 0,
   shouldAutoSolve: false,
@@ -51,119 +51,169 @@ const initialStates = {
   sortedEntries: [],
 
   // Settings
-  difficulty: "easy" as Difficulty
+  difficulty: "easy" as Difficulty,
 }
 
 function useSudokuManagement() {
-  const [puzzleStringCurrent, setPuzzleStringCurrent, isLoadingPuzzleStringCurrent] = usePersistedState<string>(
+  const [
+    puzzleStringCurrent,
+    setPuzzleStringCurrent,
+    isLoadingPuzzleStringCurrent,
+  ] = usePersistedState<string>(
     "puzzleStringCurrent",
-    initialStates.puzzleStringCurrent
+    initialStates.puzzleStringCurrent,
   )
   const handlePuzzleStringCurrent = createStateHandler(setPuzzleStringCurrent, {
-    sideEffect: newValue => {
+    sideEffect: (newValue) => {
       if (newValue === undefined) return
       handleIsBoardSolved(isBoardSet && checkBoardFilled(newValue))
-    }
+    },
   })
-  const replacePuzzleStringCurrentAtWith = (gridSquareIndex: number, replacement: string) => {
-    const newValue = puzzleStringCurrent.slice(0, gridSquareIndex) + replacement + puzzleStringCurrent.slice(gridSquareIndex + 1)
+  const replacePuzzleStringCurrentAtWith = (
+    gridSquareIndex: number,
+    replacement: string,
+  ) => {
+    const newValue =
+      puzzleStringCurrent.slice(0, gridSquareIndex) +
+      replacement +
+      puzzleStringCurrent.slice(gridSquareIndex + 1)
 
     handlePuzzleStringCurrent(newValue)
   }
 
-  const [puzzleStringStart, setPuzzleStringStart, isLoadingPuzzleStringStart] = usePersistedState<string>(
-    "puzzleStringStart",
-    initialStates.puzzleStringStart
-  )
+  const [puzzleStringStart, setPuzzleStringStart, isLoadingPuzzleStringStart] =
+    usePersistedState<string>(
+      "puzzleStringStart",
+      initialStates.puzzleStringStart,
+    )
   const handlePuzzleStringStart = createStateHandler(setPuzzleStringStart, {
-    sideEffect: newValue => {
+    sideEffect: (newValue) => {
       if (newValue === undefined) return
       handlePuzzleStringCurrent(formatStringToPuzzleString(newValue))
-    }
+    },
   })
 
-  const [isBoardSet, setIsBoardSet, isLoadingIsBoardSet] = usePersistedState<boolean>("isBoardSet", initialStates.isBoardSet)
+  const [isBoardSet, setIsBoardSet, isLoadingIsBoardSet] =
+    usePersistedState<boolean>("isBoardSet", initialStates.isBoardSet)
   const handleIsBoardSet = createStateHandler(setIsBoardSet, {
-    validator: newValue => {
+    validator: (newValue) => {
       if (newValue && checkForAnySudokuConflict()) {
         alert("There is a sudoku conflict")
         return false
       } else return true
     },
-    sideEffect: newValue => {
+    sideEffect: (newValue) => {
       if (newValue) {
         handleShouldAutoSolve(true)
       }
-    }
+    },
   })
 
-  const [isBoardSolved, setIsBoardSolved, isLoadingIsBoardSolved] = usePersistedState<boolean>("isBoardSolved", initialStates.isBoardSolved)
+  const [isBoardSolved, setIsBoardSolved, isLoadingIsBoardSolved] =
+    usePersistedState<boolean>("isBoardSolved", initialStates.isBoardSolved)
   const handleIsBoardSolved = createStateHandler(setIsBoardSolved)
 
-  const [ruleOutcomes, setRuleOutcomes, isLoadingRuleOutcomes] = usePersistedState<RuleOutcome[]>("ruleOutcomes", initialStates.ruleOutcomes)
+  const [ruleOutcomes, setRuleOutcomes, isLoadingRuleOutcomes] =
+    usePersistedState<RuleOutcome[]>("ruleOutcomes", initialStates.ruleOutcomes)
   const handleRuleOutcomes = createStateHandler(setRuleOutcomes)
-  const handleRuleOutcomeAtIndex = (ruleIndex: number, newOutcome: RuleOutcome) => {
-    handleRuleOutcomes(prev => {
+  const handleRuleOutcomeAtIndex = (
+    ruleIndex: number,
+    newOutcome: RuleOutcome,
+  ) => {
+    handleRuleOutcomes((prev) => {
       const updatedOutcomes = [...prev]
       updatedOutcomes[ruleIndex] = newOutcome
       return updatedOutcomes
     })
   }
 
-  const [checkedRuleIndices, setCheckedRuleIndices, isLoadingCheckedRuleIndices] = usePersistedState<number[]>(
+  const [
+    checkedRuleIndices,
+    setCheckedRuleIndices,
+    isLoadingCheckedRuleIndices,
+  ] = usePersistedState<number[]>(
     "checkedRuleIndices",
-    initialStates.checkedRuleIndices
+    initialStates.checkedRuleIndices,
   )
   const handleCheckedRuleIndices = createStateHandler(setCheckedRuleIndices)
 
-  const [currentAutoRuleIndex, setCurrentAutoRuleIndex, isLoadingCurrentAutoRuleIndex] = usePersistedState<number>(
+  const [
+    currentAutoRuleIndex,
+    setCurrentAutoRuleIndex,
+    isLoadingCurrentAutoRuleIndex,
+  ] = usePersistedState<number>(
     "currentAutoRuleIndex",
-    initialStates.currentAutoRuleIndex
+    initialStates.currentAutoRuleIndex,
   )
   const handleCurrentAutoRuleIndex = createStateHandler(setCurrentAutoRuleIndex)
   const resetCurrentAutoRuleIndex = () => {
     handleCurrentAutoRuleIndex(0)
   }
   const increaseCurrentAutoRuleIndex = () => {
-    handleCurrentAutoRuleIndex(prev => prev + 1)
+    handleCurrentAutoRuleIndex((prev) => prev + 1)
   }
 
-  const [shouldAutoSolve, setShouldAutoSolve, isLoadingShouldAutoSolve] = usePersistedState<boolean>("shouldAutoSolve", initialStates.shouldAutoSolve)
+  const [shouldAutoSolve, setShouldAutoSolve, isLoadingShouldAutoSolve] =
+    usePersistedState<boolean>("shouldAutoSolve", initialStates.shouldAutoSolve)
   const handleShouldAutoSolve = createStateHandler(setShouldAutoSolve)
 
-  const [shouldShowCandidates, setShouldShowCandidates, isLoadingShouldShowCandidates] = usePersistedState<boolean>(
+  const [
+    shouldShowCandidates,
+    setShouldShowCandidates,
+    isLoadingShouldShowCandidates,
+  ] = usePersistedState<boolean>(
     "shouldShowCandidates",
-    initialStates.shouldShowCandidates
+    initialStates.shouldShowCandidates,
   )
   const handleShouldShowCandidates = createStateHandler(setShouldShowCandidates)
   const toggleShouldShowCandidates = (shouldShow?: boolean) => {
-    handleShouldShowCandidates(prev => (shouldShow === undefined ? !prev : shouldShow))
+    handleShouldShowCandidates((prev) =>
+      shouldShow === undefined ? !prev : shouldShow,
+    )
   }
 
-  const [isCandidateMode, setIsCandidateMode, isLoadingIsCandidateMode] = usePersistedState<boolean>("isCandidateMode", initialStates.isCandidateMode)
+  const [isCandidateMode, setIsCandidateMode, isLoadingIsCandidateMode] =
+    usePersistedState<boolean>("isCandidateMode", initialStates.isCandidateMode)
   const handleIsCandidateMode = createStateHandler(setIsCandidateMode)
   const toggleCandidateMode = (beCandidateMode?: boolean) => {
-    handleIsCandidateMode(prev => (beCandidateMode === undefined ? !prev : beCandidateMode))
+    handleIsCandidateMode((prev) =>
+      beCandidateMode === undefined ? !prev : beCandidateMode,
+    )
   }
 
-  const [manualElimCandidates, setManualElimCandidates, isLoadingManualElimCandidates] = usePersistedState<string[]>(
+  const [
+    manualElimCandidates,
+    setManualElimCandidates,
+    isLoadingManualElimCandidates,
+  ] = usePersistedState<string[]>(
     "manualElimCandidates",
-    initialStates.manualElimCandidates
+    initialStates.manualElimCandidates,
   )
   const handleManualElimCandidates = createStateHandler(setManualElimCandidates)
   const toggleManualElimCandidate = useCallback(
-    (gridSquareIndex: number, candidateIndex: number, shouldManualElim?: boolean) => {
+    (
+      gridSquareIndex: number,
+      candidateIndex: number,
+      shouldManualElim?: boolean,
+    ) => {
       const candidateKey = `${gridSquareIndex}-${candidateIndex}`
-      const isCandidateInPeerEntry = isAlreadyInUnit(gridSquareIndex, symbols[candidateIndex], puzzleStringCurrent)
-      const entryShownValue = puzzleStringCurrent[gridSquareIndex] == "0" ? "" : puzzleStringCurrent[gridSquareIndex]
+      const isCandidateInPeerEntry = isAlreadyInUnit(
+        gridSquareIndex,
+        symbols[candidateIndex],
+        puzzleStringCurrent,
+      )
+      const entryShownValue =
+        puzzleStringCurrent[gridSquareIndex] == "0"
+          ? ""
+          : puzzleStringCurrent[gridSquareIndex]
 
       if (!isCandidateInPeerEntry && !entryShownValue) {
-        handleManualElimCandidates(prev => {
+        handleManualElimCandidates((prev) => {
           if (shouldManualElim === undefined) {
             if (!prev.includes(candidateKey)) {
               return [...prev, candidateKey]
             } else {
-              return prev.filter(key => key !== candidateKey)
+              return prev.filter((key) => key !== candidateKey)
             }
           }
 
@@ -175,23 +225,28 @@ function useSudokuManagement() {
             }
           }
 
-          return prev.filter(key => key !== candidateKey)
+          return prev.filter((key) => key !== candidateKey)
         })
       }
     },
-    [isAlreadyInUnit, puzzleStringCurrent]
+    [isAlreadyInUnit, puzzleStringCurrent],
   )
 
-  const [goodCandidates, setGoodCandidates, isLoadingGoodCandidates] = usePersistedState<string[]>("goodCandidates", initialStates.goodCandidates)
+  const [goodCandidates, setGoodCandidates, isLoadingGoodCandidates] =
+    usePersistedState<string[]>("goodCandidates", initialStates.goodCandidates)
   const handleGoodCandidates = createStateHandler(setGoodCandidates)
-  const toggleGoodCandidates = (gridSquareIndex: number, candidateIndex: number, shouldMark?: boolean) => {
+  const toggleGoodCandidates = (
+    gridSquareIndex: number,
+    candidateIndex: number,
+    shouldMark?: boolean,
+  ) => {
     const candidateKey = `${gridSquareIndex}-${candidateIndex}`
-    handleGoodCandidates(prev => {
+    handleGoodCandidates((prev) => {
       if (shouldMark === undefined) {
         if (!prev.includes(candidateKey)) {
           return [...prev, candidateKey]
         } else {
-          return prev.filter(key => key !== candidateKey)
+          return prev.filter((key) => key !== candidateKey)
         }
       }
 
@@ -203,71 +258,111 @@ function useSudokuManagement() {
         }
       }
 
-      return prev.filter(key => key !== candidateKey)
+      return prev.filter((key) => key !== candidateKey)
     })
   }
 
-  const [badCandidates, setBadCandidates, isLoadingBadCandidates] = usePersistedState<string[]>("badCandidates", initialStates.badCandidates)
+  const [badCandidates, setBadCandidates, isLoadingBadCandidates] =
+    usePersistedState<string[]>("badCandidates", initialStates.badCandidates)
   const handleBadCandidates = createStateHandler(setBadCandidates)
-  const toggleBadCandidates = (gridSquareIndex: number, candidateIndex: number, shouldMark?: boolean) => {
+  const toggleBadCandidates = (
+    gridSquareIndex: number,
+    candidateIndex: number,
+    shouldMark?: boolean,
+  ) => {
     const candidateKey = `${gridSquareIndex}-${candidateIndex}`
-    handleBadCandidates(prev => {
+    handleBadCandidates((prev) => {
       if (shouldMark === undefined) {
-        return prev.includes(candidateKey) ? prev.filter(key => key !== candidateKey) : [...prev, candidateKey]
+        return prev.includes(candidateKey)
+          ? prev.filter((key) => key !== candidateKey)
+          : [...prev, candidateKey]
       }
 
-      return shouldMark ? (prev.includes(candidateKey) ? prev : [...prev, candidateKey]) : prev.filter(key => key !== candidateKey)
+      return shouldMark
+        ? prev.includes(candidateKey)
+          ? prev
+          : [...prev, candidateKey]
+        : prev.filter((key) => key !== candidateKey)
     })
   }
 
-  const [highlightIndex, setHighlightIndex, isLoadingHighlightIndex] = usePersistedState<number | null>(
-    "highlightIndex",
-    initialStates.highlightIndex
-  )
+  const [highlightIndex, setHighlightIndex, isLoadingHighlightIndex] =
+    usePersistedState<number | null>(
+      "highlightIndex",
+      initialStates.highlightIndex,
+    )
   const handleHighlightIndex = createStateHandler(setHighlightIndex, {
-    modifier: getValidIndexOrNull
+    modifier: getValidIndexOrNull,
   })
 
-  const [lastClickedHighlightIndex, setLastClickedHighlightIndex, isLoadingLastClickedHighlightIndex] = usePersistedState<number | null>(
+  const [
+    lastClickedHighlightIndex,
+    setLastClickedHighlightIndex,
+    isLoadingLastClickedHighlightIndex,
+  ] = usePersistedState<number | null>(
     "lastClickedHighlightIndex",
-    initialStates.lastClickedHighlightIndex
+    initialStates.lastClickedHighlightIndex,
   )
-  const handleLastClickedHighlightIndex = createStateHandler(setLastClickedHighlightIndex, {
-    modifier: getValidIndexOrNull
-  })
+  const handleLastClickedHighlightIndex = createStateHandler(
+    setLastClickedHighlightIndex,
+    {
+      modifier: getValidIndexOrNull,
+    },
+  )
 
-  const [lastFocusedEntryIndex, setLastFocusedEntryIndex, isLoadingLastFocusedEntryIndex] = usePersistedState<number | null>(
+  const [
+    lastFocusedEntryIndex,
+    setLastFocusedEntryIndex,
+    isLoadingLastFocusedEntryIndex,
+  ] = usePersistedState<number | null>(
     "lastFocusedEntryIndex",
-    initialStates.lastFocusedEntryIndex
+    initialStates.lastFocusedEntryIndex,
   )
-  const handleLastFocusedEntryIndex = createStateHandler(setLastFocusedEntryIndex, {
-    validator: newValue => {
-      return newValue == null || (Number.isInteger(newValue) && newValue >= 0 && newValue < Math.pow(symbolsLength, 2))
-    }
-  })
+  const handleLastFocusedEntryIndex = createStateHandler(
+    setLastFocusedEntryIndex,
+    {
+      validator: (newValue) => {
+        return (
+          newValue == null ||
+          (Number.isInteger(newValue) &&
+            newValue >= 0 &&
+            newValue < Math.pow(symbolsLength, 2))
+        )
+      },
+    },
+  )
 
-  const [sortedEntries, setSortedEntries] = useState<(Element | null)[]>(initialStates.sortedEntries)
+  const [sortedEntries, setSortedEntries] = useState<(Element | null)[]>(
+    initialStates.sortedEntries,
+  )
   const handleSortedEntries = createStateHandler(setSortedEntries)
 
-  const [difficulty, setDifficulty, isLoadingDifficulty] = usePersistedState<Difficulty>("difficulty", initialStates.difficulty)
+  const [difficulty, setDifficulty, isLoadingDifficulty] =
+    usePersistedState<Difficulty>("difficulty", initialStates.difficulty)
   const handleDifficulty = createStateHandler(setDifficulty)
 
   const entryDivRefs = useRef<(HTMLDivElement | null)[]>([])
 
   const padNumberClicked = useRef(false)
 
-  const charCounts = useMemo(() => getCountOfCharactersInStringFromArray(puzzleStringCurrent, symbols), [puzzleStringCurrent])
+  const charCounts = useMemo(
+    () => getCountOfCharactersInStringFromArray(puzzleStringCurrent, symbols),
+    [puzzleStringCurrent],
+  )
 
   const allSquares: Square[] = useMemo(
     () =>
-      Array.from({ length: Math.pow(symbolsLength, 2) }, (_, gridSquareIndex) => {
-        return {
-          entryValue: puzzleStringCurrent[gridSquareIndex],
-          candidates: getCandidates(gridSquareIndex),
-          gridSquareIndex: gridSquareIndex
-        }
-      }),
-    [getCandidates, puzzleStringCurrent]
+      Array.from(
+        { length: Math.pow(symbolsLength, 2) },
+        (_, gridSquareIndex) => {
+          return {
+            entryValue: puzzleStringCurrent[gridSquareIndex],
+            candidates: getCandidates(gridSquareIndex),
+            gridSquareIndex: gridSquareIndex,
+          }
+        },
+      ),
+    [getCandidates, puzzleStringCurrent],
   )
 
   const handleEntry = useCallback(
@@ -284,7 +379,7 @@ function useSudokuManagement() {
       replacePuzzleStringCurrentAtWith(gridSquareIndex, replacementChar)
       const candidateIndex = symbols.indexOf(replacementChar)
 
-      getPeerSquares(gridSquareIndex).forEach(square => {
+      getPeerSquares(gridSquareIndex).forEach((square) => {
         const candidateKey = `${square.gridSquareIndex}-${candidateIndex}`
 
         //remove all candidates that are in the gridSquareIndex from the manual elim candidate array
@@ -299,12 +394,21 @@ function useSudokuManagement() {
         } else {
           //remove candidates matching the replacementChar in peer squares of the gridSquareIndex from the manual elim candidate array
           if (manualElimCandidates.includes(candidateKey)) {
-            toggleManualElimCandidate(square.gridSquareIndex, candidateIndex, false)
+            toggleManualElimCandidate(
+              square.gridSquareIndex,
+              candidateIndex,
+              false,
+            )
           }
         }
       })
     },
-    [getPeerSquares, manualElimCandidates, puzzleStringCurrent, toggleManualElimCandidate]
+    [
+      getPeerSquares,
+      manualElimCandidates,
+      puzzleStringCurrent,
+      toggleManualElimCandidate,
+    ],
   )
 
   const tryRuleAtIndex = useCallback(
@@ -314,23 +418,37 @@ function useSudokuManagement() {
         return "default" as RuleOutcome
       }
       const outcomeTime = isAuto ? 50 : 500
-      const ruleResult = rulesArr[ruleIndex].ruleAttempt({ allSquares, toggleManualElimCandidate, handleEntry })
+      const ruleResult = rulesArr[ruleIndex].ruleAttempt({
+        allSquares,
+        toggleManualElimCandidate,
+        handleEntry,
+      })
 
-      const ruleOutcome: RuleOutcome = ruleResult.hasProgress ? "success" : "fail"
+      const ruleOutcome: RuleOutcome = ruleResult.hasProgress
+        ? "success"
+        : "fail"
 
       handleRuleOutcomeAtIndex(ruleIndex, ruleOutcome)
       if (ruleResult.candidatesToMarkGood !== undefined) {
-        ruleResult.candidatesToMarkGood.forEach(candidate => {
-          toggleGoodCandidates(candidate.gridSquareIndex, candidate.candidateIndex, true)
+        ruleResult.candidatesToMarkGood.forEach((candidate) => {
+          toggleGoodCandidates(
+            candidate.gridSquareIndex,
+            candidate.candidateIndex,
+            true,
+          )
         })
       }
       if (ruleResult.candidatesToMarkBad !== undefined) {
-        ruleResult.candidatesToMarkBad.forEach(candidate => {
-          toggleBadCandidates(candidate.gridSquareIndex, candidate.candidateIndex, true)
+        ruleResult.candidatesToMarkBad.forEach((candidate) => {
+          toggleBadCandidates(
+            candidate.gridSquareIndex,
+            candidate.candidateIndex,
+            true,
+          )
         })
       }
 
-      await new Promise(resolve => setTimeout(resolve, outcomeTime))
+      await new Promise((resolve) => setTimeout(resolve, outcomeTime))
 
       if (ruleResult.hasProgress && ruleResult.resolve) {
         ruleResult.resolve()
@@ -339,19 +457,27 @@ function useSudokuManagement() {
 
       handleRuleOutcomeAtIndex(ruleIndex, "default")
       if (ruleResult.candidatesToMarkGood !== undefined) {
-        ruleResult.candidatesToMarkGood.forEach(candidate => {
-          toggleGoodCandidates(candidate.gridSquareIndex, candidate.candidateIndex, false)
+        ruleResult.candidatesToMarkGood.forEach((candidate) => {
+          toggleGoodCandidates(
+            candidate.gridSquareIndex,
+            candidate.candidateIndex,
+            false,
+          )
         })
       }
       if (ruleResult.candidatesToMarkBad !== undefined) {
-        ruleResult.candidatesToMarkBad.forEach(candidate => {
-          toggleBadCandidates(candidate.gridSquareIndex, candidate.candidateIndex, false)
+        ruleResult.candidatesToMarkBad.forEach((candidate) => {
+          toggleBadCandidates(
+            candidate.gridSquareIndex,
+            candidate.candidateIndex,
+            false,
+          )
         })
       }
 
       return ruleOutcome
     },
-    [allSquares, handleEntry, handleShouldAutoSolve, toggleManualElimCandidate]
+    [allSquares, handleEntry, handleShouldAutoSolve, toggleManualElimCandidate],
   )
 
   const tryAutoSolves = useCallback(async () => {
@@ -377,7 +503,12 @@ function useSudokuManagement() {
         handleShouldAutoSolve(true)
       }
     }
-  }, [checkedRuleIndices, currentAutoRuleIndex, handleShouldAutoSolve, tryRuleAtIndex])
+  }, [
+    checkedRuleIndices,
+    currentAutoRuleIndex,
+    handleShouldAutoSolve,
+    tryRuleAtIndex,
+  ])
 
   const isLoadingFromLocalStorage = [
     isLoadingPuzzleStringCurrent,
@@ -396,7 +527,7 @@ function useSudokuManagement() {
     isLoadingHighlightIndex,
     isLoadingLastClickedHighlightIndex,
     isLoadingLastFocusedEntryIndex,
-    isLoadingDifficulty
+    isLoadingDifficulty,
   ].some(Boolean)
 
   useEffect(() => {
@@ -416,23 +547,39 @@ function useSudokuManagement() {
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      handleSortedEntries(entryDivRefs.current.filter(div => div && div.tabIndex !== -1))
+      handleSortedEntries(
+        entryDivRefs.current.filter((div) => div && div.tabIndex !== -1),
+      )
     }, 0)
     return () => clearTimeout(timeoutId)
   }, [isBoardSet])
 
   useEffect(() => {
-    if (shouldAutoSolve && isBoardSet && !isBoardSolved && !checkForAnySudokuConflict()) {
+    if (
+      shouldAutoSolve &&
+      isBoardSet &&
+      !isBoardSolved &&
+      !checkForAnySudokuConflict()
+    ) {
       handleShouldAutoSolve(false)
       tryAutoSolves()
     }
-  }, [isBoardSet, isBoardSolved, checkForAnySudokuConflict, handleShouldAutoSolve, shouldAutoSolve, tryAutoSolves])
+  }, [
+    isBoardSet,
+    isBoardSolved,
+    checkForAnySudokuConflict,
+    handleShouldAutoSolve,
+    shouldAutoSolve,
+    tryAutoSolves,
+  ])
 
   const handleCheckboxChange = (ruleIndex: number) => {
     const isNewCheck = !checkedRuleIndices.includes(ruleIndex)
 
-    handleCheckedRuleIndices(prev => {
-      const updatedRules = isNewCheck ? [...prev, ruleIndex] : prev.filter(n => n !== ruleIndex)
+    handleCheckedRuleIndices((prev) => {
+      const updatedRules = isNewCheck
+        ? [...prev, ruleIndex]
+        : prev.filter((n) => n !== ruleIndex)
       return updatedRules.sort((a, b) => a - b)
     })
 
@@ -441,13 +588,16 @@ function useSudokuManagement() {
     }
   }
 
-  const toggleCandidateQueueSolveOnElim = useCallback((gridSquareIndex: number, candidateIndex: number) => {
-    toggleManualElimCandidate(gridSquareIndex, candidateIndex)
-    const candidateKey = `${gridSquareIndex}-${candidateIndex}`
-    if (!manualElimCandidates.includes(candidateKey)) {
-      handleShouldAutoSolve(true)
-    }
-  }, [])
+  const toggleCandidateQueueSolveOnElim = useCallback(
+    (gridSquareIndex: number, candidateIndex: number) => {
+      toggleManualElimCandidate(gridSquareIndex, candidateIndex)
+      const candidateKey = `${gridSquareIndex}-${candidateIndex}`
+      if (!manualElimCandidates.includes(candidateKey)) {
+        handleShouldAutoSolve(true)
+      }
+    },
+    [],
+  )
 
   const restartPuzzle = () => {
     handlePuzzleStringCurrent(formatStringToPuzzleString(puzzleStringStart))
@@ -498,19 +648,29 @@ function useSudokuManagement() {
   }, [])
 
   function getCandidates(gridSquareIndex: number) {
-    const candidateArr = Array.from({ length: symbolsLength }, (_, candidateIndex) => {
-      const candidateKey = `${gridSquareIndex}-${candidateIndex}`
+    const candidateArr = Array.from(
+      { length: symbolsLength },
+      (_, candidateIndex) => {
+        const candidateKey = `${gridSquareIndex}-${candidateIndex}`
 
-      const isSquareOccupied = puzzleStringCurrent[gridSquareIndex] != "0"
+        const isSquareOccupied = puzzleStringCurrent[gridSquareIndex] != "0"
 
-      const isAlreadyInUnit = getPeerGridSquareIndices(gridSquareIndex, symbolsLength).some(i => puzzleStringCurrent[i] === symbols[candidateIndex])
+        const isAlreadyInUnit = getPeerGridSquareIndices(
+          gridSquareIndex,
+          symbolsLength,
+        ).some((i) => puzzleStringCurrent[i] === symbols[candidateIndex])
 
-      if (isSquareOccupied || isAlreadyInUnit || manualElimCandidates.includes(candidateKey)) {
-        return false
-      } else {
-        return true
-      }
-    })
+        if (
+          isSquareOccupied ||
+          isAlreadyInUnit ||
+          manualElimCandidates.includes(candidateKey)
+        ) {
+          return false
+        } else {
+          return true
+        }
+      },
+    )
     return candidateArr
   }
 
@@ -526,19 +686,31 @@ function useSudokuManagement() {
     return false
   }
 
-  function isAlreadyInUnit(gridSquareIndex: number, character: string, puzzleString: string) {
+  function isAlreadyInUnit(
+    gridSquareIndex: number,
+    character: string,
+    puzzleString: string,
+  ) {
     if (character == "0" || character == "") return false
-    return getPeerGridSquareIndices(gridSquareIndex, symbolsLength).some(i => {
-      if (i < 0 || i >= puzzleString.length) {
-        console.error(`Index ${i} is out of bounds for puzzleStringCurrent with length ${puzzleString.length}`)
-        return false
-      }
-      return puzzleString[i] == character && i != gridSquareIndex
-    })
+    return getPeerGridSquareIndices(gridSquareIndex, symbolsLength).some(
+      (i) => {
+        if (i < 0 || i >= puzzleString.length) {
+          console.error(
+            `Index ${i} is out of bounds for puzzleStringCurrent with length ${puzzleString.length}`,
+          )
+          return false
+        }
+        return puzzleString[i] == character && i != gridSquareIndex
+      },
+    )
   }
 
   function getPeerSquares(gridSquareIndex: number) {
-    return allSquares.filter(square => getPeerGridSquareIndices(gridSquareIndex, symbolsLength).includes(square.gridSquareIndex))
+    return allSquares.filter((square) =>
+      getPeerGridSquareIndices(gridSquareIndex, symbolsLength).includes(
+        square.gridSquareIndex,
+      ),
+    )
   }
 
   function checkBoardFilled(puzzleStringCurrent: string) {
@@ -547,11 +719,21 @@ function useSudokuManagement() {
 
   function formatStringToPuzzleString(value: string) {
     const zeroReplaced = replaceNonDigitsWithZero(value)
-    return truncateAndPad(zeroReplaced, Math.pow(symbolsLength, 2), "0", symbols)
+    return truncateAndPad(
+      zeroReplaced,
+      Math.pow(symbolsLength, 2),
+      "0",
+      symbols,
+    )
   }
 
   function getValidIndexOrNull(newValue: number | null) {
-    return typeof newValue !== "number" || !Number.isInteger(newValue) || newValue < 0 || newValue >= symbolsLength ? null : newValue
+    return typeof newValue !== "number" ||
+      !Number.isInteger(newValue) ||
+      newValue < 0 ||
+      newValue >= symbolsLength
+      ? null
+      : newValue
   }
 
   return {
@@ -592,7 +774,7 @@ function useSudokuManagement() {
     padNumberClicked,
     charCounts,
     isLoadingFromLocalStorage,
-    entryDivRefs
+    entryDivRefs,
   }
 }
 

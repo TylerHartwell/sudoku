@@ -1,9 +1,9 @@
-"use client";
+"use client"
 
-import { useTheme } from "@/contexts/ThemeContext";
+import { useTheme } from "@/contexts/ThemeContext"
 
 export default function ThemeSelector() {
-  const { theme, setTheme } = useTheme();
+  const { theme, setTheme } = useTheme()
 
   return (
     <div className="absolute right-1 text-[.5em] md:text-[1em]">
@@ -17,5 +17,5 @@ export default function ThemeSelector() {
         <option value="neon">Neon</option>
       </select>
     </div>
-  );
+  )
 }

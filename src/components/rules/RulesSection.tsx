@@ -1,7 +1,7 @@
-import { ReactNode } from "react";
+import { ReactNode } from "react"
 
 interface Props {
-  children: ReactNode;
+  children: ReactNode
 }
 
 const RulesSection = ({ children }: Props) => {
@@ -9,7 +9,7 @@ const RulesSection = ({ children }: Props) => {
     <section aria-label="Rules" className="mt-[10px] text-center md:mt-0">
       {children}
     </section>
-  );
-};
+  )
+}
 
-export default RulesSection;
+export default RulesSection

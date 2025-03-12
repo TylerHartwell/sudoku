@@ -1,7 +1,7 @@
-import { ReactNode } from "react";
+import { ReactNode } from "react"
 
 interface Props {
-  children: ReactNode;
+  children: ReactNode
 }
 
 const FetchGroup = ({ children }: Props) => {
@@ -9,7 +9,7 @@ const FetchGroup = ({ children }: Props) => {
     <div className="grid w-full grid-cols-[1fr_minmax(min-content,_2fr)_1fr] pt-1">
       {children}
     </div>
-  );
-};
+  )
+}
 
-export default FetchGroup;
+export default FetchGroup

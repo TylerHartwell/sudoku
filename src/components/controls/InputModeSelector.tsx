@@ -1,7 +1,7 @@
-import { ReactNode } from "react";
+import { ReactNode } from "react"
 
 interface Props {
-  children: ReactNode;
+  children: ReactNode
 }
 
 const InputModeSelector = ({ children }: Props) => {
@@ -12,7 +12,7 @@ const InputModeSelector = ({ children }: Props) => {
     >
       {children}
     </section>
-  );
-};
+  )
+}
 
-export default InputModeSelector;
+export default InputModeSelector

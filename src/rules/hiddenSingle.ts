@@ -11,7 +11,11 @@ const hiddenSingle: Rule = {
     const allSquaresSqrt = Math.sqrt(allSquares.length)
 
     for (const unit of allSquaresByUnit) {
-      for (let candidateIndex = 0; candidateIndex < allSquaresSqrt; candidateIndex++) {
+      for (
+        let candidateIndex = 0;
+        candidateIndex < allSquaresSqrt;
+        candidateIndex++
+      ) {
         let instanceCount = 0
         let targetGridSquareIndex: number | null = null
         for (const square of unit) {
@@ -33,13 +37,14 @@ const hiddenSingle: Rule = {
           return {
             hasProgress: true,
             candidatesToMarkGood: [{ gridSquareIndex, candidateIndex }],
-            resolve: () => handleEntry(gridSquareIndex, candidateNumber.toString())
+            resolve: () =>
+              handleEntry(gridSquareIndex, candidateNumber.toString()),
           }
         }
       }
     }
     return { hasProgress: false }
-  }
+  },
 }
 
 export default hiddenSingle

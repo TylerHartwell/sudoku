@@ -1,11 +1,11 @@
-import clsx from "clsx";
-import { ChangeEventHandler } from "react";
+import clsx from "clsx"
+import { ChangeEventHandler } from "react"
 
 interface Props {
-  puzzleLength: number;
-  isHidden: boolean;
-  puzzleStringStart: string;
-  onChange: ChangeEventHandler<HTMLInputElement>;
+  puzzleLength: number
+  isHidden: boolean
+  puzzleStringStart: string
+  onChange: ChangeEventHandler<HTMLInputElement>
 }
 
 const PuzzleStringInput = ({
@@ -27,7 +27,7 @@ const PuzzleStringInput = ({
       value={puzzleStringStart}
       onChange={onChange}
     />
-  );
-};
+  )
+}
 
-export default PuzzleStringInput;
+export default PuzzleStringInput

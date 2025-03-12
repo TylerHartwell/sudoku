@@ -14,7 +14,11 @@ const intersectionRemoval: Rule = {
 
     for (const [unitIndex, unit] of allSquaresByUnit.entries()) {
       const currentUnitType = unitTypes[unitIndex % unitTypes.length]
-      for (let candidateIndex = 0; candidateIndex < allSquaresSqrt; candidateIndex++) {
+      for (
+        let candidateIndex = 0;
+        candidateIndex < allSquaresSqrt;
+        candidateIndex++
+      ) {
         const candidateObjArr: Candidate[] = []
         let isIntersector = false
 
@@ -33,14 +37,17 @@ const intersectionRemoval: Rule = {
             candidateObjArr.push({
               gridSquareIndex: square.gridSquareIndex,
               candidateIndex,
-              possible
+              possible,
             })
           }
         }
 
         if (!isIntersector || candidateObjArr.length <= 1) continue
 
-        const { rowIndex, colIndex, boxIndex } = getRowColBox(candidateObjArr[0].gridSquareIndex, allSquaresSqrt)
+        const { rowIndex, colIndex, boxIndex } = getRowColBox(
+          candidateObjArr[0].gridSquareIndex,
+          allSquaresSqrt,
+        )
         let peerUnitType: UnitType | undefined
         let peerUnitIndex: number | undefined
 
@@ -48,7 +55,11 @@ const intersectionRemoval: Rule = {
           if (currentUnitType === unitType) continue
           if (
             unitType === "row" &&
-            candidateObjArr.every(candidateObj => getRowColBox(candidateObj.gridSquareIndex, allSquaresSqrt).rowIndex === rowIndex)
+            candidateObjArr.every(
+              (candidateObj) =>
+                getRowColBox(candidateObj.gridSquareIndex, allSquaresSqrt)
+                  .rowIndex === rowIndex,
+            )
           ) {
             peerUnitIndex = rowIndex
             peerUnitType = unitType
@@ -56,7 +67,11 @@ const intersectionRemoval: Rule = {
           }
           if (
             unitType === "col" &&
-            candidateObjArr.every(candidateObj => getRowColBox(candidateObj.gridSquareIndex, allSquaresSqrt).colIndex === colIndex)
+            candidateObjArr.every(
+              (candidateObj) =>
+                getRowColBox(candidateObj.gridSquareIndex, allSquaresSqrt)
+                  .colIndex === colIndex,
+            )
           ) {
             peerUnitIndex = colIndex
             peerUnitType = unitType
@@ -64,7 +79,11 @@ const intersectionRemoval: Rule = {
           }
           if (
             unitType === "box" &&
-            candidateObjArr.every(candidateObj => getRowColBox(candidateObj.gridSquareIndex, allSquaresSqrt).boxIndex === boxIndex)
+            candidateObjArr.every(
+              (candidateObj) =>
+                getRowColBox(candidateObj.gridSquareIndex, allSquaresSqrt)
+                  .boxIndex === boxIndex,
+            )
           ) {
             peerUnitIndex = boxIndex
             peerUnitType = unitType
@@ -76,7 +95,8 @@ const intersectionRemoval: Rule = {
 
         const offset = unitTypes.indexOf(peerUnitType)
 
-        const peerUnit = allSquaresByUnit[peerUnitIndex * Math.sqrt(allSquaresSqrt) + offset]
+        const peerUnit =
+          allSquaresByUnit[peerUnitIndex * Math.sqrt(allSquaresSqrt) + offset]
         const candidatesToMarkGood = candidateObjArr
         const candidatesToMarkBad = []
         const actions: (() => void)[] = []
@@ -85,12 +105,20 @@ const intersectionRemoval: Rule = {
           const gridSquareIndex = square.gridSquareIndex
           const possible = square.candidates[candidateIndex]
 
-          const isInCurrentUnit = candidateObjArr.some(candidateObj => candidateObj.gridSquareIndex === gridSquareIndex)
+          const isInCurrentUnit = candidateObjArr.some(
+            (candidateObj) => candidateObj.gridSquareIndex === gridSquareIndex,
+          )
 
           if (!isInCurrentUnit && possible) {
             // console.log("intersection eliminated for candidate ", candidateIndex + 1, "at ", gridSquareIndex)
-            candidatesToMarkBad.push({ gridSquareIndex, candidateIndex, possible })
-            actions.push(() => toggleManualElimCandidate(gridSquareIndex, candidateIndex, true))
+            candidatesToMarkBad.push({
+              gridSquareIndex,
+              candidateIndex,
+              possible,
+            })
+            actions.push(() =>
+              toggleManualElimCandidate(gridSquareIndex, candidateIndex, true),
+            )
           }
         }
 
@@ -99,13 +127,13 @@ const intersectionRemoval: Rule = {
             hasProgress: true,
             candidatesToMarkGood,
             candidatesToMarkBad,
-            resolve: () => actions.forEach(action => action())
+            resolve: () => actions.forEach((action) => action()),
           }
         }
       }
     }
     return { hasProgress: false }
-  }
+  },
 }
 
 export default intersectionRemoval

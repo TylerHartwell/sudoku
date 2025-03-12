@@ -1,7 +1,7 @@
-import { ReactNode } from "react";
+import { ReactNode } from "react"
 
 interface Props {
-  children: ReactNode;
+  children: ReactNode
 }
 
 const ActionsSection = ({ children }: Props) => {
@@ -12,7 +12,7 @@ const ActionsSection = ({ children }: Props) => {
     >
       {children}
     </section>
-  );
-};
+  )
+}
 
-export default ActionsSection;
+export default ActionsSection

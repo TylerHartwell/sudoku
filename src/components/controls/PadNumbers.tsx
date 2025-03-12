@@ -1,7 +1,7 @@
-import { ReactNode } from "react";
+import { ReactNode } from "react"
 
 interface Props {
-  children: ReactNode;
+  children: ReactNode
 }
 
 const PadNumbers = ({ children }: Props) => {
@@ -12,7 +12,7 @@ const PadNumbers = ({ children }: Props) => {
     >
       {children}
     </section>
-  );
-};
+  )
+}
 
-export default PadNumbers;
+export default PadNumbers

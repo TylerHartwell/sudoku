@@ -1,8 +1,8 @@
-import { ReactNode } from "react";
+import { ReactNode } from "react"
 
 interface Props {
-  children: ReactNode;
-  onClick: () => void;
+  children: ReactNode
+  onClick: () => void
 }
 
 const SetPuzzleBtn = ({ children, onClick }: Props) => {
@@ -13,7 +13,7 @@ const SetPuzzleBtn = ({ children, onClick }: Props) => {
     >
       {children}
     </button>
-  );
-};
+  )
+}
 
-export default SetPuzzleBtn;
+export default SetPuzzleBtn

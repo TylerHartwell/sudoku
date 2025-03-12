@@ -1,12 +1,12 @@
-import { Difficulty } from "@/hooks/useSudokuManagement";
-import clsx from "clsx";
-import { ChangeEventHandler } from "react";
+import { Difficulty } from "@/hooks/useSudokuManagement"
+import clsx from "clsx"
+import { ChangeEventHandler } from "react"
 
 interface Props {
-  difficulty: Difficulty;
-  difficultyLevels: readonly Difficulty[];
-  isHidden: boolean;
-  onChange: ChangeEventHandler<HTMLSelectElement>;
+  difficulty: Difficulty
+  difficultyLevels: readonly Difficulty[]
+  isHidden: boolean
+  onChange: ChangeEventHandler<HTMLSelectElement>
 }
 
 const DifficultySelector = ({
@@ -28,7 +28,7 @@ const DifficultySelector = ({
         </option>
       ))}
     </select>
-  );
-};
+  )
+}
 
-export default DifficultySelector;
+export default DifficultySelector

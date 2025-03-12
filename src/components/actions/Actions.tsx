@@ -1,7 +1,7 @@
-import { ReactNode } from "react";
+import { ReactNode } from "react"
 
 interface Props {
-  children: ReactNode;
+  children: ReactNode
 }
 
 const Actions = ({ children }: Props) => {
@@ -9,7 +9,7 @@ const Actions = ({ children }: Props) => {
     <div className="relative flex w-full flex-col items-center gap-[2px] overflow-auto">
       {children}
     </div>
-  );
-};
+  )
+}
 
-export default Actions;
+export default Actions

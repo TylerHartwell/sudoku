@@ -1,9 +1,9 @@
-import { ReactNode } from "react";
+import { ReactNode } from "react"
 
 interface Props {
-  children: ReactNode;
-  onClick: () => void;
-  disabled: boolean;
+  children: ReactNode
+  onClick: () => void
+  disabled: boolean
 }
 
 const ToggleCandidatesBtn = ({ children, onClick, disabled }: Props) => {
@@ -15,7 +15,7 @@ const ToggleCandidatesBtn = ({ children, onClick, disabled }: Props) => {
     >
       {children}
     </button>
-  );
-};
+  )
+}
 
-export default ToggleCandidatesBtn;
+export default ToggleCandidatesBtn

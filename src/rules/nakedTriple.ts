@@ -34,19 +34,28 @@ const nakedTriple: Rule = {
           for (let j = i + 1; j < groupOfSize.length - 1; j++) {
             for (let k = j + 1; k < groupOfSize.length; k++) {
               if (
-                groupOfSize[i][0].candidateIndex == groupOfSize[j][0].candidateIndex &&
-                groupOfSize[j][0].candidateIndex == groupOfSize[k][0].candidateIndex &&
-                groupOfSize[i][1].candidateIndex == groupOfSize[j][1].candidateIndex &&
-                groupOfSize[j][1].candidateIndex == groupOfSize[k][1].candidateIndex &&
-                groupOfSize[i][2].candidateIndex == groupOfSize[j][2].candidateIndex &&
-                groupOfSize[j][2].candidateIndex == groupOfSize[k][2].candidateIndex
+                groupOfSize[i][0].candidateIndex ==
+                  groupOfSize[j][0].candidateIndex &&
+                groupOfSize[j][0].candidateIndex ==
+                  groupOfSize[k][0].candidateIndex &&
+                groupOfSize[i][1].candidateIndex ==
+                  groupOfSize[j][1].candidateIndex &&
+                groupOfSize[j][1].candidateIndex ==
+                  groupOfSize[k][1].candidateIndex &&
+                groupOfSize[i][2].candidateIndex ==
+                  groupOfSize[j][2].candidateIndex &&
+                groupOfSize[j][2].candidateIndex ==
+                  groupOfSize[k][2].candidateIndex
               ) {
                 const firstIndexOfGroup = groupOfSize[i][0].candidateIndex
                 const secondIndexOfGroup = groupOfSize[i][1].candidateIndex
                 const thirdIndexOfGroup = groupOfSize[i][2].candidateIndex
-                const firstGroupGridSquareIndex = groupOfSize[i][0].gridSquareIndex
-                const secondGroupGridSquareIndex = groupOfSize[j][0].gridSquareIndex
-                const thirdGroupGridSquareIndex = groupOfSize[k][0].gridSquareIndex
+                const firstGroupGridSquareIndex =
+                  groupOfSize[i][0].gridSquareIndex
+                const secondGroupGridSquareIndex =
+                  groupOfSize[j][0].gridSquareIndex
+                const thirdGroupGridSquareIndex =
+                  groupOfSize[k][0].gridSquareIndex
 
                 //eliminate others from unit if present
                 const unit = allSquaresByUnit[unitIndex]
@@ -62,16 +71,46 @@ const nakedTriple: Rule = {
                       gridSquareIndex !== thirdGroupGridSquareIndex
                     ) {
                       if (square.candidates[firstIndexOfGroup]) {
-                        candidatesToMarkBad.push({ gridSquareIndex, candidateIndex: firstIndexOfGroup, possible: true })
-                        actions.push(() => toggleManualElimCandidate(gridSquareIndex, firstIndexOfGroup, true))
+                        candidatesToMarkBad.push({
+                          gridSquareIndex,
+                          candidateIndex: firstIndexOfGroup,
+                          possible: true,
+                        })
+                        actions.push(() =>
+                          toggleManualElimCandidate(
+                            gridSquareIndex,
+                            firstIndexOfGroup,
+                            true,
+                          ),
+                        )
                       }
                       if (square.candidates[secondIndexOfGroup]) {
-                        candidatesToMarkBad.push({ gridSquareIndex, candidateIndex: secondIndexOfGroup, possible: true })
-                        actions.push(() => toggleManualElimCandidate(gridSquareIndex, secondIndexOfGroup, true))
+                        candidatesToMarkBad.push({
+                          gridSquareIndex,
+                          candidateIndex: secondIndexOfGroup,
+                          possible: true,
+                        })
+                        actions.push(() =>
+                          toggleManualElimCandidate(
+                            gridSquareIndex,
+                            secondIndexOfGroup,
+                            true,
+                          ),
+                        )
                       }
                       if (square.candidates[thirdIndexOfGroup]) {
-                        candidatesToMarkBad.push({ gridSquareIndex, candidateIndex: thirdIndexOfGroup, possible: true })
-                        actions.push(() => toggleManualElimCandidate(gridSquareIndex, thirdIndexOfGroup, true))
+                        candidatesToMarkBad.push({
+                          gridSquareIndex,
+                          candidateIndex: thirdIndexOfGroup,
+                          possible: true,
+                        })
+                        actions.push(() =>
+                          toggleManualElimCandidate(
+                            gridSquareIndex,
+                            thirdIndexOfGroup,
+                            true,
+                          ),
+                        )
                       }
                     }
                   }
@@ -82,13 +121,23 @@ const nakedTriple: Rule = {
 
                 if (
                   !isUnitABox &&
-                  getRowColBox(firstGroupGridSquareIndex, allSquaresSqrt).boxIndex ==
-                    getRowColBox(secondGroupGridSquareIndex, allSquaresSqrt).boxIndex &&
-                  getRowColBox(secondGroupGridSquareIndex, allSquaresSqrt).boxIndex ==
-                    getRowColBox(thirdGroupGridSquareIndex, allSquaresSqrt).boxIndex
+                  getRowColBox(firstGroupGridSquareIndex, allSquaresSqrt)
+                    .boxIndex ==
+                    getRowColBox(secondGroupGridSquareIndex, allSquaresSqrt)
+                      .boxIndex &&
+                  getRowColBox(secondGroupGridSquareIndex, allSquaresSqrt)
+                    .boxIndex ==
+                    getRowColBox(thirdGroupGridSquareIndex, allSquaresSqrt)
+                      .boxIndex
                 ) {
                   //eliminate others from box if present
-                  const unit = allSquaresByUnit[getRowColBox(firstGroupGridSquareIndex, allSquaresSqrt).boxIndex * Math.sqrt(allSquaresSqrt) + 2]
+                  const unit =
+                    allSquaresByUnit[
+                      getRowColBox(firstGroupGridSquareIndex, allSquaresSqrt)
+                        .boxIndex *
+                        Math.sqrt(allSquaresSqrt) +
+                        2
+                    ]
                   processUnit(unit)
                 }
 
@@ -106,18 +155,45 @@ const nakedTriple: Rule = {
                   return {
                     hasProgress: true,
                     candidatesToMarkGood: [
-                      { gridSquareIndex: firstGroupGridSquareIndex, candidateIndex: firstIndexOfGroup },
-                      { gridSquareIndex: firstGroupGridSquareIndex, candidateIndex: secondIndexOfGroup },
-                      { gridSquareIndex: firstGroupGridSquareIndex, candidateIndex: thirdIndexOfGroup },
-                      { gridSquareIndex: secondGroupGridSquareIndex, candidateIndex: firstIndexOfGroup },
-                      { gridSquareIndex: secondGroupGridSquareIndex, candidateIndex: secondIndexOfGroup },
-                      { gridSquareIndex: secondGroupGridSquareIndex, candidateIndex: thirdIndexOfGroup },
-                      { gridSquareIndex: thirdGroupGridSquareIndex, candidateIndex: firstIndexOfGroup },
-                      { gridSquareIndex: thirdGroupGridSquareIndex, candidateIndex: secondIndexOfGroup },
-                      { gridSquareIndex: thirdGroupGridSquareIndex, candidateIndex: thirdIndexOfGroup }
+                      {
+                        gridSquareIndex: firstGroupGridSquareIndex,
+                        candidateIndex: firstIndexOfGroup,
+                      },
+                      {
+                        gridSquareIndex: firstGroupGridSquareIndex,
+                        candidateIndex: secondIndexOfGroup,
+                      },
+                      {
+                        gridSquareIndex: firstGroupGridSquareIndex,
+                        candidateIndex: thirdIndexOfGroup,
+                      },
+                      {
+                        gridSquareIndex: secondGroupGridSquareIndex,
+                        candidateIndex: firstIndexOfGroup,
+                      },
+                      {
+                        gridSquareIndex: secondGroupGridSquareIndex,
+                        candidateIndex: secondIndexOfGroup,
+                      },
+                      {
+                        gridSquareIndex: secondGroupGridSquareIndex,
+                        candidateIndex: thirdIndexOfGroup,
+                      },
+                      {
+                        gridSquareIndex: thirdGroupGridSquareIndex,
+                        candidateIndex: firstIndexOfGroup,
+                      },
+                      {
+                        gridSquareIndex: thirdGroupGridSquareIndex,
+                        candidateIndex: secondIndexOfGroup,
+                      },
+                      {
+                        gridSquareIndex: thirdGroupGridSquareIndex,
+                        candidateIndex: thirdIndexOfGroup,
+                      },
                     ],
                     candidatesToMarkBad,
-                    resolve: () => actions.forEach(action => action())
+                    resolve: () => actions.forEach((action) => action()),
                   }
                 }
               }
@@ -128,7 +204,7 @@ const nakedTriple: Rule = {
     }
 
     return { hasProgress: false }
-  }
+  },
 }
 
 export default nakedTriple

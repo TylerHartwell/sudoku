@@ -1,8 +1,8 @@
-import clsx from "clsx";
+import clsx from "clsx"
 
 interface Props {
-  isRightMode: boolean;
-  onClick: () => void;
+  isRightMode: boolean
+  onClick: () => void
 }
 
 const InputModeSwitch = ({ isRightMode, onClick }: Props) => {
@@ -23,7 +23,7 @@ const InputModeSwitch = ({ isRightMode, onClick }: Props) => {
         )}
       ></div>
     </div>
-  );
-};
+  )
+}
 
-export default InputModeSwitch;
+export default InputModeSwitch

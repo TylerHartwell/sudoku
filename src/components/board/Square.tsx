@@ -1,9 +1,9 @@
-import { ReactNode } from "react";
-import clsx from "clsx";
+import { ReactNode } from "react"
+import clsx from "clsx"
 
 interface Props {
-  children: ReactNode;
-  squareSize: number;
+  children: ReactNode
+  squareSize: number
 }
 
 const Square = ({ children, squareSize }: Props) => {
@@ -21,7 +21,7 @@ const Square = ({ children, squareSize }: Props) => {
     >
       {children}
     </div>
-  );
-};
+  )
+}
 
-export default Square;
+export default Square

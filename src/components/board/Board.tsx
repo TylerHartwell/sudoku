@@ -1,10 +1,10 @@
-import { ReactNode } from "react";
-import clsx from "clsx";
+import { ReactNode } from "react"
+import clsx from "clsx"
 
 interface Props {
-  children: ReactNode;
-  isBoardSolved: boolean;
-  gridSize: number;
+  children: ReactNode
+  isBoardSolved: boolean
+  gridSize: number
 }
 
 const Board = ({ children, isBoardSolved, gridSize }: Props) => {
@@ -20,7 +20,7 @@ const Board = ({ children, isBoardSolved, gridSize }: Props) => {
     >
       {children}
     </section>
-  );
-};
+  )
+}
 
-export default Board;
+export default Board

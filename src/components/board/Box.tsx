@@ -1,9 +1,9 @@
-import clsx from "clsx";
-import { ReactNode } from "react";
+import clsx from "clsx"
+import { ReactNode } from "react"
 
 interface Props {
-  children: ReactNode;
-  boxSize: number;
+  children: ReactNode
+  boxSize: number
 }
 
 const Box = ({ children, boxSize }: Props) => {
@@ -18,7 +18,7 @@ const Box = ({ children, boxSize }: Props) => {
     >
       {children}
     </div>
-  );
-};
+  )
+}
 
-export default Box;
+export default Box

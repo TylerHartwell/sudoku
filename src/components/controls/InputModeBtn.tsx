@@ -1,9 +1,9 @@
-import clsx from "clsx";
+import clsx from "clsx"
 
 interface Props {
-  isModeActive: boolean;
-  onClick: () => void;
-  children: React.ReactNode;
+  isModeActive: boolean
+  onClick: () => void
+  children: React.ReactNode
 }
 
 const InputModeBtn = ({ isModeActive, onClick, children }: Props) => {
@@ -17,7 +17,7 @@ const InputModeBtn = ({ isModeActive, onClick, children }: Props) => {
     >
       {children}
     </button>
-  );
-};
+  )
+}
 
-export default InputModeBtn;
+export default InputModeBtn

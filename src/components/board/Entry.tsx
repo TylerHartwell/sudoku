@@ -1,36 +1,36 @@
-"use client";
+"use client"
 
-import { RefObject, useEffect } from "react";
-import clsx from "clsx";
-import isValidChar from "@/utils/isValidChar";
+import { RefObject, useEffect } from "react"
+import clsx from "clsx"
+import isValidChar from "@/utils/isValidChar"
 
 interface Props {
-  gridSquareIndex: number;
-  shownValue: string;
-  puzzleStringStart: string;
-  puzzleStringCurrent: string;
-  isCandidateMode: boolean;
-  isBoardSet: boolean;
-  highlightIndex: number | null;
-  handleEntry: (i: number, s: string) => void;
-  manualElimCandidates: string[];
+  gridSquareIndex: number
+  shownValue: string
+  puzzleStringStart: string
+  puzzleStringCurrent: string
+  isCandidateMode: boolean
+  isBoardSet: boolean
+  highlightIndex: number | null
+  handleEntry: (i: number, s: string) => void
+  manualElimCandidates: string[]
   isAlreadyInUnit: (
     gridSquareIndex: number,
     character: string,
     puzzleString: string,
-  ) => boolean;
-  handleLastFocusedEntryIndex: (entryIndex: number | null) => void;
-  padNumberClicked: RefObject<boolean>;
-  handleShouldAutoSolve: (beQueued: boolean) => void;
-  lastFocusedEntryIndex: number | null;
+  ) => boolean
+  handleLastFocusedEntryIndex: (entryIndex: number | null) => void
+  padNumberClicked: RefObject<boolean>
+  handleShouldAutoSolve: (beQueued: boolean) => void
+  lastFocusedEntryIndex: number | null
   toggleCandidateQueueSolveOnElim: (
     gridSquareIndex: number,
     candidateIndex: number,
-  ) => void;
-  sortedEntries: (Element | null)[];
-  symbols: string[];
-  symbolsLength: number;
-  entryDivRefs: RefObject<(HTMLDivElement | null)[]>;
+  ) => void
+  sortedEntries: (Element | null)[]
+  symbols: string[]
+  symbolsLength: number
+  entryDivRefs: RefObject<(HTMLDivElement | null)[]>
 }
 
 const Entry = ({
@@ -54,28 +54,28 @@ const Entry = ({
   symbolsLength,
   entryDivRefs,
 }: Props) => {
-  useEffect(() => {}, []);
+  useEffect(() => {}, [])
 
   const isLocked =
     isBoardSet &&
     puzzleStringStart.length == Math.pow(symbolsLength, 2) &&
-    puzzleStringStart[gridSquareIndex] == shownValue;
+    puzzleStringStart[gridSquareIndex] == shownValue
   const isWrong = isAlreadyInUnit(
     gridSquareIndex,
     shownValue,
     puzzleStringCurrent,
-  );
+  )
 
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
-    e.preventDefault();
+    e.preventDefault()
     if (!isLocked) {
       if (isCandidateMode && e.pointerType === "touch") {
         if (entryDivRefs.current[gridSquareIndex] !== document.activeElement) {
-          entryDivRefs.current[gridSquareIndex]?.focus();
+          entryDivRefs.current[gridSquareIndex]?.focus()
         } else {
           if (highlightIndex !== null) {
-            const candidateIndex = highlightIndex;
-            const candidateKey = `${gridSquareIndex}-${candidateIndex}`;
+            const candidateIndex = highlightIndex
+            const candidateKey = `${gridSquareIndex}-${candidateIndex}`
 
             const isEliminated =
               shownValue ||
@@ -84,28 +84,28 @@ const Entry = ({
                 symbols[highlightIndex],
                 puzzleStringCurrent,
               ) ||
-              manualElimCandidates.includes(candidateKey);
+              manualElimCandidates.includes(candidateKey)
             const isToggleable =
-              !isEliminated || manualElimCandidates.includes(candidateKey);
+              !isEliminated || manualElimCandidates.includes(candidateKey)
 
             if (isToggleable) {
-              toggleCandidateQueueSolveOnElim(gridSquareIndex, candidateIndex);
-              (document.activeElement as HTMLElement)?.blur();
+              toggleCandidateQueueSolveOnElim(gridSquareIndex, candidateIndex)
+              ;(document.activeElement as HTMLElement)?.blur()
             }
           } else {
-            (document.activeElement as HTMLElement)?.blur();
+            ;(document.activeElement as HTMLElement)?.blur()
           }
         }
-        return;
+        return
       }
       if (entryDivRefs.current[gridSquareIndex] !== document.activeElement) {
-        entryDivRefs.current[gridSquareIndex]?.focus();
+        entryDivRefs.current[gridSquareIndex]?.focus()
       } else {
         if (highlightIndex !== null) {
           if (highlightIndex === symbols.indexOf(shownValue)) {
-            handleEntry(gridSquareIndex, "0");
+            handleEntry(gridSquareIndex, "0")
           } else {
-            handleEntry(gridSquareIndex, symbols[highlightIndex]);
+            handleEntry(gridSquareIndex, symbols[highlightIndex])
             if (
               !isAlreadyInUnit(
                 gridSquareIndex,
@@ -114,44 +114,44 @@ const Entry = ({
               )
             ) {
               if (document.activeElement) {
-                (document.activeElement as HTMLElement)?.blur();
+                ;(document.activeElement as HTMLElement)?.blur()
               }
 
-              handleShouldAutoSolve(true);
+              handleShouldAutoSolve(true)
             }
           }
         } else {
-          (document.activeElement as HTMLElement)?.blur();
+          ;(document.activeElement as HTMLElement)?.blur()
         }
       }
     } else {
-      (document.activeElement as HTMLElement)?.blur();
+      ;(document.activeElement as HTMLElement)?.blur()
     }
-  };
+  }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (e.key === "Tab") {
-      const entries = sortedEntries as HTMLElement[];
+      const entries = sortedEntries as HTMLElement[]
       const currentIndex = entries.findIndex(
         (el) => el === document.activeElement,
-      );
+      )
 
       if (currentIndex !== -1) {
-        e.preventDefault();
-        const nextIndex = e.shiftKey ? currentIndex - 1 : currentIndex + 1;
+        e.preventDefault()
+        const nextIndex = e.shiftKey ? currentIndex - 1 : currentIndex + 1
 
         if (nextIndex >= 0 && nextIndex < entries.length) {
-          entries[nextIndex].focus();
+          entries[nextIndex].focus()
         } else {
-          e.currentTarget.blur();
+          e.currentTarget.blur()
         }
       }
 
-      return;
+      return
     }
 
     if (e.key.length > 1 && e.key !== " ") {
-      return;
+      return
     }
 
     if (!isLocked) {
@@ -163,23 +163,23 @@ const Entry = ({
             puzzleStringCurrent,
           )
         ) {
-          (document.activeElement as HTMLElement)?.blur();
-          handleShouldAutoSolve(true);
+          ;(document.activeElement as HTMLElement)?.blur()
+          handleShouldAutoSolve(true)
         }
-        handleEntry(gridSquareIndex, e.key.toUpperCase());
+        handleEntry(gridSquareIndex, e.key.toUpperCase())
       } else if (
         e.key === " " ||
         e.key === "0" ||
         e.key.toUpperCase() == shownValue
       ) {
-        handleEntry(gridSquareIndex, "0");
+        handleEntry(gridSquareIndex, "0")
       }
     }
-  };
+  }
 
   const handleFocus = () => {
-    handleLastFocusedEntryIndex(gridSquareIndex);
-  };
+    handleLastFocusedEntryIndex(gridSquareIndex)
+  }
 
   const handleBlur = () => {
     if (!padNumberClicked.current) {
@@ -187,20 +187,20 @@ const Entry = ({
         isAlreadyInUnit(gridSquareIndex, shownValue, puzzleStringCurrent) &&
         gridSquareIndex == lastFocusedEntryIndex
       ) {
-        handleEntry(gridSquareIndex, "0");
+        handleEntry(gridSquareIndex, "0")
       }
-      handleLastFocusedEntryIndex(null);
+      handleLastFocusedEntryIndex(null)
     } else {
-      (document.activeElement as HTMLElement)?.blur();
-      handleLastFocusedEntryIndex(null);
+      ;(document.activeElement as HTMLElement)?.blur()
+      handleLastFocusedEntryIndex(null)
     }
-    padNumberClicked.current = false;
-  };
+    padNumberClicked.current = false
+  }
 
   return (
     <div
       ref={(el) => {
-        entryDivRefs.current[gridSquareIndex] = el;
+        entryDivRefs.current[gridSquareIndex] = el
       }}
       className={clsx(
         "focus:outline-hidden hover:border-secondary absolute z-10 flex size-full cursor-default items-center justify-center text-[10vw] hover:border focus:border-[2px] focus:border-green-600/50 md:text-[clamp(10px,min(6vh,3vw),90px)]",
@@ -222,7 +222,7 @@ const Entry = ({
     >
       {shownValue}
     </div>
-  );
-};
+  )
+}
 
-export default Entry;
+export default Entry

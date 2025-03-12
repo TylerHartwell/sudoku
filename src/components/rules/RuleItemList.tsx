@@ -1,7 +1,7 @@
-import { ReactNode } from "react";
+import { ReactNode } from "react"
 
 interface Props {
-  children: ReactNode;
+  children: ReactNode
 }
 
 const RuleItemList = ({ children }: Props) => {
@@ -9,7 +9,7 @@ const RuleItemList = ({ children }: Props) => {
     <ol className="mx-[10px] flex list-none flex-col overflow-auto">
       {children}
     </ol>
-  );
-};
+  )
+}
 
-export default RuleItemList;
+export default RuleItemList

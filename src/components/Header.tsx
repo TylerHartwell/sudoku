@@ -1,7 +1,7 @@
-import { ReactNode } from "react";
+import { ReactNode } from "react"
 
 interface Props {
-  children: ReactNode;
+  children: ReactNode
 }
 
 const Header = ({ children }: Props) => {
@@ -9,7 +9,7 @@ const Header = ({ children }: Props) => {
     <div className="relative flex w-full items-center justify-center">
       {children}
     </div>
-  );
-};
+  )
+}
 
-export default Header;
+export default Header

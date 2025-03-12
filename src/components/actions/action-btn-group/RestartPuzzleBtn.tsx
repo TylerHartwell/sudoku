@@ -1,8 +1,8 @@
-import { ReactNode } from "react";
+import { ReactNode } from "react"
 
 interface Props {
-  children: ReactNode;
-  onClick: () => void;
+  children: ReactNode
+  onClick: () => void
 }
 
 const RestartPuzzleBtn = ({ children, onClick }: Props) => {
@@ -13,7 +13,7 @@ const RestartPuzzleBtn = ({ children, onClick }: Props) => {
     >
       {children}
     </button>
-  );
-};
+  )
+}
 
-export default RestartPuzzleBtn;
+export default RestartPuzzleBtn

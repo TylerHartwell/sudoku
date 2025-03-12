@@ -1,8 +1,8 @@
-import { ReactNode } from "react";
+import { ReactNode } from "react"
 
 interface Props {
-  children: ReactNode;
-  onClick: () => void;
+  children: ReactNode
+  onClick: () => void
 }
 
 const ClearAllBtn = ({ children, onClick }: Props) => {
@@ -13,7 +13,7 @@ const ClearAllBtn = ({ children, onClick }: Props) => {
     >
       {children}
     </button>
-  );
-};
+  )
+}
 
-export default ClearAllBtn;
+export default ClearAllBtn
