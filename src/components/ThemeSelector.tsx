@@ -9,7 +9,15 @@ export default function ThemeSelector() {
     <div className="absolute right-1 text-[.5em] md:text-[1em]">
       <select
         value={theme}
-        onChange={(e) => setTheme(e.target.value)}
+        onChange={(e) => {
+          setTheme(e.target.value)
+          const html = document.documentElement
+          html.classList.add("disable-transitions")
+
+          requestAnimationFrame(() => {
+            html.classList.remove("disable-transitions")
+          })
+        }}
         className="bg-primary rounded border p-[.1em]"
       >
         <option value="light">Light</option>

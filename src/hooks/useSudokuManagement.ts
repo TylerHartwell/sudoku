@@ -9,6 +9,7 @@ import getValidSymbols from "@/utils/getValidSymbols"
 import getCountOfCharactersInStringFromArray from "@/utils/getCountOfCharactersInStringFromArray"
 import { usePersistedState } from "./usePersistedState"
 import createStateHandler from "@/utils/createStateHandler"
+import { clearLocalStoragePreserve } from "@/utils/localStorage"
 
 // const inputSymbols = ["1", "2", "3", "4"]
 const inputSymbols = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
@@ -644,7 +645,7 @@ function useSudokuManagement() {
 
     padNumberClicked.current = false
 
-    localStorage.clear()
+    clearLocalStoragePreserve(["theme"])
   }, [])
 
   function getCandidates(gridSquareIndex: number) {

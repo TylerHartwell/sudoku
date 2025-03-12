@@ -23,9 +23,9 @@ const RuleItem = ({
     <li className="flex h-[30px] items-center justify-between p-1">
       <button
         className={clsx(
-          "m-[2px] w-[70px] whitespace-nowrap rounded-[10px] px-[5px] py-[2px] transition-colors duration-300 ease-out",
-          ruleOutcome === "success" && "bg-[green]",
-          ruleOutcome === "fail" && "bg-[red]",
+          "m-[2px] w-[70px] whitespace-nowrap rounded-[10px] px-[5px] py-[2px] transition-colors duration-500 ease-linear",
+          ruleOutcome === "success" && "bg-[green] transition-none",
+          ruleOutcome === "fail" && "bg-[red] transition-none",
         )}
         onClick={tryRuleAtIndex}
         disabled={!allDefault}

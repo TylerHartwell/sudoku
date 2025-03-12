@@ -19,3 +19,20 @@ export function getItem<T>(key: string): T | null {
     return null
   }
 }
+
+export const clearLocalStoragePreserve = (keysToPreserve: string[]): void => {
+  const preservedData: Record<string, string> = keysToPreserve.reduce(
+    (acc, key) => {
+      const value = localStorage.getItem(key)
+      if (value !== null) acc[key] = value // Store only if key exists
+      return acc
+    },
+    {} as Record<string, string>,
+  )
+
+  localStorage.clear()
+
+  Object.entries(preservedData).forEach(([key, value]) => {
+    localStorage.setItem(key, value)
+  })
+}
