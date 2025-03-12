@@ -7,7 +7,8 @@ const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
   title: "Sudoku Ruler",
-  description: "For practice recognizing certain sudoku rules",
+  description:
+    "Practice solving sudoku puzzles and automatically perform common strategies",
 }
 
 export default function RootLayout({

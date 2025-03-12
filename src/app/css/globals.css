@@ -5,6 +5,7 @@
   --color-secondary: var(--secondary);
   --color-accent: var(--accent);
   --color-copy: var(--copy);
+  --color-secondary-opac: var(--secondary-opac);
 }
 
 [data-theme="light"] {
@@ -12,18 +13,21 @@
   --secondary: oklch(0 0 0);
   --accent: oklch(0.8 0 0);
   --copy: oklch(0 0 0);
+  --secondary-opac: color-mix(in oklch, var(--secondary) 10%, transparent);
 }
 [data-theme="dark"] {
   --primary: oklch(0 0 0);
   --secondary: oklch(0.8 0 0);
   --accent: oklch(0.5 0 0);
   --copy: oklch(1 0 0);
+  --secondary-opac: color-mix(in oklch, var(--secondary) 25%, transparent);
 }
 [data-theme="neon"] {
-  --primary: oklch(0.5 0.5 0.3);
+  --primary: oklch(0.6 0.5 0.3);
   --secondary: oklch(84.85% 0.2516 142.41);
   --accent: oklch(0.1 0.1 0.1);
   --copy: oklch(0 0 0);
+  --secondary-opac: color-mix(in oklch, var(--secondary) 20%, transparent);
 }
 
 @utility b1 {
