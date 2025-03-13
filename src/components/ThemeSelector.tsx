@@ -18,7 +18,7 @@ export default function ThemeSelector() {
             html.classList.remove("disable-transitions")
           })
         }}
-        className="bg-primary rounded border p-[.1em]"
+        className="bg-primary border p-[.1em]"
       >
         <option value="light">Light</option>
         <option value="dark">Dark</option>
