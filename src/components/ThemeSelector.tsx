@@ -8,6 +8,7 @@ export default function ThemeSelector() {
   return (
     <div className="absolute right-1 text-[.5em] md:text-[1em]">
       <select
+        name={"theme selector"}
         value={theme}
         onChange={(e) => {
           setTheme(e.target.value)
@@ -22,6 +23,7 @@ export default function ThemeSelector() {
       >
         <option value="light">Light</option>
         <option value="dark">Dark</option>
+        <option value="forest">Forest</option>
         <option value="neon">Neon</option>
       </select>
     </div>
