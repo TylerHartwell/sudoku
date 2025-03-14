@@ -203,7 +203,7 @@ const Entry = ({
         entryDivRefs.current[gridSquareIndex] = el
       }}
       className={clsx(
-        "focus:outline-hidden hover:border-secondary absolute z-10 flex size-full cursor-default items-center justify-center text-[10vw] hover:border focus:border-[2px] focus:border-green-600/50 md:text-[clamp(10px,min(6vh,3vw),90px)]",
+        "focus:outline-hidden hover:border-secondary focus:border-accent absolute z-10 flex size-full cursor-default items-center justify-center text-[10vw] hover:border focus:border-[2px] md:text-[clamp(10px,min(6vh,3vw),90px)]",
         isCandidateMode && "hover:border-none focus:border-red-500",
         isLocked && "bg-secondary-opac",
         isWrong && "bg-red-500",

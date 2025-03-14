@@ -11,28 +11,28 @@
 [data-theme="light"] {
   --primary: oklch(1 0 0);
   --secondary: oklch(0 0 0);
-  --accent: oklch(0.8 0 0);
+  --accent: oklch(0 0 0);
   --copy: oklch(0 0 0);
   --secondary-opac: color-mix(in oklch, var(--secondary) 10%, transparent);
 }
 [data-theme="dark"] {
   --primary: oklch(0 0 0);
   --secondary: oklch(0.8 0 0);
-  --accent: oklch(0.5 0 0);
+  --accent: oklch(1 0 0);
   --copy: oklch(1 0 0);
   --secondary-opac: color-mix(in oklch, var(--secondary) 25%, transparent);
 }
 [data-theme="forest"] {
   --primary: oklch(0.15 0.2 145);
   --secondary: oklch(0.5 0.15 145);
-  --accent: oklch(0.5 0 0);
+  --accent: oklch(0.9 0.12 75);
   --copy: oklch(0.9 0.12 75);
   --secondary-opac: color-mix(in oklch, var(--secondary) 25%, transparent);
 }
 [data-theme="neon"] {
   --primary: oklch(0 0 0);
   --secondary: oklch(0.91 0.4 193);
-  --accent: oklch(0.8 0.3 140);
+  --accent: oklch(0.6 0.3 328);
   --copy: oklch(0.6 0.3 328);
   --secondary-opac: color-mix(in oklch, var(--secondary) 20%, transparent);
 }
@@ -54,7 +54,7 @@
     padding: 4px 6px;
     background-color: var(--primary);
     color: var(--copy);
-    border: 2px solid var(--secondary);
+    border: 2px solid var(--secondary-opac);
   }
 
   button:active:not(:disabled) {

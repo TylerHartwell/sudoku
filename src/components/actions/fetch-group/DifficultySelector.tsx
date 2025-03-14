@@ -23,7 +23,7 @@ const DifficultySelector = ({
       onChange={onChange}
     >
       {difficultyLevels.map((level) => (
-        <option key={level} value={level}>
+        <option key={level} value={level} className="bg-primary">
           {level.charAt(0).toUpperCase() + level.slice(1)}
         </option>
       ))}

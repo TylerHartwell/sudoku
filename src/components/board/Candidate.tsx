@@ -111,7 +111,7 @@ const Candidate = ({
           isToggleable && "border-secondary/50 border-[1px] border-dashed",
           isCandidateMode &&
             isToggleable &&
-            "hover:bg-[#ff5353] hover:font-bold",
+            "hover:bg-[#ff5353] hover:font-bold hover:text-black",
           !isCandidateMode && "pointer-events-none",
           goodCandidates.includes(candidateKey) &&
             !isEliminated &&
