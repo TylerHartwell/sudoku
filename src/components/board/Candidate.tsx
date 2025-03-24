@@ -115,10 +115,10 @@ const Candidate = ({
           !isCandidateMode && "pointer-events-none",
           goodCandidates.includes(candidateKey) &&
             !isEliminated &&
-            "bg-[rgb(45,241,77)] font-bold",
+            "bg-[rgb(45,241,77)] font-bold text-black",
           badCandidates.includes(candidateKey) &&
             !isEliminated &&
-            "bg-[red] font-bold",
+            "bg-[red] font-bold text-black",
         )}
         data-grid-square-index={gridSquareIndex}
         data-candidate-index={candidateIndex}
