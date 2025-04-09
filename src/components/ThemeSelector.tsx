@@ -6,7 +6,7 @@ export default function ThemeSelector() {
   const { theme, setTheme } = useTheme()
 
   return (
-    <div className="absolute right-1 text-[.5em] md:text-[1em]">
+    <div className="justify-self-end text-[.5em] md:text-[1em]">
       <select
         name={"theme selector"}
         value={theme}

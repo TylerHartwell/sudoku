@@ -18,7 +18,11 @@ export default function RootLayout({
 }>) {
   return (
     <ThemeProvider>
-      <html lang="en" suppressHydrationWarning>
+      <html
+        lang="en"
+        suppressHydrationWarning
+        className="text-copy bg-primary size-full font-sans text-[16px]"
+      >
         <head>
           <script
             id="theme-loader"
@@ -26,7 +30,7 @@ export default function RootLayout({
           />
         </head>
         <body
-          className={`${inter.className} bg-primary text-copy touch-pan-y select-none font-sans text-[16px]`}
+          className={`${inter.className} b3 grid h-full min-h-fit w-full touch-pan-y select-none grid-cols-1 md:min-h-screen`}
         >
           {children}
         </body>

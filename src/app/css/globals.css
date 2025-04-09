@@ -38,15 +38,18 @@
 }
 
 @utility b1 {
-  border: 5px solid var(--accent);
+  outline: dashed red 2px;
+  > * {
+    outline: dashed orange 1px;
+  }
 }
 
 @utility b2 {
-  border: 5px solid rgb(60, 255, 1);
+  outline: dashed green 2px;
 }
 
 @utility b3 {
-  border: 5px solid rgb(3, 104, 255);
+  outline: dashed blue 2px;
 }
 
 @layer utilities {

@@ -6,7 +6,7 @@ interface Props {
 
 const GameContent = ({ children }: Props) => {
   return (
-    <div className="flex w-full flex-col md:w-full md:max-w-[max(800px,80vw)] md:flex-row-reverse md:justify-center md:px-5">
+    <div className="grid h-full w-full grid-rows-[minmax(0,_1fr)_min-content] md:grid-cols-[minmax(min-content,_40%)_1fr] md:grid-rows-none">
       {children}
     </div>
   )

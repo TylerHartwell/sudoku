@@ -18,7 +18,7 @@ const DifficultySelector = ({
   return (
     <select
       name={"difficulty"}
-      className={clsx("m-1 h-min py-0.5", isHidden && "hidden")}
+      className={clsx("m-1 h-min w-min py-0.5", isHidden && "hidden")}
       value={difficulty}
       onChange={onChange}
     >
