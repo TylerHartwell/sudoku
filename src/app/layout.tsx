@@ -18,16 +18,18 @@ export default function RootLayout({
 }>) {
   return (
     <ThemeProvider>
-      <html lang="en" suppressHydrationWarning>
+      <html
+        lang="en"
+        suppressHydrationWarning
+        className="text-copy bg-primary font-sans text-[16px]"
+      >
         <head>
           <script
             id="theme-loader"
             dangerouslySetInnerHTML={{ __html: themeInitScriptString }}
           />
         </head>
-        <body
-          className={`${inter.className} bg-primary text-copy touch-pan-y select-none font-sans text-[16px]`}
-        >
+        <body className={`${inter.className} touch-pan-y select-none`}>
           {children}
         </body>
       </html>

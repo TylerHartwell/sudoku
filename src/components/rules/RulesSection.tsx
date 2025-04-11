@@ -6,7 +6,7 @@ interface Props {
 
 const RulesSection = ({ children }: Props) => {
   return (
-    <section aria-label="Rules" className="mt-[10px] text-center md:mt-0">
+    <section aria-label="Rules" className="mt-[10px] text-center">
       {children}
     </section>
   )

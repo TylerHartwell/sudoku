@@ -96,10 +96,10 @@ export default function Page() {
     <SudokuMain>
       <Header>
         <MainTitle>SUDOKU RULER</MainTitle>
-        <ThemeSelector />
       </Header>
       <GameContent>
         <GameInterface>
+          <ThemeSelector />
           <Board isBoardSolved={isBoardSolved} gridSize={symbolsSqrt}>
             {Array.from({ length: symbolsLength }).map((_, boxIndex) => (
               <Box key={boxIndex} boxSize={symbolsSqrt}>

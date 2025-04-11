@@ -6,7 +6,7 @@ interface Props {
 
 const GameInterface = ({ children }: Props) => {
   return (
-    <div className="flex w-full flex-col md:w-[max(calc(100vh-155px),300px)] md:content-center">
+    <div className="relative flex w-full flex-col sm:w-[max(calc(100vh-155px),300px)] sm:content-center">
       {children}
     </div>
   )

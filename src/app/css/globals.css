@@ -38,15 +38,21 @@
 }
 
 @utility b1 {
-  border: 5px solid var(--accent);
+  outline: dotted red 4px;
+  outline-offset: -4px;
+  > * {
+    outline: dotted orange 1px;
+  }
 }
 
 @utility b2 {
-  border: 5px solid rgb(60, 255, 1);
+  outline: dashed green 8px;
+  outline-offset: -4px;
 }
 
 @utility b3 {
-  border: 5px solid rgb(3, 104, 255);
+  outline: solid blue 4px;
+  outline-offset: -8px;
 }
 
 @layer utilities {

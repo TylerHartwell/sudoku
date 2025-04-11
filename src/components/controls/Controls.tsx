@@ -8,7 +8,7 @@ const Controls = ({ children }: Props) => {
   return (
     <section
       aria-label="Controls"
-      className="flex flex-col items-center md:h-[115px]"
+      className="flex w-full min-w-min flex-col items-center"
     >
       {children}
     </section>
