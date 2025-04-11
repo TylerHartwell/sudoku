@@ -6,7 +6,7 @@ interface Props {
 
 const PuzzleOperations = ({ children }: Props) => {
   return (
-    <div className="flex flex-col md:min-w-min md:justify-between">
+    <div className="flex w-full flex-col justify-between sm:w-auto sm:min-w-fit sm:max-w-[40%] sm:grow sm:overflow-auto">
       {children}
     </div>
   )

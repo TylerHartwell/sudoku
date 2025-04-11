@@ -38,18 +38,21 @@
 }
 
 @utility b1 {
-  outline: dashed red 2px;
+  outline: dotted red 4px;
+  outline-offset: -4px;
   > * {
-    outline: dashed orange 1px;
+    outline: dotted orange 1px;
   }
 }
 
 @utility b2 {
-  outline: dashed green 2px;
+  outline: dashed green 8px;
+  outline-offset: -4px;
 }
 
 @utility b3 {
-  outline: dashed blue 2px;
+  outline: solid blue 4px;
+  outline-offset: -8px;
 }
 
 @layer utilities {

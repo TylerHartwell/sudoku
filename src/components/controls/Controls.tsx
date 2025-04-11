@@ -6,7 +6,10 @@ interface Props {
 
 const Controls = ({ children }: Props) => {
   return (
-    <section aria-label="Controls" className="flex flex-col items-center">
+    <section
+      aria-label="Controls"
+      className="flex w-full min-w-min flex-col items-center"
+    >
       {children}
     </section>
   )

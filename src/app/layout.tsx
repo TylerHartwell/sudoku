@@ -21,7 +21,7 @@ export default function RootLayout({
       <html
         lang="en"
         suppressHydrationWarning
-        className="text-copy bg-primary size-full font-sans text-[16px]"
+        className="text-copy bg-primary font-sans text-[16px]"
       >
         <head>
           <script
@@ -29,9 +29,7 @@ export default function RootLayout({
             dangerouslySetInnerHTML={{ __html: themeInitScriptString }}
           />
         </head>
-        <body
-          className={`${inter.className} b3 grid h-full min-h-fit w-full touch-pan-y select-none grid-cols-1 md:min-h-screen`}
-        >
+        <body className={`${inter.className} touch-pan-y select-none`}>
           {children}
         </body>
       </html>

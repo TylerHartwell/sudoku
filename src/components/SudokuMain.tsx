@@ -6,7 +6,7 @@ interface Props {
 
 const SudokuMain = ({ children }: Props) => {
   return (
-    <main className="b1 md:max-w-screen grid grid-rows-[min-content_minmax(min-content,_1fr)] md:max-h-screen md:min-h-min md:min-w-min">
+    <main className="flex flex-col items-center sm:h-max sm:min-h-min sm:w-auto sm:min-w-fit sm:overflow-y-auto">
       {children}
     </main>
   )

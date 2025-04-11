@@ -6,7 +6,7 @@ interface Props {
 
 const Header = ({ children }: Props) => {
   return (
-    <div className="grid h-min grid-cols-3 items-center text-center">
+    <div className="grid h-min w-full grid-cols-3 items-center text-center sm:max-w-[max(640px,80vw)]">
       {children}
     </div>
   )

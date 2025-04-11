@@ -11,7 +11,7 @@ const Board = ({ children, isBoardSolved, gridSize }: Props) => {
   return (
     <section
       className={clsx(
-        `grid aspect-square select-none`,
+        `grid aspect-square w-full select-none`,
         isBoardSolved
           ? "border-copy border-[5px]"
           : "border-secondary border-[2px]",
