@@ -47,7 +47,22 @@ const FetchPuzzleBtn = ({
       )}
       onClick={handleClick}
     >
-      {loading ? "Loading..." : children}
+      {loading ? (
+        <span className="flex">
+          Loading
+          <span className="animate-[dot-bouncey_0.6s_ease-in-out_infinite]">
+            .
+          </span>
+          <span className="animate-[dot-bouncey_0.6s_ease-in-out_infinite] [animation-delay:0.2s]">
+            .
+          </span>
+          <span className="animate-[dot-bouncey_0.6s_ease-in-out_infinite] [animation-delay:0.4s]">
+            .
+          </span>
+        </span>
+      ) : (
+        children
+      )}
     </button>
   )
 }

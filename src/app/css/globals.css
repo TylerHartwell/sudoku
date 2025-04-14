@@ -56,6 +56,17 @@
 }
 
 @layer utilities {
+  @keyframes dot-bouncey {
+    50% {
+      transform: translateY(-1px);
+    }
+  }
+
+  @keyframes border-pulse {
+    50% {
+      border-color: var(--secondary);
+    }
+  }
   button {
     padding: 4px 6px;
     background-color: var(--primary);

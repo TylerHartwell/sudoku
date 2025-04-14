@@ -87,7 +87,18 @@ export default function Page() {
   if (isLoadingFromLocalStorage) {
     return (
       <div className="bg-primary text-copy flex h-screen items-center justify-center text-center">
-        Loading...
+        <span className="flex">
+          Loading
+          <span className="animate-[dot-bouncey_0.6s_ease-in-out_infinite]">
+            .
+          </span>
+          <span className="animate-[dot-bouncey_0.6s_ease-in-out_infinite] [animation-delay:0.2s]">
+            .
+          </span>
+          <span className="animate-[dot-bouncey_0.6s_ease-in-out_infinite] [animation-delay:0.4s]">
+            .
+          </span>
+        </span>
       </div>
     )
   }
@@ -276,7 +287,11 @@ export default function Page() {
                     Restart
                   </RestartPuzzleBtn>
                 ) : (
-                  <SetPuzzleBtn onClick={() => handleIsBoardSet(true)}>
+                  <SetPuzzleBtn
+                    onClick={() => handleIsBoardSet(true)}
+                    puzzleLength={Math.pow(symbolsLength, 2)}
+                    puzzleStringStart={puzzleStringStart}
+                  >
                     Set Puzzle
                   </SetPuzzleBtn>
                 )}
