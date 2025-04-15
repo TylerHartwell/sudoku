@@ -50,12 +50,16 @@ const PadNumber = ({
   manualElimCandidates,
   toggleCandidateQueueSolveOnElim,
 }: Props) => {
-  const handleMouseEnter = () => {
-    handleHighlightIndex(index)
+  const handlePointerEnter = (e: React.PointerEvent) => {
+    if (e.pointerType !== "touch") {
+      handleHighlightIndex(index)
+    }
   }
 
-  const handleMouseLeave = () => {
-    handleHighlightIndex(lastClickedHighlightIndex)
+  const handlePointerLeave = (e: React.PointerEvent) => {
+    if (e.pointerType !== "touch") {
+      handleHighlightIndex(lastClickedHighlightIndex)
+    }
   }
 
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
@@ -134,8 +138,8 @@ const PadNumber = ({
           "shadow-red-700 drop-shadow-[1px_1px_0.5px_rgba(255,43,43,0.4)]",
       )}
       data-pad-number
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
+      onPointerEnter={handlePointerEnter}
+      onPointerLeave={handlePointerLeave}
       onPointerDown={handlePointerDown}
     >
       {symbol}

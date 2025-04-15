@@ -14,13 +14,16 @@ const SetPuzzleBtn = ({
   puzzleLength,
   puzzleStringStart,
 }: Props) => {
+  const disabled = puzzleStringStart.length == 0
   return (
     <button
       className={clsx(
-        "w-min rounded-[10px] text-[clamp(12px,4vw,16px)] active:bg-yellow-200",
+        "w-min rounded-[10px] text-[clamp(12px,4vw,16px)] disabled:opacity-50",
         puzzleStringStart.length == puzzleLength && "animate-border-pulse",
+        !disabled && "active:bg-yellow-200",
       )}
       onClick={onClick}
+      disabled={disabled}
     >
       {children}
     </button>
