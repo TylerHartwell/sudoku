@@ -18,8 +18,7 @@ const SetPuzzleBtn = ({
     <button
       className={clsx(
         "w-min rounded-[10px] text-[clamp(12px,4vw,16px)] active:bg-yellow-200",
-        puzzleStringStart.length == puzzleLength &&
-          "animate-[border-pulse_1.5s_cubic-bezier(0.4,0,0.6,1)_infinite]",
+        puzzleStringStart.length == puzzleLength && "animate-border-pulse",
       )}
       onClick={onClick}
     >

@@ -89,15 +89,9 @@ export default function Page() {
       <div className="bg-primary text-copy flex h-screen items-center justify-center text-center">
         <span className="flex">
           Loading
-          <span className="animate-[dot-bouncey_0.6s_ease-in-out_infinite]">
-            .
-          </span>
-          <span className="animate-[dot-bouncey_0.6s_ease-in-out_infinite] [animation-delay:0.2s]">
-            .
-          </span>
-          <span className="animate-[dot-bouncey_0.6s_ease-in-out_infinite] [animation-delay:0.4s]">
-            .
-          </span>
+          <span className="animate-dot-bouncey">.</span>
+          <span className="animate-dot-bouncey [animation-delay:0.2s]">.</span>
+          <span className="animate-dot-bouncey [animation-delay:0.4s]">.</span>
         </span>
       </div>
     )
