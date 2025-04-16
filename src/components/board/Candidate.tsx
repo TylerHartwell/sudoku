@@ -58,7 +58,6 @@ const Candidate = ({
     if (isCandidateMode) {
       if (e.pointerType === "touch") {
         const candidateElement = e.currentTarget
-        console.log("touch")
 
         if (candidateElement.classList.contains("pointer-events-none")) return
         candidateElement.classList.add("pointer-events-none")
@@ -97,13 +96,15 @@ const Candidate = ({
     }
   }
 
+  const shouldShow =
+    !entryShownValue && (shouldShowCandidates || isCandidateMode)
+
   return (
     <div className="relative size-full">
       <div
         className={clsx(
           "absolute z-20 flex size-full items-center justify-center text-[3vw] font-medium sm:text-[clamp(12px,min(2vh,2vw),30px)]",
-          ((!shouldShowCandidates && !isCandidateMode) || entryShownValue) &&
-            "invisible",
+          !shouldShow && "invisible",
           candidateIndex === highlightIndex &&
             (shouldShowCandidates || isCandidateMode) &&
             !isEliminated &&

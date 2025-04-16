@@ -122,20 +122,24 @@ const PadNumber = ({
     handleHighlightIndex(index)
   }
 
+  const isHighlightedIndex = highlightIndex != null && index === highlightIndex
+  const hasUsedFullCount =
+    charCounts != undefined && charCounts[symbol] === symbolsLength
+  const shouldShowAsEntryAble =
+    lastFocusedEntryIndex !== null && !isCandidateMode
+  const shouldShowAsCandidateAble =
+    lastFocusedEntryIndex !== null && isCandidateMode
+
   return (
     <div
       className={clsx(
         `pad${index} h-full flex-1 select-none place-content-center text-center text-[5vw] hover:cursor-pointer hover:font-bold sm:text-[30px]`,
-        highlightIndex != null && index === highlightIndex && "font-bold",
-        charCounts != undefined &&
-          charCounts[symbol] === symbolsLength &&
-          "opacity-30",
-        lastFocusedEntryIndex !== null &&
-          !isCandidateMode &&
-          "shadow-green-700 drop-shadow-[1px_1px_0.5px_rgba(43,143,43,0.4)]",
-        lastFocusedEntryIndex !== null &&
-          isCandidateMode &&
-          "shadow-red-700 drop-shadow-[1px_1px_0.5px_rgba(255,43,43,0.4)]",
+        isHighlightedIndex && "font-bold",
+        hasUsedFullCount && "opacity-30",
+        shouldShowAsEntryAble &&
+          "shadow-green-700 drop-shadow-[4px_1px_0.5px_rgba(43,143,43,0.4)]",
+        shouldShowAsCandidateAble &&
+          "shadow-red-700 drop-shadow-[4px_1px_0.5px_rgba(255,43,43,0.4)]",
       )}
       data-pad-number
       onPointerEnter={handlePointerEnter}

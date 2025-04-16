@@ -189,11 +189,8 @@ const Entry = ({
       ) {
         handleEntry(gridSquareIndex, "0")
       }
-      handleLastFocusedEntryIndex(null)
-    } else {
-      ;(document.activeElement as HTMLElement)?.blur()
-      handleLastFocusedEntryIndex(null)
     }
+    handleLastFocusedEntryIndex(null)
     padNumberClicked.current = false
   }
 
