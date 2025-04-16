@@ -111,7 +111,7 @@ const Candidate = ({
           isAllowed && "border-secondary/50 border-[1px] border-dashed",
           isCandidateMode &&
             isAllowed &&
-            "pointer-events-auto hover:bg-[#ff5353] hover:font-bold hover:text-black",
+            "supports-hover:pointer-events-auto supports-hover:hover:bg-[#ff5353] supports-hover:hover:font-bold supports-hover:hover:text-black",
           goodCandidates.includes(candidateKey) &&
             !isEliminated &&
             "bg-[rgb(45,241,77)] font-bold text-black",
