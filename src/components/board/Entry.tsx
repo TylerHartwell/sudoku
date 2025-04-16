@@ -85,10 +85,10 @@ const Entry = ({
                 puzzleStringCurrent,
               ) ||
               manualElimCandidates.includes(candidateKey)
-            const isToggleable =
+            const isAllowed =
               !isEliminated || manualElimCandidates.includes(candidateKey)
 
-            if (isToggleable) {
+            if (isAllowed) {
               toggleCandidateQueueSolveOnElim(gridSquareIndex, candidateIndex)
               ;(document.activeElement as HTMLElement)?.blur()
             }

@@ -49,8 +49,10 @@ const Candidate = ({
     entryShownValue ||
     isAlreadyInUnit ||
     manualElimCandidates.includes(candidateKey)
-  const isToggleable =
-    !isEliminated || manualElimCandidates.includes(candidateKey)
+  const isAllowed = !isEliminated || manualElimCandidates.includes(candidateKey)
+  const shouldShow =
+    !entryShownValue && (shouldShowCandidates || isCandidateMode)
+  const shouldHighlight = candidateIndex === highlightIndex && !isEliminated
 
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     e.preventDefault()
@@ -87,7 +89,7 @@ const Candidate = ({
           }, 0)
         }
       } else {
-        if (isToggleable) {
+        if (isAllowed) {
           e.stopPropagation()
 
           toggleCandidateQueueSolveOnElim(gridSquareIndex, candidateIndex)
@@ -96,24 +98,20 @@ const Candidate = ({
     }
   }
 
-  const shouldShow =
-    !entryShownValue && (shouldShowCandidates || isCandidateMode)
+  if (!shouldShow) {
+    return null
+  }
 
   return (
-    <div className="relative size-full">
+    <div className="pointer-events-none relative size-full">
       <div
         className={clsx(
           "absolute z-20 flex size-full items-center justify-center text-[3vw] font-medium sm:text-[clamp(12px,min(2vh,2vw),30px)]",
-          !shouldShow && "invisible",
-          candidateIndex === highlightIndex &&
-            (shouldShowCandidates || isCandidateMode) &&
-            !isEliminated &&
-            "border-primary border-[1px] border-dashed bg-[rgb(248,248,120)] font-bold text-black",
-          isToggleable && "border-secondary/50 border-[1px] border-dashed",
+          shouldHighlight && "bg-[rgb(248,248,120)] font-bold text-black",
+          isAllowed && "border-secondary/50 border-[1px] border-dashed",
           isCandidateMode &&
-            isToggleable &&
-            "hover:bg-[#ff5353] hover:font-bold hover:text-black",
-          !isCandidateMode && "pointer-events-none",
+            isAllowed &&
+            "pointer-events-auto hover:bg-[#ff5353] hover:font-bold hover:text-black",
           goodCandidates.includes(candidateKey) &&
             !isEliminated &&
             "bg-[rgb(45,241,77)] font-bold text-black",

@@ -97,9 +97,9 @@ const PadNumber = ({
           puzzleStringCurrent[lastFocusedEntryIndex] !== "0" ||
           isAlreadyInUnit ||
           manualElimCandidates.includes(candidateKey)
-        const isToggleable =
+        const isAllowed =
           !isEliminated || manualElimCandidates.includes(candidateKey)
-        if (isToggleable) {
+        if (isAllowed) {
           toggleCandidateQueueSolveOnElim(lastFocusedEntryIndex, index)
         } else {
           ;(document.activeElement as HTMLElement)?.blur()
