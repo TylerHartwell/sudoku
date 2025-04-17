@@ -103,15 +103,15 @@ const Candidate = ({
   }
 
   return (
-    <div className="pointer-events-none relative size-full">
+    <div className="relative size-full">
       <div
         className={clsx(
           "absolute z-20 flex size-full items-center justify-center text-[3vw] font-medium sm:text-[clamp(12px,min(2vh,2vw),30px)]",
           shouldHighlight && "bg-[rgb(248,248,120)] font-bold text-black",
           isAllowed && "border-secondary/50 border-[1px] border-dashed",
-          isCandidateMode &&
-            isAllowed &&
-            "supports-hover:pointer-events-auto supports-hover:hover:bg-[#ff5353] supports-hover:hover:font-bold supports-hover:hover:text-black",
+          isCandidateMode && isAllowed
+            ? "has-hover:pointer-events-auto has-hover:hover:font-bold has-hover:hover:text-black has-hover:hover:bg-[#ff5353]"
+            : "pointer-events-none",
           goodCandidates.includes(candidateKey) &&
             !isEliminated &&
             "bg-[rgb(45,241,77)] font-bold text-black",

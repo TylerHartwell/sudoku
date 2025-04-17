@@ -18,8 +18,8 @@ const InputModeSwitch = ({ isRightMode, onClick }: Props) => {
         className={clsx(
           "pointer-events-none absolute top-[50%] aspect-square h-[80%] -translate-y-1/2 rounded-[50%] bg-white duration-300 ease-in-out",
           isRightMode
-            ? "supports-hover:group-hover:left-[calc(100%-7px)] supports-hover:group-hover:bg-white/90 left-[calc(100%-5px)] -translate-x-full"
-            : "supports-hover:group-hover:left-[7px] supports-hover:group-hover:bg-white/90 left-[5px] translate-x-0",
+            ? "has-hover:group-hover:left-[calc(100%-7px)] has-hover:group-hover:bg-white/90 left-[calc(100%-5px)] -translate-x-full"
+            : "has-hover:group-hover:left-[7px] has-hover:group-hover:bg-white/90 left-[5px] translate-x-0",
         )}
       ></div>
     </div>

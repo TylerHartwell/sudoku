@@ -99,7 +99,9 @@ const Entry = ({
         return
       }
       if (entryDivRefs.current[gridSquareIndex] !== document.activeElement) {
-        entryDivRefs.current[gridSquareIndex]?.focus()
+        if (e.pointerType === "touch" || !isCandidateMode) {
+          entryDivRefs.current[gridSquareIndex]?.focus()
+        }
       } else {
         if (highlightIndex !== null) {
           if (highlightIndex === symbols.indexOf(shownValue)) {
@@ -200,9 +202,11 @@ const Entry = ({
         entryDivRefs.current[gridSquareIndex] = el
       }}
       className={clsx(
-        "focus:outline-hidden supports-hover:hover:border-secondary focus:border-accent supports-hover:hover:border absolute z-10 flex size-full cursor-default items-center justify-center text-[10vw] focus:border-[2px] sm:text-[clamp(30px,min(8vh,5vw),90px)]",
+        "absolute z-10 flex size-full cursor-default items-center justify-center text-[10vw] sm:text-[clamp(30px,min(8vh,5vw),90px)]",
+        "focus:border-accent focus:outline-hidden focus:border-[2px]",
+        "has-hover:hover:not-focus:border has-hover:hover:not-focus:border-secondary",
         isCandidateMode &&
-          "supports-hover:hover:border-none focus:border-red-500",
+          "has-hover:hover:border-none has-hover:focus:border-red-500",
         isLocked && "bg-secondary-opac",
         isWrong && "bg-red-500",
         highlightIndex != null &&
