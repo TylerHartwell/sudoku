@@ -115,9 +115,6 @@ const PadNumber = ({
       handleLastClickedHighlightIndex(null)
       handleHighlightIndex(null)
       padNumberClicked.current = false
-      alert(
-        `lastClickedHighlightIndex: ${lastClickedHighlightIndex}, highlightIndex: ${highlightIndex}, padNumberClicked: ${padNumberClicked.current}`,
-      )
       return
     }
 
