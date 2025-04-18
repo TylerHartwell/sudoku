@@ -137,10 +137,8 @@ const PadNumber = ({
         "has-hover:hover:cursor-pointer",
         isHighlightedIndex && "font-bold",
         hasUsedFullCount && "opacity-30",
-        shouldShowAsEntryAble &&
-          "shadow-green-700 drop-shadow-[4px_1px_0.5px_rgba(43,143,43,0.4)]",
-        shouldShowAsCandidateAble &&
-          "shadow-red-700 drop-shadow-[4px_1px_0.5px_rgba(255,43,43,0.4)]",
+        shouldShowAsEntryAble && "underline decoration-green-700",
+        shouldShowAsCandidateAble && "underline decoration-red-700",
       )}
       data-pad-number
       onPointerEnter={handlePointerEnter}

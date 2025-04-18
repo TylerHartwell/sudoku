@@ -6,7 +6,7 @@ interface Props {
 
 const RuleItemList = ({ children }: Props) => {
   return (
-    <ol className="mx-[10px] flex list-none flex-col overflow-auto">
+    <ol className="mx-[10px] flex list-none flex-col gap-1 overflow-auto py-1">
       {children}
     </ol>
   )

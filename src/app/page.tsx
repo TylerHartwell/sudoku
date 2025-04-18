@@ -1,7 +1,6 @@
 "use client"
 
 import FetchPuzzleBtn from "@/components/actions/fetch-group/FetchPuzzleBtn"
-import "./css/modern-normalize.css"
 import Board from "@/components/board/Board"
 import RuleItem from "@/components/rules/RuleItem"
 import rulesArr from "@/rules/rulesArr"

@@ -83,7 +83,8 @@
   }
 
   button:active:not(:disabled) {
-    transform: scale(0.98);
+    filter: brightness(0.95);
+    transform: translateY(1px);
   }
 
   @media (hover: hover) and (pointer: fine) {
