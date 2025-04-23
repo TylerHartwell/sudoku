@@ -164,6 +164,7 @@ export default function Page() {
                             toggleCandidateQueueSolveOnElim
                           }
                           symbolsLength={symbolsLength}
+                          boxSize={symbolsSqrt}
                         />
                       ))}
                     </Square>

@@ -32,7 +32,7 @@ const RuleItem = ({
       >
         Attempt
       </button>
-      <span className="mx-[10px] whitespace-nowrap text-[clamp(12px,4vw,16px)]">
+      <span className="mx-[10px] text-start text-[clamp(12px,4vw,16px)]">
         {ruleName}
       </span>
       <label

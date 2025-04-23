@@ -202,7 +202,7 @@ const Entry = ({
         entryDivRefs.current[gridSquareIndex] = el
       }}
       className={clsx(
-        "absolute z-10 flex size-full cursor-default items-center justify-center text-[10vw] sm:text-[clamp(30px,min(8vh,5vw),90px)]",
+        "absolute z-10 flex size-full cursor-default items-center justify-center",
         "focus:border-accent focus:outline-hidden focus:border-[2px]",
         "has-hover:hover:not-focus:border has-hover:hover:not-focus:border-secondary",
         isCandidateMode &&

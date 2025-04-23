@@ -20,6 +20,7 @@ interface Props {
     candidateIndex: number,
   ) => void
   symbolsLength: number
+  boxSize: number
 }
 
 let isPointerDownInProgress = false
@@ -38,6 +39,7 @@ const Candidate = ({
   badCandidates,
   toggleCandidateQueueSolveOnElim,
   symbolsLength,
+  boxSize,
 }: Props) => {
   const candidateKey = `${gridSquareIndex}-${candidateIndex}`
   const isAlreadyInUnit = getPeerGridSquareIndices(
@@ -106,7 +108,10 @@ const Candidate = ({
     <div className="relative size-full">
       <div
         className={clsx(
-          "absolute z-20 flex size-full items-center justify-center text-[3vw] font-medium sm:text-[clamp(12px,min(2vh,2vw),30px)]",
+          "absolute z-20 flex size-full items-center justify-center font-medium",
+          boxSize == 2 && "text-[calc(1em/2)]",
+          boxSize == 3 && "text-[calc(1em/3)]",
+          boxSize == 4 && "text-[calc(1em/4)]",
           shouldHighlight && "bg-[rgb(248,248,120)] font-bold text-black",
           isAllowed && "border-secondary/50 border-[1px] border-dashed",
           isCandidateMode && isAllowed
