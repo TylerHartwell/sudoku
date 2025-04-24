@@ -8,7 +8,7 @@ const PadNumbers = ({ children }: Props) => {
   return (
     <section
       aria-label="Number pad"
-      className="@container flex w-full items-center justify-around py-[10px]"
+      className="@container flex w-full items-center justify-around"
     >
       {children}
     </section>

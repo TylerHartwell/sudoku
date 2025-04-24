@@ -6,7 +6,7 @@ interface Props {
 
 const Actions = ({ children }: Props) => {
   return (
-    <div className="flex w-full flex-col items-center gap-[2px] overflow-auto">
+    <div className="flex w-full flex-col items-center gap-1 overflow-auto p-1">
       {children}
     </div>
   )

@@ -5,7 +5,7 @@ interface Props {
 }
 
 const ActionBtnGroup = ({ children }: Props) => {
-  return <div className="flex w-full justify-between p-[2px]">{children}</div>
+  return <div className="flex w-full justify-between">{children}</div>
 }
 
 export default ActionBtnGroup
