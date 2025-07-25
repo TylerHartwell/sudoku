@@ -2,12 +2,18 @@
 
 import { createContext, useContext, useState, useEffect } from "react"
 
-const ThemeContext = createContext({
-  theme: "light",
-  setTheme: (theme: string) => {},
-})
+type ThemeContextType = {
+  theme: string
+  setTheme: (theme: string) => void
+}
 
-export const useTheme = () => useContext(ThemeContext)
+const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
+
+export const useTheme = () => {
+  const context = useContext(ThemeContext)
+  if (!context) throw new Error("useTheme must be used within a ThemeProvider")
+  return context
+}
 
 const themeInit = () => {
   let theme = localStorage.getItem("theme")
