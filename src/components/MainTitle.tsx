@@ -7,7 +7,7 @@ interface Props {
 
 const MainTitle = ({ children }: Props) => {
   return (
-    <h1 className="text-copy/70 col-start-2 whitespace-nowrap text-center text-[clamp(1em,_4vw,_1.5em)]">
+    <h1 className="text-copy/70 col-start-2 whitespace-nowrap text-center text-[clamp(1em,4vw,1.5em)]">
       <span>{children}</span>
     </h1>
   )

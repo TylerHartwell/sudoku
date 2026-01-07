@@ -10,7 +10,7 @@ const Box = ({ children, boxSize }: Props) => {
   return (
     <div
       className={clsx(
-        `border-secondary grid place-items-center border-[2px]`,
+        `border-secondary grid place-items-center border-2`,
         boxSize == 2 &&
           "grid-cols-[repeat(2,1fr)] grid-rows-[repeat(2,1fr)] text-[calc(100cqw/4)]",
         boxSize == 3 &&

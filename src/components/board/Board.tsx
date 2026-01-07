@@ -14,7 +14,7 @@ const Board = ({ children, isBoardSolved, gridSize }: Props) => {
         `@container grid aspect-square w-full select-none`,
         isBoardSolved
           ? "border-copy border-[5px]"
-          : "border-secondary border-[2px]",
+          : "border-secondary border-2",
         gridSize == 2 && "grid-cols-[repeat(2,1fr)]",
         gridSize == 3 && "grid-cols-[repeat(3,1fr)]",
         gridSize == 4 && "grid-cols-[repeat(4,1fr)]",

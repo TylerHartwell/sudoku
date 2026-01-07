@@ -113,7 +113,7 @@ const Candidate = ({
           boxSize == 3 && "text-[calc(1em/3)]",
           boxSize == 4 && "text-[calc(1em/4)]",
           shouldHighlight && "bg-[rgb(248,248,120)] font-bold text-black",
-          isAllowed && "border-secondary/50 border-[1px] border-dashed",
+          isAllowed && "border-secondary/50 border border-dashed",
           isCandidateMode && isAllowed
             ? "has-hover:pointer-events-auto has-hover:hover:font-bold has-hover:hover:text-black has-hover:hover:bg-[#ff5353]"
             : "pointer-events-none",

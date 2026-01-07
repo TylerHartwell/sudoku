@@ -203,7 +203,7 @@ const Entry = ({
       }}
       className={clsx(
         "absolute z-10 flex size-full cursor-default items-center justify-center overflow-hidden",
-        "focus:border-accent focus:outline-hidden focus:border-[2px]",
+        "focus:border-accent focus:outline-hidden focus:border-2",
         "has-hover:hover:not-focus:border has-hover:hover:not-focus:border-secondary",
         isCandidateMode &&
           "has-hover:hover:border-none has-hover:focus:border-red-500",

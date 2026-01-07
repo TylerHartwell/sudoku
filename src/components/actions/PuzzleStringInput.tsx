@@ -19,7 +19,7 @@ const PuzzleStringInput = ({
       type="text"
       placeholder={`fetch or enter puzzle string of length ${puzzleLength}`}
       className={clsx(
-        "my-[2px] h-[2em] w-[98%] select-text border-[1px] px-1 text-[.85em]",
+        "my-0.5 h-[2em] w-[98%] select-text border px-1 text-[.85em]",
         "placeholder-copy/80",
         isHidden && "hidden",
       )}

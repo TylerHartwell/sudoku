@@ -10,7 +10,7 @@ const Square = ({ children, squareSize }: Props) => {
   return (
     <div
       className={clsx(
-        `border-secondary relative grid size-full items-center justify-center border-[1px] text-[100%]`,
+        `border-secondary relative grid size-full items-center justify-center border text-[100%]`,
         squareSize == 2 &&
           "grid-cols-[repeat(2,1fr)] grid-rows-[repeat(2,1fr)]",
         squareSize == 3 &&

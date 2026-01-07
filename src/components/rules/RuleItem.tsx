@@ -20,10 +20,10 @@ const RuleItem = ({
   allDefault,
 }: RuleItemProps) => {
   return (
-    <li className="flex h-[30px] items-center justify-between p-1">
+    <li className="h-7.5 flex items-center justify-between p-1">
       <button
         className={clsx(
-          "whitespace-nowrap rounded-[10px] px-[5px] py-[2px] transition-colors duration-500 ease-linear",
+          "px-1.25 whitespace-nowrap rounded-[10px] py-0.5 transition-colors duration-500 ease-linear",
           ruleOutcome === "success" && "bg-[green] transition-none",
           ruleOutcome === "fail" && "bg-[red] transition-none",
         )}
@@ -32,7 +32,7 @@ const RuleItem = ({
       >
         Attempt
       </button>
-      <span className="mx-[10px] text-start text-[clamp(12px,4vw,16px)]">
+      <span className="mx-2.5 text-start text-[clamp(12px,4vw,16px)]">
         {ruleName}
       </span>
       <label
@@ -45,7 +45,7 @@ const RuleItem = ({
         type="checkbox"
         name={"checkbox" + ruleN}
         id={"checkbox" + ruleN}
-        className="ml-[5px]"
+        className="ml-1.25"
         checked={isChecked}
         onChange={handleCheckboxChange}
       />
