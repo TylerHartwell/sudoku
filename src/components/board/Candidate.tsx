@@ -109,9 +109,9 @@ const Candidate = ({
       <div
         className={clsx(
           "absolute z-20 flex size-full items-center justify-center font-medium",
-          boxSize == 2 && "text-[calc(1em/2)]",
-          boxSize == 3 && "text-[calc(1em/3)]",
-          boxSize == 4 && "text-[calc(1em/4)]",
+          boxSize == 2 && "text-[0.5em]",
+          boxSize == 3 && "text-[0.33em]",
+          boxSize == 4 && "text-[0.25em]",
           shouldHighlight && "bg-[rgb(248,248,120)] font-bold text-black",
           isAllowed && "border-secondary/50 border border-dashed",
           isCandidateMode && isAllowed
