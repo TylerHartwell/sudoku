@@ -11,11 +11,8 @@ const getPeerGridSquareIndices = (
 
   const peerGridSquareIndices: number[] = []
   for (let i = 0; i < Math.pow(symbolsLength, 2); i++) {
-    if (
-      getRowColBox(i, symbolsLength).rowIndex == rowIndex ||
-      getRowColBox(i, symbolsLength).colIndex == colIndex ||
-      getRowColBox(i, symbolsLength).boxIndex == boxIndex
-    ) {
+    const { rowIndex: iRow, colIndex: iCol, boxIndex: iBox } = getRowColBox(i, symbolsLength)
+    if (iRow === rowIndex || iCol === colIndex || iBox === boxIndex) {
       peerGridSquareIndices.push(i)
     }
   }

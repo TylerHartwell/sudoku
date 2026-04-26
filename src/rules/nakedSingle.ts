@@ -15,7 +15,7 @@ const nakedSingle: Rule = {
           targetCandidateIndex = candidateIndex
         }
       }
-      if (possibleCount > 1 || possibleCount == 0) continue
+      if (possibleCount > 1 || possibleCount === 0) continue
 
       const candidateIndex = targetCandidateIndex as number
       const candidateNumber = candidateIndex + 1

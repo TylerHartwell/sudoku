@@ -20,7 +20,7 @@ const hiddenSingle: Rule = {
         let targetGridSquareIndex: number | null = null
         for (const square of unit) {
           if (instanceCount > 1) break
-          if (square.entryValue != "0") continue
+          if (square.entryValue !== "0") continue
           if (square.candidates[candidateIndex]) {
             if (square.candidates.filter(Boolean).length === 1) {
               targetGridSquareIndex = null

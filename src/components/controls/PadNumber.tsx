@@ -12,7 +12,7 @@ interface Props {
   symbolsLength: number
   lastFocusedEntryIndex: number | null
   handleLastFocusedEntryIndex: (entryIndex: number | null) => void
-  padNumberClicked: RefObject<boolean>
+  padNumberClickedRef: RefObject<boolean>
   handleEntry: (i: number, s: string) => void
   isCandidateMode: boolean
   charCounts: { [key: string]: number }
@@ -40,7 +40,7 @@ const PadNumber = ({
   symbolsLength,
   lastFocusedEntryIndex,
   handleLastFocusedEntryIndex,
-  padNumberClicked,
+  padNumberClickedRef,
   handleEntry,
   isCandidateMode,
   charCounts,
@@ -64,7 +64,7 @@ const PadNumber = ({
 
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     e.preventDefault()
-    padNumberClicked.current = true
+    padNumberClickedRef.current = true
 
     if (lastFocusedEntryIndex != null) {
       if (!isCandidateMode) {
@@ -114,7 +114,7 @@ const PadNumber = ({
     if (index === lastClickedHighlightIndex) {
       handleLastClickedHighlightIndex(null)
       handleHighlightIndex(null)
-      padNumberClicked.current = false
+      padNumberClickedRef.current = false
       return
     }
 

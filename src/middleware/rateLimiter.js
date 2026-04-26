@@ -9,7 +9,7 @@ let globalRateLimit = {
 
 export default function rateLimitMiddleware(handler) {
   return async (req, res) => {
-    const ip = req.headers.get("x-forwarded-for")?.split(",")[0] || req.ip
+    const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown"
     const perIpLimit = 5 // Limiting requests per minute per IP
     const globalLimit = 50 // Limiting total requests per minute globally
     const windowMs = 60 * 1000 // 1 minute
@@ -30,6 +30,13 @@ export default function rateLimitMiddleware(handler) {
         exceptionCount: 0,
         firstRequestTime: Date.now() // Track the first request time for the 1-hour exception window
       })
+    }
+
+    // Sweep entries that are past the exception window to prevent unbounded memory growth
+    for (const [key, data] of rateLimitMap) {
+      if (Date.now() - data.firstRequestTime > exceptionWindowMs) {
+        rateLimitMap.delete(key)
+      }
     }
 
     const ipData = rateLimitMap.get(ip)

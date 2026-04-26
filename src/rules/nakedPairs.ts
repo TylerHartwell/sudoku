@@ -24,7 +24,7 @@ const nakedPairs: Rule = {
           }
         }
 
-        if (candidateObjArr.length == groupSize) {
+        if (candidateObjArr.length === groupSize) {
           groupOfSize.push(candidateObjArr)
         }
       }
@@ -33,9 +33,9 @@ const nakedPairs: Rule = {
         for (let i = 0; i < groupOfSize.length - 1; i++) {
           for (let j = i + 1; j < groupOfSize.length; j++) {
             if (
-              groupOfSize[i][0].candidateIndex ==
+              groupOfSize[i][0].candidateIndex ===
                 groupOfSize[j][0].candidateIndex &&
-              groupOfSize[i][1].candidateIndex ==
+              groupOfSize[i][1].candidateIndex ===
                 groupOfSize[j][1].candidateIndex
             ) {
               const firstIndexOfGroup = groupOfSize[i][0].candidateIndex
@@ -45,7 +45,7 @@ const nakedPairs: Rule = {
               const secondGroupGridSquareIndex =
                 groupOfSize[j][0].gridSquareIndex
 
-              //eliminate others from unit if present
+              // eliminate others from unit if present
               const unit = allSquaresByUnit[unitIndex]
               const candidatesToMarkBad: Candidate[] = []
               const actions: (() => void)[] = []
@@ -95,11 +95,11 @@ const nakedPairs: Rule = {
               if (
                 !isUnitABox &&
                 getRowColBox(firstGroupGridSquareIndex, allSquaresSqrt)
-                  .boxIndex ==
+                  .boxIndex ===
                   getRowColBox(secondGroupGridSquareIndex, allSquaresSqrt)
                     .boxIndex
               ) {
-                //eliminate others from box if present
+                // eliminate others from box if present
                 const unit =
                   allSquaresByUnit[
                     getRowColBox(firstGroupGridSquareIndex, allSquaresSqrt)
@@ -111,7 +111,6 @@ const nakedPairs: Rule = {
               }
 
               if (actions.length !== 0) {
-                // console.log("has elimination for pair ", firstIndexOfGroup + 1, "and ", secondIndexOfGroup + 1, "in unit ", unitIndex)
                 return {
                   hasProgress: true,
                   candidatesToMarkGood: [

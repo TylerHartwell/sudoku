@@ -24,7 +24,7 @@ const nakedTriple: Rule = {
           }
         }
 
-        if (candidateObjArr.length == groupSize) {
+        if (candidateObjArr.length === groupSize) {
           groupOfSize.push(candidateObjArr)
         }
       }
@@ -34,17 +34,17 @@ const nakedTriple: Rule = {
           for (let j = i + 1; j < groupOfSize.length - 1; j++) {
             for (let k = j + 1; k < groupOfSize.length; k++) {
               if (
-                groupOfSize[i][0].candidateIndex ==
+                groupOfSize[i][0].candidateIndex ===
                   groupOfSize[j][0].candidateIndex &&
-                groupOfSize[j][0].candidateIndex ==
+                groupOfSize[j][0].candidateIndex ===
                   groupOfSize[k][0].candidateIndex &&
-                groupOfSize[i][1].candidateIndex ==
+                groupOfSize[i][1].candidateIndex ===
                   groupOfSize[j][1].candidateIndex &&
-                groupOfSize[j][1].candidateIndex ==
+                groupOfSize[j][1].candidateIndex ===
                   groupOfSize[k][1].candidateIndex &&
-                groupOfSize[i][2].candidateIndex ==
+                groupOfSize[i][2].candidateIndex ===
                   groupOfSize[j][2].candidateIndex &&
-                groupOfSize[j][2].candidateIndex ==
+                groupOfSize[j][2].candidateIndex ===
                   groupOfSize[k][2].candidateIndex
               ) {
                 const firstIndexOfGroup = groupOfSize[i][0].candidateIndex
@@ -57,7 +57,7 @@ const nakedTriple: Rule = {
                 const thirdGroupGridSquareIndex =
                   groupOfSize[k][0].gridSquareIndex
 
-                //eliminate others from unit if present
+                // eliminate others from unit if present
                 const unit = allSquaresByUnit[unitIndex]
                 const candidatesToMarkBad: Candidate[] = []
                 const actions: (() => void)[] = []
@@ -122,15 +122,15 @@ const nakedTriple: Rule = {
                 if (
                   !isUnitABox &&
                   getRowColBox(firstGroupGridSquareIndex, allSquaresSqrt)
-                    .boxIndex ==
+                    .boxIndex ===
                     getRowColBox(secondGroupGridSquareIndex, allSquaresSqrt)
                       .boxIndex &&
                   getRowColBox(secondGroupGridSquareIndex, allSquaresSqrt)
-                    .boxIndex ==
+                    .boxIndex ===
                     getRowColBox(thirdGroupGridSquareIndex, allSquaresSqrt)
                       .boxIndex
                 ) {
-                  //eliminate others from box if present
+                  // eliminate others from box if present
                   const unit =
                     allSquaresByUnit[
                       getRowColBox(firstGroupGridSquareIndex, allSquaresSqrt)
@@ -142,16 +142,6 @@ const nakedTriple: Rule = {
                 }
 
                 if (actions.length !== 0) {
-                  // console.log(
-                  //   "has elimination for triple ",
-                  //   firstIndexOfGroup + 1,
-                  //   "and ",
-                  //   secondIndexOfGroup + 1,
-                  //   "and ",
-                  //   thirdIndexOfGroup + 1,
-                  //   "in unit ",
-                  //   unitIndex
-                  // )
                   return {
                     hasProgress: true,
                     candidatesToMarkGood: [

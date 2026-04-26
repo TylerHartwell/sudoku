@@ -20,7 +20,7 @@ interface Props {
     puzzleString: string,
   ) => boolean
   handleLastFocusedEntryIndex: (entryIndex: number | null) => void
-  padNumberClicked: RefObject<boolean>
+  padNumberClickedRef: RefObject<boolean>
   handleShouldAutoSolve: (beQueued: boolean) => void
   lastFocusedEntryIndex: number | null
   toggleCandidateQueueSolveOnElim: (
@@ -30,7 +30,7 @@ interface Props {
   sortedEntries: (Element | null)[]
   symbols: string[]
   symbolsLength: number
-  entryDivRefs: RefObject<(HTMLDivElement | null)[]>
+  entryElementsRef: RefObject<(HTMLDivElement | null)[]>
 }
 
 const Entry = ({
@@ -45,14 +45,14 @@ const Entry = ({
   manualElimCandidates,
   isAlreadyInUnit,
   handleLastFocusedEntryIndex,
-  padNumberClicked,
+  padNumberClickedRef,
   handleShouldAutoSolve,
   lastFocusedEntryIndex,
   toggleCandidateQueueSolveOnElim,
   sortedEntries,
   symbols,
   symbolsLength,
-  entryDivRefs,
+  entryElementsRef,
 }: Props) => {
   useEffect(() => {}, [])
 
@@ -70,8 +70,10 @@ const Entry = ({
     e.preventDefault()
     if (!isLocked) {
       if (isCandidateMode && e.pointerType === "touch") {
-        if (entryDivRefs.current[gridSquareIndex] !== document.activeElement) {
-          entryDivRefs.current[gridSquareIndex]?.focus()
+        if (
+          entryElementsRef.current[gridSquareIndex] !== document.activeElement
+        ) {
+          entryElementsRef.current[gridSquareIndex]?.focus()
         } else {
           if (highlightIndex !== null) {
             const candidateIndex = highlightIndex
@@ -98,9 +100,9 @@ const Entry = ({
         }
         return
       }
-      if (entryDivRefs.current[gridSquareIndex] !== document.activeElement) {
+      if (entryElementsRef.current[gridSquareIndex] !== document.activeElement) {
         if (e.pointerType === "touch" || !isCandidateMode) {
-          entryDivRefs.current[gridSquareIndex]?.focus()
+          entryElementsRef.current[gridSquareIndex]?.focus()
         }
       } else {
         if (highlightIndex !== null) {
@@ -184,7 +186,7 @@ const Entry = ({
   }
 
   const handleBlur = () => {
-    if (!padNumberClicked.current) {
+    if (!padNumberClickedRef.current) {
       if (
         isAlreadyInUnit(gridSquareIndex, shownValue, puzzleStringCurrent) &&
         gridSquareIndex == lastFocusedEntryIndex
@@ -193,13 +195,13 @@ const Entry = ({
       }
     }
     handleLastFocusedEntryIndex(null)
-    padNumberClicked.current = false
+    padNumberClickedRef.current = false
   }
 
   return (
     <div
       ref={(el) => {
-        entryDivRefs.current[gridSquareIndex] = el
+        entryElementsRef.current[gridSquareIndex] = el
       }}
       className={clsx(
         "absolute z-10 flex size-full cursor-default items-center justify-center overflow-hidden",

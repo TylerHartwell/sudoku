@@ -4,7 +4,7 @@ import rateLimitMiddleware from "../../../middleware/rateLimiter"
 
 export const dynamic = "force-dynamic"
 
-const handler = async (req: NextRequest, res: NextResponse) => {
+const handler = async (req: NextRequest) => {
   try {
     const client = await clientPromise
     const db = client.db("sudoku")
@@ -32,10 +32,11 @@ const handler = async (req: NextRequest, res: NextResponse) => {
       response.headers.set("Expires", "0")
       return response
     } else {
-      return NextResponse.json({ error: "No puzzles" }, { status: 500 })
+      return NextResponse.json({ error: "No puzzles found" }, { status: 404 })
     }
   } catch (error) {
-    return new Response(JSON.stringify(error))
+    console.error("randomPuzzle API error:", error)
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 })
   }
 }
 

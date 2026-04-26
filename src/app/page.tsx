@@ -74,13 +74,13 @@ export default function Page() {
     isAlreadyInUnit,
     lastFocusedEntryIndex,
     handleLastFocusedEntryIndex,
-    padNumberClicked,
+    padNumberClickedRef,
     charCounts,
     restartPuzzle,
     toggleCandidateQueueSolveOnElim,
     sortedEntries,
     isLoadingFromLocalStorage,
-    entryDivRefs,
+    entryElementsRef,
   } = useSudokuManagement()
 
   if (isLoadingFromLocalStorage) {
@@ -135,7 +135,7 @@ export default function Page() {
                         handleLastFocusedEntryIndex={
                           handleLastFocusedEntryIndex
                         }
-                        padNumberClicked={padNumberClicked}
+                        padNumberClickedRef={padNumberClickedRef}
                         handleShouldAutoSolve={handleShouldAutoSolve}
                         lastFocusedEntryIndex={lastFocusedEntryIndex}
                         toggleCandidateQueueSolveOnElim={
@@ -144,7 +144,7 @@ export default function Page() {
                         sortedEntries={sortedEntries}
                         symbols={symbols}
                         symbolsLength={symbolsLength}
-                        entryDivRefs={entryDivRefs}
+                        entryElementsRef={entryElementsRef}
                       />
                       {symbols.map((symbol, index) => (
                         <Candidate
@@ -189,7 +189,7 @@ export default function Page() {
                   }
                   lastFocusedEntryIndex={lastFocusedEntryIndex}
                   handleLastFocusedEntryIndex={handleLastFocusedEntryIndex}
-                  padNumberClicked={padNumberClicked}
+                  padNumberClickedRef={padNumberClickedRef}
                   handleEntry={handleEntry}
                   isCandidateMode={isCandidateMode}
                   charCounts={charCounts}

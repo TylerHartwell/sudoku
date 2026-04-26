@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
+import Script from "next/script"
 import "./css/globals.css"
 import { themeInitScriptString, ThemeProvider } from "@/contexts/ThemeContext"
 
@@ -24,10 +25,9 @@ export default function RootLayout({
         className="text-copy bg-primary font-sans text-[16px]"
       >
         <head>
-          <script
-            id="theme-loader"
-            dangerouslySetInnerHTML={{ __html: themeInitScriptString }}
-          />
+          <Script id="theme-loader" strategy="beforeInteractive">
+            {themeInitScriptString}
+          </Script>
         </head>
         <body className={`${inter.className} touch-pan-y select-none`}>
           {children}
