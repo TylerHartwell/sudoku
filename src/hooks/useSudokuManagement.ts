@@ -67,7 +67,7 @@ function useSudokuManagement() {
   const handlePuzzleStringCurrent = createStateHandler(setPuzzleStringCurrent, {
     sideEffect: (newValue) => {
       if (newValue === undefined) return
-      handleIsBoardSolved(isBoardSet && checkBoardFilled(newValue))
+      handleIsBoardSolved(isBoardSet && checkIsSolvedBoard(newValue))
     },
   })
   const replacePuzzleStringCurrentAtWith = useCallback(
@@ -98,7 +98,7 @@ function useSudokuManagement() {
     usePersistedState<boolean>("isBoardSet", initialStates.isBoardSet)
   const handleIsBoardSet = createStateHandler(setIsBoardSet, {
     validator: (newValue) => {
-      if (newValue && checkForAnySudokuConflict()) {
+      if (newValue && checkCurrentPuzzleForConflict()) {
         alert("There is a sudoku conflict")
         return false
       } else return true
@@ -745,11 +745,11 @@ function useSudokuManagement() {
     handleSortedEntries,
   ])
 
-  function checkForAnySudokuConflict() {
-    for (let i = 0; i < puzzleStringCurrent.length; i++) {
-      const character = puzzleStringCurrent[i]
+  function checkForAnySudokuConflictInPuzzle(puzzleString: string) {
+    for (let i = 0; i < puzzleString.length; i++) {
+      const character = puzzleString[i]
       if (character !== "0") {
-        if (isAlreadyInUnit(i, character, puzzleStringCurrent)) {
+        if (isAlreadyInUnit(i, character, puzzleString)) {
           return true
         }
       }
@@ -757,8 +757,19 @@ function useSudokuManagement() {
     return false
   }
 
+  function checkCurrentPuzzleForConflict() {
+    return checkForAnySudokuConflictInPuzzle(puzzleStringCurrent)
+  }
+
   function checkBoardFilled(puzzleStringCurrent: string) {
     return !puzzleStringCurrent.includes("0")
+  }
+
+  function checkIsSolvedBoard(puzzleString: string) {
+    return (
+      checkBoardFilled(puzzleString) &&
+      !checkForAnySudokuConflictInPuzzle(puzzleString)
+    )
   }
 
   function formatStringToPuzzleString(value: string) {

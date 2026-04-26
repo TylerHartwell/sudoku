@@ -1,76 +1,131 @@
 import { NextResponse } from "next/server"
+import { isIP } from "node:net"
+import clientPromise from "../lib/mongodb"
 
-const rateLimitMap = new Map()
+const WINDOW_MS = 60 * 1000
+const PER_IP_LIMIT = 5
+const GLOBAL_LIMIT = 50
 
-let globalRateLimit = {
-  count: 0,
-  lastReset: Date.now()
+let indexSetupPromise = null
+
+async function getRateLimitCollection() {
+  const client = await clientPromise
+  const collection = client.db("sudoku").collection("rateLimits")
+
+  if (!indexSetupPromise) {
+    indexSetupPromise = Promise.all([
+      collection.createIndex({ key: 1, windowStart: 1 }, { unique: true }),
+      collection.createIndex({ expiresAt: 1 }, { expireAfterSeconds: 0 }),
+    ]).catch((error) => {
+      indexSetupPromise = null
+      throw error
+    })
+  }
+
+  await indexSetupPromise
+
+  return collection
+}
+
+function isValidIp(ip) {
+  return typeof ip === "string" && isIP(ip) !== 0
+}
+
+function getClientIp(req) {
+  if (isValidIp(req.ip)) {
+    return req.ip
+  }
+
+  const trustProxyHeaders = process.env.TRUST_PROXY_HEADERS === "true"
+
+  if (!trustProxyHeaders) {
+    return "unknown"
+  }
+
+  const candidates = [
+    req.headers.get("cf-connecting-ip"),
+    req.headers.get("true-client-ip"),
+    req.headers.get("x-real-ip"),
+    req.headers.get("x-forwarded-for")?.split(",")[0]?.trim(),
+  ]
+
+  for (const candidate of candidates) {
+    if (isValidIp(candidate)) {
+      return candidate
+    }
+  }
+
+  return "unknown"
+}
+
+async function incrementAndGetCount(collection, key, windowStart, expiresAt) {
+  const result = await collection.findOneAndUpdate(
+    { key, windowStart },
+    {
+      $inc: { count: 1 },
+      $setOnInsert: { expiresAt },
+    },
+    {
+      upsert: true,
+      returnDocument: "after",
+    },
+  )
+
+  return result?.count ?? 0
 }
 
 export default function rateLimitMiddleware(handler) {
   return async (req, res) => {
-    const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown"
-    const perIpLimit = 5 // Limiting requests per minute per IP
-    const globalLimit = 50 // Limiting total requests per minute globally
-    const windowMs = 60 * 1000 // 1 minute
-    const exceptionWindowMs = 60 * 60 * 1000 // 1 hour window for exceptions
-    const exceptionLimit = 3 // Allow first 3 requests per IP within 1 hour to bypass global limit
+    try {
+      const now = Date.now()
+      const windowStart = Math.floor(now / WINDOW_MS) * WINDOW_MS
+      const expiresAt = new Date(windowStart + WINDOW_MS)
+      const retryAfterSeconds = Math.max(
+        1,
+        Math.ceil((windowStart + WINDOW_MS - now) / 1000),
+      )
+      const collection = await getRateLimitCollection()
+      const routeKey = req.nextUrl?.pathname ?? "global"
 
-    // Global rate limit logic
-    if (Date.now() - globalRateLimit.lastReset > windowMs) {
-      globalRateLimit.count = 0
-      globalRateLimit.lastReset = Date.now()
-    }
+      const globalCount = await incrementAndGetCount(
+        collection,
+        `global:${routeKey}`,
+        windowStart,
+        expiresAt,
+      )
 
-    // If this is the first time we're seeing this IP, initialize its data
-    if (!rateLimitMap.has(ip)) {
-      rateLimitMap.set(ip, {
-        count: 0,
-        lastReset: Date.now(),
-        exceptionCount: 0,
-        firstRequestTime: Date.now() // Track the first request time for the 1-hour exception window
-      })
-    }
-
-    // Sweep entries that are past the exception window to prevent unbounded memory growth
-    for (const [key, data] of rateLimitMap) {
-      if (Date.now() - data.firstRequestTime > exceptionWindowMs) {
-        rateLimitMap.delete(key)
+      if (globalCount > GLOBAL_LIMIT) {
+        return new NextResponse("Global Rate Limit Exceeded", {
+          status: 429,
+          headers: {
+            "Retry-After": String(retryAfterSeconds),
+          },
+        })
       }
+
+      const ip = getClientIp(req)
+      const ipCount = await incrementAndGetCount(
+        collection,
+        `ip:${ip}:${routeKey}`,
+        windowStart,
+        expiresAt,
+      )
+
+      if (ipCount > PER_IP_LIMIT) {
+        return new NextResponse("Per-IP Rate Limit Exceeded", {
+          status: 429,
+          headers: {
+            "Retry-After": String(retryAfterSeconds),
+          },
+        })
+      }
+
+      return handler(req, res)
+    } catch (error) {
+      console.error("rateLimitMiddleware error:", error)
+
+      // Fail open to keep API available if the limiter backend is unavailable.
+      return handler(req, res)
     }
-
-    const ipData = rateLimitMap.get(ip)
-
-    // Reset per-IP data if a minute has passed since the last reset
-    if (Date.now() - ipData.lastReset > windowMs) {
-      ipData.count = 0
-      ipData.lastReset = Date.now()
-    }
-
-    // Check if the IP is still within its 1-hour exception window
-    const withinExceptionWindow = Date.now() - ipData.firstRequestTime <= exceptionWindowMs
-
-    // If the IP is within the exception window and has made fewer than 3 requests, bypass the global rate limit
-    if (withinExceptionWindow && ipData.exceptionCount < exceptionLimit) {
-      ipData.exceptionCount += 1 // Increment the exception counter for this IP
-      ipData.count += 1 // Increment the per-IP counter
-      return handler(req, res) // Allow the request without affecting the global limit
-    }
-
-    // If the global rate limit is hit and the IP is not within the exception, block the request
-    if (globalRateLimit.count >= globalLimit) {
-      return new NextResponse("Global Rate Limit Exceeded", { status: 429 })
-    }
-
-    // If the per-IP limit is hit, block the request
-    if (ipData.count >= perIpLimit) {
-      return new NextResponse("Per-IP Rate Limit Exceeded", { status: 429 })
-    }
-
-    // Increment both the global and per-IP request counts
-    globalRateLimit.count += 1
-    ipData.count += 1
-
-    return handler(req, res)
   }
 }
