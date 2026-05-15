@@ -42,7 +42,7 @@ const FetchPuzzleBtn = ({
   return (
     <button
       className={clsx(
-        "text-copy border-accent col-start-2 rounded-[10px] border-2 disabled:cursor-not-allowed disabled:opacity-70",
+        "min-w-42 text-copy border-accent col-start-2 rounded-[10px] border-2 disabled:cursor-not-allowed disabled:opacity-70",
         isHidden && "hidden",
       )}
       type="button"

@@ -21,6 +21,8 @@ import ToggleCandidatesBtn from "@/components/actions/action-btn-group/ToggleCan
 import ClearAllBtn from "@/components/actions/action-btn-group/ClearAllBtn"
 import RestartPuzzleBtn from "@/components/actions/action-btn-group/RestartPuzzleBtn"
 import SetPuzzleBtn from "@/components/actions/action-btn-group/SetPuzzleBtn"
+import UndoBtn from "@/components/actions/action-btn-group/UndoBtn"
+import RedoBtn from "@/components/actions/action-btn-group/RedoBtn"
 import PuzzleStringInput from "@/components/actions/PuzzleStringInput"
 import DifficultySelector from "@/components/actions/fetch-group/DifficultySelector"
 import ActionBtnGroup from "@/components/actions/action-btn-group/ActionBtnGroup"
@@ -77,6 +79,10 @@ export default function Page() {
     padNumberClickedRef,
     charCounts,
     restartPuzzle,
+    undo,
+    redo,
+    canUndo,
+    canRedo,
     toggleCandidateQueueSolveOnElim,
     startAutoSolve,
     stopAutoSolve,
@@ -294,56 +300,85 @@ export default function Page() {
           <ActionsSection>
             {/* <SectionTitle>Actions</SectionTitle> */}
             <Actions>
-              <FetchGroup>
-                <FetchPuzzleBtn
-                  handlePuzzleStringStart={handlePuzzleStringStart}
-                  difficulty={difficulty}
-                  isHidden={isBoardSet}
+              <div className="relative w-full h-22 flex flex-col justify-center">
+                <div
+                  className={isBoardSet ? "invisible pointer-events-none" : ""}
+                  aria-hidden={isBoardSet}
                 >
-                  Fetch A New Puzzle
-                </FetchPuzzleBtn>
-
-                <DifficultySelector
-                  difficulty={difficulty}
-                  isHidden={isBoardSet}
-                  onChange={(e) =>
-                    handleDifficulty(e.target.value as Difficulty)
-                  }
-                  difficultyLevels={difficultyLevels}
-                />
-              </FetchGroup>
-              <PuzzleStringInput
-                puzzleLength={Math.pow(symbolsLength, 2)}
-                isHidden={isBoardSet}
-                puzzleStringStart={puzzleStringStart}
-                onChange={(e) => {
-                  handlePuzzleStringStart(e.target.value)
-                }}
-              />
-              <ActionBtnGroup>
-                <ClearAllBtn onClick={() => resetBoardData()}>
-                  Clear All
-                </ClearAllBtn>
-                {isBoardSet ? (
-                  <RestartPuzzleBtn onClick={() => restartPuzzle()}>
-                    Restart
-                  </RestartPuzzleBtn>
-                ) : (
-                  <SetPuzzleBtn
-                    onClick={() => handleIsBoardSet(true)}
+                  <FetchGroup>
+                    <FetchPuzzleBtn
+                      handlePuzzleStringStart={handlePuzzleStringStart}
+                      difficulty={difficulty}
+                      isHidden={false}
+                    >
+                      Fetch A New Puzzle
+                    </FetchPuzzleBtn>
+                    <DifficultySelector
+                      difficulty={difficulty}
+                      isHidden={false}
+                      onChange={(e) =>
+                        handleDifficulty(e.target.value as Difficulty)
+                      }
+                      difficultyLevels={difficultyLevels}
+                    />
+                  </FetchGroup>
+                  <PuzzleStringInput
                     puzzleLength={Math.pow(symbolsLength, 2)}
+                    isHidden={false}
                     puzzleStringStart={puzzleStringStart}
-                  >
-                    Set Puzzle
-                  </SetPuzzleBtn>
-                )}
-                <ToggleCandidatesBtn
-                  onClick={() => toggleShouldShowCandidates()}
-                  disabled={isCandidateMode}
+                    onChange={(e) => {
+                      handlePuzzleStringStart(e.target.value)
+                    }}
+                  />
+                </div>
+                <div
+                  className={`absolute inset-0 flex w-full items-center justify-center ${
+                    isBoardSet ? "" : "invisible pointer-events-none"
+                  }`}
+                  aria-hidden={!isBoardSet}
                 >
-                  Toggle Candidates
-                </ToggleCandidatesBtn>
-              </ActionBtnGroup>
+                  <div className="flex items-center gap-2">
+                    <UndoBtn onClick={undo} disabled={!canUndo || isAutoSolving}>
+                      Undo
+                    </UndoBtn>
+                    <RedoBtn onClick={redo} disabled={!canRedo || isAutoSolving}>
+                      Redo
+                    </RedoBtn>
+                  </div>
+                </div>
+              </div>
+              <div className="relative flex items-center w-full min-h-8">
+                <div className="flex-1 flex justify-start">
+                  <ClearAllBtn onClick={() => resetBoardData()}>
+                    Clear All
+                  </ClearAllBtn>
+                </div>
+                <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
+                  <div className="pointer-events-auto">
+                    {isBoardSet ? (
+                      <RestartPuzzleBtn onClick={() => restartPuzzle()}>
+                        Restart
+                      </RestartPuzzleBtn>
+                    ) : (
+                      <SetPuzzleBtn
+                        onClick={() => handleIsBoardSet(true)}
+                        puzzleLength={Math.pow(symbolsLength, 2)}
+                        puzzleStringStart={puzzleStringStart}
+                      >
+                        Set Puzzle
+                      </SetPuzzleBtn>
+                    )}
+                  </div>
+                </div>
+                <div className="flex-1 flex justify-end">
+                  <ToggleCandidatesBtn
+                    onClick={() => toggleShouldShowCandidates()}
+                    disabled={isCandidateMode}
+                  >
+                    Toggle Candidates
+                  </ToggleCandidatesBtn>
+                </div>
+              </div>
             </Actions>
           </ActionsSection>
         </PuzzleOperations>

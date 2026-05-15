@@ -56,6 +56,25 @@ const initialStates = {
   difficulty: "easy" as Difficulty,
 }
 
+interface HistorySnapshot {
+  puzzleStringCurrent: string
+  puzzleStringStart: string
+  isBoardSet: boolean
+  isBoardSolved: boolean
+  shouldShowCandidates: boolean
+  isCandidateMode: boolean
+  manualElimCandidates: string[]
+  goodCandidates: string[]
+  badCandidates: string[]
+  highlightIndex: number | null
+  lastClickedHighlightIndex: number | null
+  lastFocusedEntryIndex: number | null
+  checkedRuleIndices: number[]
+  difficulty: Difficulty
+}
+
+const maxHistoryLength = 200
+
 function useSudokuManagement() {
   const [
     puzzleStringCurrent,
@@ -263,7 +282,11 @@ function useSudokuManagement() {
         })
       }
     },
-    [handleManualElimCandidates, isAlreadyInUnit, puzzleStringCurrent],
+    [
+      handleManualElimCandidates,
+      isAlreadyInUnit,
+      puzzleStringCurrent,
+    ],
   )
 
   const [goodCandidates, setGoodCandidates, isLoadingGoodCandidates] =
@@ -383,6 +406,154 @@ function useSudokuManagement() {
   const autoSolveInFlightRef = useRef(false)
   const autoSolvePendingRef = useRef(false)
   const autoSolveStopRequestedRef = useRef(false)
+  const isRestoringHistoryRef = useRef(false)
+  const suppressHistoryPushRef = useRef(false)
+
+  const [undoHistory, setUndoHistory] = useState<HistorySnapshot[]>([])
+  const [redoHistory, setRedoHistory] = useState<HistorySnapshot[]>([])
+
+  const createHistorySnapshot = useCallback(
+    (): HistorySnapshot => ({
+      puzzleStringCurrent,
+      puzzleStringStart,
+      isBoardSet,
+      isBoardSolved,
+      shouldShowCandidates,
+      isCandidateMode,
+      manualElimCandidates: [...manualElimCandidates],
+      goodCandidates: [...goodCandidates],
+      badCandidates: [...badCandidates],
+      highlightIndex,
+      lastClickedHighlightIndex,
+      lastFocusedEntryIndex,
+      checkedRuleIndices: [...checkedRuleIndices],
+      difficulty,
+    }),
+    [
+      badCandidates,
+      checkedRuleIndices,
+      difficulty,
+      goodCandidates,
+      highlightIndex,
+      isBoardSet,
+      isBoardSolved,
+      isCandidateMode,
+      lastClickedHighlightIndex,
+      lastFocusedEntryIndex,
+      manualElimCandidates,
+      puzzleStringCurrent,
+      puzzleStringStart,
+      shouldShowCandidates,
+    ],
+  )
+
+  const snapshotsMatch = (a: HistorySnapshot, b: HistorySnapshot) => {
+    return JSON.stringify(a) === JSON.stringify(b)
+  }
+
+  const applyHistorySnapshot = useCallback(
+    (snapshot: HistorySnapshot) => {
+      isRestoringHistoryRef.current = true
+
+      setPuzzleStringCurrent(snapshot.puzzleStringCurrent)
+      setPuzzleStringStart(snapshot.puzzleStringStart)
+      setIsBoardSet(snapshot.isBoardSet)
+      setIsBoardSolved(snapshot.isBoardSolved)
+      setShouldShowCandidates(snapshot.shouldShowCandidates)
+      setIsCandidateMode(snapshot.isCandidateMode)
+      setManualElimCandidates(snapshot.manualElimCandidates)
+      setGoodCandidates(snapshot.goodCandidates)
+      setBadCandidates(snapshot.badCandidates)
+      setHighlightIndex(snapshot.highlightIndex)
+      setLastClickedHighlightIndex(snapshot.lastClickedHighlightIndex)
+      setLastFocusedEntryIndex(snapshot.lastFocusedEntryIndex)
+      setCheckedRuleIndices(snapshot.checkedRuleIndices)
+      setDifficulty(snapshot.difficulty)
+
+      autoSolveStopRequestedRef.current = true
+      autoSolvePendingRef.current = false
+      autoSolveInFlightRef.current = false
+      setShouldAutoSolve(false)
+      setIsAutoSolving(false)
+      setRuleOutcomes(initialStates.ruleOutcomes)
+      setCurrentAutoRuleIndex(initialStates.currentAutoRuleIndex)
+
+      queueMicrotask(() => {
+        isRestoringHistoryRef.current = false
+      })
+    },
+    [
+      setBadCandidates,
+      setCheckedRuleIndices,
+      setCurrentAutoRuleIndex,
+      setDifficulty,
+      setGoodCandidates,
+      setHighlightIndex,
+      setIsBoardSet,
+      setIsBoardSolved,
+      setIsCandidateMode,
+      setLastClickedHighlightIndex,
+      setLastFocusedEntryIndex,
+      setManualElimCandidates,
+      setPuzzleStringCurrent,
+      setPuzzleStringStart,
+      setRuleOutcomes,
+      setShouldAutoSolve,
+      setShouldShowCandidates,
+    ],
+  )
+
+  const pushUndoHistory = useCallback(() => {
+    if (isRestoringHistoryRef.current || suppressHistoryPushRef.current) return
+
+    const snapshot = createHistorySnapshot()
+    setUndoHistory((prev) => {
+      if (prev.length > 0 && snapshotsMatch(prev[prev.length - 1], snapshot)) {
+        return prev
+      }
+
+      const next = [...prev, snapshot]
+      return next.length > maxHistoryLength
+        ? next.slice(next.length - maxHistoryLength)
+        : next
+    })
+    setRedoHistory([])
+  }, [createHistorySnapshot])
+
+  const undo = useCallback(() => {
+    if (isAutoSolving || undoHistory.length === 0) return
+
+    const previousSnapshot = undoHistory[undoHistory.length - 1]
+    const currentSnapshot = createHistorySnapshot()
+
+    setUndoHistory((prev) => prev.slice(0, -1))
+    setRedoHistory((prev) => {
+      const next = [...prev, currentSnapshot]
+      return next.length > maxHistoryLength
+        ? next.slice(next.length - maxHistoryLength)
+        : next
+    })
+    applyHistorySnapshot(previousSnapshot)
+  }, [applyHistorySnapshot, createHistorySnapshot, isAutoSolving, undoHistory])
+
+  const redo = useCallback(() => {
+    if (isAutoSolving || redoHistory.length === 0) return
+
+    const nextSnapshot = redoHistory[redoHistory.length - 1]
+    const currentSnapshot = createHistorySnapshot()
+
+    setRedoHistory((prev) => prev.slice(0, -1))
+    setUndoHistory((prev) => {
+      const next = [...prev, currentSnapshot]
+      return next.length > maxHistoryLength
+        ? next.slice(next.length - maxHistoryLength)
+        : next
+    })
+    applyHistorySnapshot(nextSnapshot)
+  }, [applyHistorySnapshot, createHistorySnapshot, isAutoSolving, redoHistory])
+
+  const canUndo = undoHistory.length > 0
+  const canRedo = redoHistory.length > 0
 
   const charCounts = useMemo(
     () => getCountOfCharactersInStringFromArray(puzzleStringCurrent, symbols),
@@ -446,11 +617,15 @@ function useSudokuManagement() {
 
       if (replacementChar === "0") {
         if (puzzleStringCurrent[gridSquareIndex] === "0") return
+        pushUndoHistory()
         replacePuzzleStringCurrentAtWith(gridSquareIndex, replacementChar)
 
         return
       }
 
+      if (puzzleStringCurrent[gridSquareIndex] !== replacementChar) {
+        pushUndoHistory()
+      }
       replacePuzzleStringCurrentAtWith(gridSquareIndex, replacementChar)
       const candidateIndex = symbols.indexOf(replacementChar)
 
@@ -482,6 +657,7 @@ function useSudokuManagement() {
       getPeerSquares,
       manualElimCandidates,
       puzzleStringCurrent,
+      pushUndoHistory,
       replacePuzzleStringCurrentAtWith,
       toggleManualElimCandidate,
     ],
@@ -537,7 +713,13 @@ function useSudokuManagement() {
         !(isAuto && autoSolveStopRequestedRef.current)
 
       if (shouldResolve) {
-        resolveAction()
+        pushUndoHistory()
+        suppressHistoryPushRef.current = true
+        try {
+          resolveAction()
+        } finally {
+          suppressHistoryPushRef.current = false
+        }
         // Manual Attempt never triggers autosolve
       }
 
@@ -569,6 +751,7 @@ function useSudokuManagement() {
       handleRuleOutcomeAtIndex,
       isAutoSolving,
       isBoardSolved,
+      pushUndoHistory,
       toggleBadCandidates,
       toggleGoodCandidates,
       toggleManualElimCandidate,
@@ -709,6 +892,36 @@ function useSudokuManagement() {
   }, [handleSortedEntries, isBoardSet])
 
   useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      const isModifierDown = event.ctrlKey || event.metaKey
+      if (!isModifierDown) return
+
+      const target = event.target as HTMLElement | null
+      const tag = target?.tagName?.toLowerCase()
+      const isTypingTarget =
+        target?.isContentEditable || tag === "input" || tag === "textarea"
+      if (isTypingTarget) return
+
+      if (event.key.toLowerCase() === "z" && !event.shiftKey) {
+        event.preventDefault()
+        undo()
+      } else if (
+        event.key.toLowerCase() === "y" ||
+        (event.key.toLowerCase() === "z" && event.shiftKey)
+      ) {
+        event.preventDefault()
+        redo()
+      }
+    }
+
+    document.addEventListener("keydown", handleKeyDown)
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown)
+    }
+  }, [redo, undo])
+
+  useEffect(() => {
     let hasConflict = false
     for (let i = 0; i < puzzleStringCurrent.length; i++) {
       const character = puzzleStringCurrent[i]
@@ -799,16 +1012,24 @@ function useSudokuManagement() {
 
   const toggleCandidateQueueSolveOnElim = useCallback(
     (gridSquareIndex: number, candidateIndex: number) => {
+      pushUndoHistory()
       toggleManualElimCandidate(gridSquareIndex, candidateIndex)
       const candidateKey = `${gridSquareIndex}-${candidateIndex}`
       if (!manualElimCandidates.includes(candidateKey)) {
         handleShouldAutoSolve(true)
       }
     },
-    [toggleManualElimCandidate, manualElimCandidates, handleShouldAutoSolve],
+    [
+      pushUndoHistory,
+      toggleManualElimCandidate,
+      manualElimCandidates,
+      handleShouldAutoSolve,
+    ],
   )
 
   const restartPuzzle = () => {
+    pushUndoHistory()
+
     handlePuzzleStringCurrent(formatStringToPuzzleString(puzzleStringStart))
     handleIsBoardSolved(initialStates.isBoardSolved)
 
@@ -827,7 +1048,19 @@ function useSudokuManagement() {
     padNumberClickedRef.current = false
   }
 
+  const handleIsBoardSetWithHistory = useCallback(
+    (newValue: boolean) => {
+      if (isBoardSet !== newValue) {
+        pushUndoHistory()
+      }
+      handleIsBoardSet(newValue)
+    },
+    [handleIsBoardSet, isBoardSet, pushUndoHistory],
+  )
+
   const resetBoardData = useCallback(() => {
+    pushUndoHistory()
+
     handlePuzzleStringCurrent(initialStates.puzzleStringCurrent)
     handlePuzzleStringStart(initialStates.puzzleStringStart)
     handleIsBoardSet(initialStates.isBoardSet)
@@ -855,6 +1088,7 @@ function useSudokuManagement() {
 
     clearLocalStoragePreserve(["theme"])
   }, [
+    pushUndoHistory,
     handleBadCandidates,
     handleCheckedRuleIndices,
     handleCurrentAutoRuleIndex,
@@ -926,7 +1160,7 @@ function useSudokuManagement() {
     puzzleStringStart,
     handlePuzzleStringStart,
     isBoardSet,
-    handleIsBoardSet,
+    handleIsBoardSet: handleIsBoardSetWithHistory,
     isBoardSolved,
     ruleOutcomes,
     checkedRuleIndices,
@@ -955,6 +1189,10 @@ function useSudokuManagement() {
     tryRuleAtIndex,
     resetBoardData,
     restartPuzzle,
+    undo,
+    redo,
+    canUndo,
+    canRedo,
     toggleCandidateQueueSolveOnElim,
     startAutoSolve,
     stopAutoSolve,

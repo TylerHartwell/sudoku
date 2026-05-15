@@ -8,7 +8,7 @@ interface Props {
 const ClearAllBtn = ({ children, onClick }: Props) => {
   return (
     <button
-      className="w-min rounded-[10px] text-[clamp(12px,4vw,16px)]"
+      className="w-min rounded-[10px] text-[clamp(10px,3vw,13px)]"
       onClick={onClick}
     >
       {children}
