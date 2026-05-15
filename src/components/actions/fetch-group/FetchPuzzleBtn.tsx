@@ -42,13 +42,16 @@ const FetchPuzzleBtn = ({
   return (
     <button
       className={clsx(
-        "text-copy border-accent col-start-2 rounded-[10px] border-2",
+        "text-copy border-accent col-start-2 rounded-[10px] border-2 disabled:cursor-not-allowed disabled:opacity-70",
         isHidden && "hidden",
       )}
+      type="button"
+      disabled={loading}
+      aria-busy={loading}
       onClick={handleClick}
     >
       {loading ? (
-        <span className="flex">
+        <span className="flex" aria-live="polite">
           Loading
           <span className="animate-dot-bouncey">.</span>
           <span className="animate-dot-bouncey [animation-delay:0.2s]">.</span>

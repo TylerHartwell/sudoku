@@ -37,6 +37,7 @@ const initialStates = {
   checkedRuleIndices: [],
   currentAutoRuleIndex: 0,
   shouldAutoSolve: false,
+  shouldLoopAutoSolveOnSuccess: true,
 
   // Candidate-related states
   shouldShowCandidates: false,
@@ -157,6 +158,21 @@ function useSudokuManagement() {
   const [shouldAutoSolve, setShouldAutoSolve, isLoadingShouldAutoSolve] =
     usePersistedState<boolean>("shouldAutoSolve", initialStates.shouldAutoSolve)
   const handleShouldAutoSolve = createStateHandler(setShouldAutoSolve)
+
+  const [
+    shouldLoopAutoSolveOnSuccess,
+    setShouldLoopAutoSolveOnSuccess,
+    isLoadingShouldLoopAutoSolveOnSuccess,
+  ] = usePersistedState<boolean>(
+    "shouldLoopAutoSolveOnSuccess",
+    initialStates.shouldLoopAutoSolveOnSuccess,
+  )
+  const handleShouldLoopAutoSolveOnSuccess = createStateHandler(
+    setShouldLoopAutoSolveOnSuccess,
+  )
+  const toggleShouldLoopAutoSolveOnSuccess = useCallback(() => {
+    handleShouldLoopAutoSolveOnSuccess((prev) => !prev)
+  }, [handleShouldLoopAutoSolveOnSuccess])
 
   const [
     shouldShowCandidates,
@@ -355,6 +371,8 @@ function useSudokuManagement() {
   )
   const handleSortedEntries = createStateHandler(setSortedEntries)
 
+  const [isAutoSolving, setIsAutoSolving] = useState(false)
+
   const [difficulty, setDifficulty, isLoadingDifficulty] =
     usePersistedState<Difficulty>("difficulty", initialStates.difficulty)
   const handleDifficulty = createStateHandler(setDifficulty)
@@ -362,6 +380,9 @@ function useSudokuManagement() {
   const entryElementsRef = useRef<(HTMLDivElement | null)[]>([])
 
   const padNumberClickedRef = useRef(false)
+  const autoSolveInFlightRef = useRef(false)
+  const autoSolvePendingRef = useRef(false)
+  const autoSolveStopRequestedRef = useRef(false)
 
   const charCounts = useMemo(
     () => getCountOfCharactersInStringFromArray(puzzleStringCurrent, symbols),
@@ -468,6 +489,10 @@ function useSudokuManagement() {
 
   const tryRuleAtIndex = useCallback(
     async (ruleIndex: number, isAuto: boolean = false) => {
+      if (!isAuto && isAutoSolving) {
+        return "default" as RuleOutcome
+      }
+
       if (isBoardSolved) {
         handleRuleOutcomeAtIndex(ruleIndex, "default")
         return "default" as RuleOutcome
@@ -505,9 +530,15 @@ function useSudokuManagement() {
 
       await new Promise((resolve) => setTimeout(resolve, outcomeTime))
 
-      if (ruleResult.hasProgress && ruleResult.resolve) {
-        ruleResult.resolve()
-        handleShouldAutoSolve(true)
+      const resolveAction = ruleResult.resolve
+      const shouldResolve =
+        ruleResult.hasProgress &&
+        resolveAction !== undefined &&
+        !(isAuto && autoSolveStopRequestedRef.current)
+
+      if (shouldResolve) {
+        resolveAction()
+        // Manual Attempt never triggers autosolve
       }
 
       handleRuleOutcomeAtIndex(ruleIndex, "default")
@@ -530,13 +561,13 @@ function useSudokuManagement() {
         })
       }
 
-      return ruleOutcome
+      return shouldResolve ? ruleOutcome : ("default" as RuleOutcome)
     },
     [
       allSquares,
       handleEntry,
       handleRuleOutcomeAtIndex,
-      handleShouldAutoSolve,
+      isAutoSolving,
       isBoardSolved,
       toggleBadCandidates,
       toggleGoodCandidates,
@@ -545,6 +576,14 @@ function useSudokuManagement() {
   )
 
   const tryAutoSolves = useCallback(async () => {
+    if (autoSolveStopRequestedRef.current) {
+      autoSolvePendingRef.current = false
+      autoSolveStopRequestedRef.current = false
+      resetCurrentAutoRuleIndex()
+      handleShouldAutoSolve(false)
+      return
+    }
+
     if (currentAutoRuleIndex >= checkedRuleIndices.length || isBoardSolved) {
       resetCurrentAutoRuleIndex()
       handleShouldAutoSolve(false)
@@ -555,15 +594,31 @@ function useSudokuManagement() {
 
     const isSuccess = (await tryRuleAtIndex(ruleIndex, true)) === "success"
 
-    if (isSuccess) {
+    if (autoSolveStopRequestedRef.current) {
+      autoSolvePendingRef.current = false
+      autoSolveStopRequestedRef.current = false
       resetCurrentAutoRuleIndex()
-      handleShouldAutoSolve(true)
+      handleShouldAutoSolve(false)
+      return
+    }
+
+    if (isSuccess) {
+      if (shouldLoopAutoSolveOnSuccess) {
+        resetCurrentAutoRuleIndex()
+        autoSolvePendingRef.current = true
+        handleShouldAutoSolve(true)
+      } else {
+        // Stop after first success
+        resetCurrentAutoRuleIndex()
+        handleShouldAutoSolve(false)
+      }
     } else {
       if (currentAutoRuleIndex >= checkedRuleIndices.length - 1) {
         resetCurrentAutoRuleIndex()
         handleShouldAutoSolve(false)
       } else {
         increaseCurrentAutoRuleIndex()
+        autoSolvePendingRef.current = true
         handleShouldAutoSolve(true)
       }
     }
@@ -574,8 +629,39 @@ function useSudokuManagement() {
     increaseCurrentAutoRuleIndex,
     isBoardSolved,
     resetCurrentAutoRuleIndex,
+    shouldLoopAutoSolveOnSuccess,
     tryRuleAtIndex,
   ])
+
+  const startAutoSolve = useCallback(() => {
+    if (
+      isAutoSolving ||
+      !isBoardSet ||
+      isBoardSolved ||
+      checkedRuleIndices.length === 0
+    ) {
+      return
+    }
+
+    autoSolveStopRequestedRef.current = false
+    autoSolvePendingRef.current = false
+    resetCurrentAutoRuleIndex()
+    setIsAutoSolving(true)
+    handleShouldAutoSolve(true)
+  }, [
+    checkedRuleIndices.length,
+    handleShouldAutoSolve,
+    isAutoSolving,
+    isBoardSet,
+    isBoardSolved,
+    resetCurrentAutoRuleIndex,
+  ])
+
+  const stopAutoSolve = useCallback(() => {
+    autoSolveStopRequestedRef.current = true
+    autoSolvePendingRef.current = false
+    handleShouldAutoSolve(false)
+  }, [handleShouldAutoSolve])
 
   const isLoadingFromLocalStorage = [
     isLoadingPuzzleStringCurrent,
@@ -586,6 +672,7 @@ function useSudokuManagement() {
     isLoadingCheckedRuleIndices,
     isLoadingCurrentAutoRuleIndex,
     isLoadingShouldAutoSolve,
+    isLoadingShouldLoopAutoSolveOnSuccess,
     isLoadingShouldShowCandidates,
     isLoadingIsCandidateMode,
     isLoadingManualElimCandidates,
@@ -639,8 +726,43 @@ function useSudokuManagement() {
       !isBoardSolved &&
       !hasConflict
     ) {
+      if (autoSolveInFlightRef.current) {
+        if (!autoSolveStopRequestedRef.current) {
+          autoSolvePendingRef.current = true
+        }
+        handleShouldAutoSolve(false)
+        return
+      }
+
+      autoSolveStopRequestedRef.current = false
+      autoSolveInFlightRef.current = true
+      setIsAutoSolving(true)
       handleShouldAutoSolve(false)
-      tryAutoSolves()
+
+      const runAutoSolve = async () => {
+        try {
+          await tryAutoSolves()
+        } finally {
+          autoSolveInFlightRef.current = false
+
+          if (autoSolveStopRequestedRef.current) {
+            autoSolveStopRequestedRef.current = false
+            autoSolvePendingRef.current = false
+            resetCurrentAutoRuleIndex()
+            setIsAutoSolving(false)
+            return
+          }
+
+          if (autoSolvePendingRef.current) {
+            autoSolvePendingRef.current = false
+            handleShouldAutoSolve(true)
+          } else {
+            setIsAutoSolving(false)
+          }
+        }
+      }
+
+      void runAutoSolve()
     }
   }, [
     isBoardSet,
@@ -648,6 +770,7 @@ function useSudokuManagement() {
     handleShouldAutoSolve,
     isAlreadyInUnit,
     puzzleStringCurrent,
+    resetCurrentAutoRuleIndex,
     shouldAutoSolve,
     tryAutoSolves,
   ])
@@ -661,10 +784,6 @@ function useSudokuManagement() {
         : prev.filter((n) => n !== ruleIndex)
       return updatedRules.sort((a, b) => a - b)
     })
-
-    if (isNewCheck && isBoardSet) {
-      handleShouldAutoSolve(true)
-    }
   }
 
   const toggleCandidateQueueSolveOnElim = useCallback(
@@ -803,6 +922,8 @@ function useSudokuManagement() {
     shouldShowCandidates,
     toggleShouldShowCandidates,
     handleShouldAutoSolve,
+    shouldLoopAutoSolveOnSuccess,
+    toggleShouldLoopAutoSolveOnSuccess,
     isCandidateMode,
     toggleCandidateMode,
     manualElimCandidates,
@@ -824,6 +945,9 @@ function useSudokuManagement() {
     resetBoardData,
     restartPuzzle,
     toggleCandidateQueueSolveOnElim,
+    startAutoSolve,
+    stopAutoSolve,
+    isAutoSolving,
 
     isAlreadyInUnit,
     padNumberClickedRef,

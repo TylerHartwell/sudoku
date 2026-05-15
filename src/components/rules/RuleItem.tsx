@@ -8,6 +8,7 @@ interface RuleItemProps {
   ruleOutcome: RuleOutcome
   tryRuleAtIndex: () => Promise<RuleOutcome>
   allDefault: boolean
+  interactionDisabled: boolean
 }
 
 const RuleItem = ({
@@ -18,6 +19,7 @@ const RuleItem = ({
   ruleOutcome,
   tryRuleAtIndex,
   allDefault,
+  interactionDisabled,
 }: RuleItemProps) => {
   return (
     <li className="h-7.5 flex items-center justify-between p-1">
@@ -28,7 +30,7 @@ const RuleItem = ({
           ruleOutcome === "fail" && "bg-[red] transition-none",
         )}
         onClick={tryRuleAtIndex}
-        disabled={!allDefault}
+        disabled={!allDefault || interactionDisabled}
       >
         Attempt
       </button>
@@ -48,6 +50,7 @@ const RuleItem = ({
         className="ml-1.25"
         checked={isChecked}
         onChange={handleCheckboxChange}
+        disabled={interactionDisabled}
       />
     </li>
   )

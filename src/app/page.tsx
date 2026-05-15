@@ -78,6 +78,11 @@ export default function Page() {
     charCounts,
     restartPuzzle,
     toggleCandidateQueueSolveOnElim,
+    startAutoSolve,
+    stopAutoSolve,
+    isAutoSolving,
+    shouldLoopAutoSolveOnSuccess,
+    toggleShouldLoopAutoSolveOnSuccess,
     sortedEntries,
     isLoadingFromLocalStorage,
     entryElementsRef,
@@ -85,8 +90,13 @@ export default function Page() {
 
   if (isLoadingFromLocalStorage) {
     return (
-      <div className="bg-primary text-copy flex h-screen items-center justify-center text-center">
-        <span className="flex">
+      <div
+        className="bg-primary text-copy flex h-screen items-center justify-center text-center"
+        role="status"
+        aria-live="polite"
+        aria-busy="true"
+      >
+        <span className="flex" aria-label="Loading saved puzzle">
           Loading
           <span className="animate-dot-bouncey">.</span>
           <span className="animate-dot-bouncey [animation-delay:0.2s]">.</span>
@@ -226,6 +236,32 @@ export default function Page() {
         <PuzzleOperations>
           <RulesSection>
             <SectionTitle>Rules</SectionTitle>
+            <div className="mx-2.5 mb-1 flex items-center justify-end gap-4">
+              <label className="flex items-center gap-1.5 text-[clamp(12px,4vw,16px)]">
+                <span>Loop</span>
+                <input
+                  type="checkbox"
+                  checked={shouldLoopAutoSolveOnSuccess}
+                  onChange={toggleShouldLoopAutoSolveOnSuccess}
+                  disabled={isAutoSolving}
+                  aria-label="Repeat autosolve after a successful step"
+                />
+              </label>
+              <button
+                type="button"
+                className="rounded-[10px] border border-secondary px-3 py-1 text-sm font-semibold transition-colors has-hover:hover:bg-secondary/20 disabled:cursor-not-allowed disabled:opacity-50"
+                onClick={startAutoSolve}
+                disabled={
+                  isAutoSolving ||
+                  checkedRuleIndices.length === 0 ||
+                  !isBoardSet ||
+                  isBoardSolved
+                }
+                aria-label="Run checked rules until first success or repeat if enabled"
+              >
+                Run
+              </button>
+            </div>
             <RuleItemList>
               {rulesArr.map((rule, index) => (
                 <RuleItem
@@ -239,9 +275,21 @@ export default function Page() {
                   allDefault={ruleOutcomes.every(
                     (outcome) => outcome === "default",
                   )}
+                  interactionDisabled={isAutoSolving}
                 />
               ))}
             </RuleItemList>
+            {isAutoSolving && (
+              <div className="mt-2 flex justify-end pr-1">
+                <button
+                  type="button"
+                  className="rounded-[10px] border border-red-500 px-3 py-1 text-sm transition-colors has-hover:hover:bg-red-500 has-hover:hover:text-white"
+                  onClick={stopAutoSolve}
+                >
+                  Stop Autosolve
+                </button>
+              </div>
+            )}
           </RulesSection>
           <ActionsSection>
             <SectionTitle>Actions</SectionTitle>
