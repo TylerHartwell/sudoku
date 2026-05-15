@@ -235,7 +235,7 @@ export default function Page() {
         </GameInterface>
         <PuzzleOperations>
           <RulesSection>
-            <SectionTitle>Rules</SectionTitle>
+            {/* <SectionTitle>Rules</SectionTitle> */}
             <div className="mx-2.5 mb-1 flex items-center justify-end gap-4">
               <label className="flex items-center gap-1.5 text-[clamp(12px,4vw,16px)]">
                 <span>Loop</span>
@@ -292,7 +292,7 @@ export default function Page() {
             )}
           </RulesSection>
           <ActionsSection>
-            <SectionTitle>Actions</SectionTitle>
+            {/* <SectionTitle>Actions</SectionTitle> */}
             <Actions>
               <FetchGroup>
                 <FetchPuzzleBtn

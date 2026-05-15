@@ -720,6 +720,16 @@ function useSudokuManagement() {
       }
     }
 
+    if (isAutoSolving && isBoardSolved) {
+      autoSolveInFlightRef.current = false
+      autoSolvePendingRef.current = false
+      autoSolveStopRequestedRef.current = false
+      resetCurrentAutoRuleIndex()
+      handleShouldAutoSolve(false)
+      queueMicrotask(() => setIsAutoSolving(false))
+      return
+    }
+
     if (
       shouldAutoSolve &&
       isBoardSet &&
@@ -768,6 +778,7 @@ function useSudokuManagement() {
     isBoardSet,
     isBoardSolved,
     handleShouldAutoSolve,
+    isAutoSolving,
     isAlreadyInUnit,
     puzzleStringCurrent,
     resetCurrentAutoRuleIndex,
